@@ -1,0 +1,14 @@
+query Songs {
+	songs {
+		id
+		createdAt
+		updatedAt
+		title
+		mediaUrl
+		genre
+		owner {
+			id
+			username
+		}
+	}
+}

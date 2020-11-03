@@ -1,0 +1,14 @@
+query Song($id: Int!) {
+	song(id: $id) {
+		id
+		createdAt
+		updatedAt
+		title
+		mediaUrl
+		genre
+		owner {
+			id
+			username
+		}
+	}
+}

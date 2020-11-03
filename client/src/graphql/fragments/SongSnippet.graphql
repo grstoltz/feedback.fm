@@ -1,0 +1,12 @@
+fragment SongSnippet on Song {
+	id
+	createdAt
+	updatedAt
+	title
+	mediaUrl
+	genre
+	owner {
+		id
+		username
+	}
+}
