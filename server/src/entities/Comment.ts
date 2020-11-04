@@ -5,8 +5,10 @@ import {
 	CreateDateColumn,
 	UpdateDateColumn,
 	BaseEntity,
+	ManyToOne,
 } from "typeorm";
 import { ObjectType, Field } from "type-graphql";
+import { User } from "./User";
 
 @ObjectType()
 @Entity("Comment")
@@ -33,6 +35,14 @@ export class Comment extends BaseEntity {
 	@Field()
 	@Column()
 	active: boolean;
+
+	@Field(() => User)
+	@ManyToOne(() => User, (user) => user.sentComments)
+	owner: User;
+
+	@Field(() => User)
+	@ManyToOne(() => User, (user) => user.receivedComments)
+	receiver: User;
 
 	@Field(() => String)
 	@CreateDateColumn()

@@ -7,8 +7,10 @@ import {
 	Column,
 	BaseEntity,
 	OneToMany,
+	ManyToOne,
 } from "typeorm";
 import { Song } from "./Song";
+import { Comment } from "./Comment";
 
 @ObjectType()
 @Entity()
@@ -31,8 +33,15 @@ export class User extends BaseEntity {
 	@OneToMany(() => Song, (song) => song.owner)
 	songs: Song[];
 
-	//   @OneToMany(() => Updoot, (updoot) => updoot.user)
-	//   updoots: Updoot[];
+	@Field(() => User)
+	@ManyToOne(() => User, (user) => user.songs)
+	owner: User;
+
+	@OneToMany(() => Comment, (comment) => comment.senderId)
+	sentComments: Comment[];
+
+	@OneToMany(() => Comment, (comment) => comment.receiverId)
+	receivedComments: Comment[];
 
 	@Field(() => String)
 	@CreateDateColumn()

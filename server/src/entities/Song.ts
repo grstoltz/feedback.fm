@@ -6,9 +6,11 @@ import {
 	UpdateDateColumn,
 	BaseEntity,
 	ManyToOne,
+	OneToMany,
 } from "typeorm";
 import { ObjectType, Field } from "type-graphql";
 import { User } from "./User";
+import { Comment } from "./Comment";
 
 @ObjectType()
 @Entity()
@@ -36,6 +38,9 @@ export class Song extends BaseEntity {
 	@Field(() => User)
 	@ManyToOne(() => User, (user) => user.songs)
 	owner: User;
+
+	@OneToMany(() => Comment, (comment) => comment.parentId)
+	comments: Comment[];
 
 	@Field(() => String)
 	@CreateDateColumn()
