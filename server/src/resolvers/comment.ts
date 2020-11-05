@@ -13,8 +13,8 @@ import {
 } from "type-graphql";
 
 import { Comment } from "../entities/Comment";
-import { Song } from "../entities/Song";
 import { User } from "../entities/User";
+import { Song } from "../entities/Song";
 
 import { MyContext } from "../types";
 
@@ -40,13 +40,18 @@ export class CommentResolver {
 	}
 
 	@FieldResolver(() => User)
-	owner(@Root() comment: Comment, @Ctx() { userLoader }: MyContext) {
+	sender(@Root() comment: Comment, @Ctx() { userLoader }: MyContext) {
 		return userLoader.load(comment.senderId);
 	}
 
 	@FieldResolver(() => User)
 	receiver(@Root() comment: Comment, @Ctx() { userLoader }: MyContext) {
 		return userLoader.load(comment.receiverId);
+	}
+
+	@FieldResolver(() => Song)
+	parent(@Root() comment: Comment) {
+		return Song.findOne(comment.parentId);
 	}
 
 	@Query(() => Comment, { nullable: true })
@@ -56,7 +61,7 @@ export class CommentResolver {
 
 	@Mutation(() => Comment)
 	@UseMiddleware(isAuth)
-	async createPost(
+	async createComment(
 		@Arg("input") input: CommentInput,
 		@Ctx() { req }: MyContext
 	): Promise<Comment> {

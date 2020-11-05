@@ -22,6 +22,7 @@ import { COOKIE_NAME, FORGET_PASSWORD_PREFIX } from "../constants";
 
 import { User } from "../entities/User";
 import { Song } from "../entities/Song";
+import { Comment } from "../entities/Comment";
 
 @ObjectType()
 class FieldError {
@@ -141,11 +142,24 @@ export class UserResolver {
 
 	@FieldResolver(() => [Song])
 	async songs(@Root() user: User, @Ctx() { req }: MyContext): Promise<Song[]> {
-		// this is the current user and its ok to show them their own email
-
 		return Song.find({ ownerId: req.session.userId });
 	}
-	// current user wants to see someone elses email
+
+	@FieldResolver(() => [Comment])
+	async receivedComments(
+		@Root() user: User,
+		@Ctx() { req }: MyContext
+	): Promise<Comment[]> {
+		return Comment.find({ receiverId: req.session.userId });
+	}
+
+	@FieldResolver(() => [Comment])
+	async sentComments(
+		@Root() user: User,
+		@Ctx() { req }: MyContext
+	): Promise<Comment[]> {
+		return Comment.find({ receiverId: req.session.userId });
+	}
 
 	@Query(() => User, { nullable: true })
 	async me(@Ctx() { req }: MyContext) {

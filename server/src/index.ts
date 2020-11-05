@@ -22,6 +22,7 @@ import { Song } from "./entities/Song";
 import { HelloResolver } from "./resolvers/hello";
 import { SongResolver } from "./resolvers/song";
 import { UserResolver } from "./resolvers/user";
+import { CommentResolver } from "./resolvers/comment";
 
 import { createUserLoader } from "./utils/createUserLoader";
 
@@ -71,7 +72,12 @@ const main = async () => {
 
 	const apolloServer = new ApolloServer({
 		schema: await buildSchema({
-			resolvers: [HelloResolver, SongResolver, UserResolver],
+			resolvers: [
+				HelloResolver,
+				SongResolver,
+				UserResolver,
+				CommentResolver,
+			],
 			validate: false,
 		}),
 		context: ({ req, res }) => ({

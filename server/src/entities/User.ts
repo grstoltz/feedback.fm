@@ -7,7 +7,6 @@ import {
 	Column,
 	BaseEntity,
 	OneToMany,
-	ManyToOne,
 } from "typeorm";
 import { Song } from "./Song";
 import { Comment } from "./Comment";
@@ -33,14 +32,10 @@ export class User extends BaseEntity {
 	@OneToMany(() => Song, (song) => song.owner)
 	songs: Song[];
 
-	@Field(() => User)
-	@ManyToOne(() => User, (user) => user.songs)
-	owner: User;
-
-	@OneToMany(() => Comment, (comment) => comment.senderId)
+	@OneToMany(() => Comment, (comment) => comment.sender)
 	sentComments: Comment[];
 
-	@OneToMany(() => Comment, (comment) => comment.receiverId)
+	@OneToMany(() => Comment, (comment) => comment.receiver)
 	receivedComments: Comment[];
 
 	@Field(() => String)

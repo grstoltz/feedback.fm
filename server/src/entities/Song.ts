@@ -39,7 +39,8 @@ export class Song extends BaseEntity {
 	@ManyToOne(() => User, (user) => user.songs)
 	owner: User;
 
-	@OneToMany(() => Comment, (comment) => comment.parentId)
+	@Field(() => Comment)
+	@OneToMany(() => Comment, (comment) => comment.parent)
 	comments: Comment[];
 
 	@Field(() => String)
