@@ -158,7 +158,11 @@ export class UserResolver {
 		@Root() user: User,
 		@Ctx() { req }: MyContext
 	): Promise<Comment[]> {
-		return Comment.find({ receiverId: req.session.userId });
+		if (req.session.userId === user.id) {
+			return Comment.find({ receiverId: req.session.userId });
+		}
+
+		throw new Error("Not logged in");
 	}
 
 	@Query(() => User, { nullable: true })
