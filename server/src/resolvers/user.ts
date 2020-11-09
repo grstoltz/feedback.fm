@@ -150,7 +150,11 @@ export class UserResolver {
 		@Root() user: User,
 		@Ctx() { req }: MyContext
 	): Promise<Comment[]> {
-		return Comment.find({ receiverId: req.session.userId });
+		if (req.session.userId === user.id) {
+			return Comment.find({ receiverId: req.session.userId });
+		}
+
+		throw new Error("Not logged in");
 	}
 
 	@FieldResolver(() => [Comment])
@@ -159,7 +163,7 @@ export class UserResolver {
 		@Ctx() { req }: MyContext
 	): Promise<Comment[]> {
 		if (req.session.userId === user.id) {
-			return Comment.find({ receiverId: req.session.userId });
+			return Comment.find({ senderId: req.session.userId });
 		}
 
 		throw new Error("Not logged in");
