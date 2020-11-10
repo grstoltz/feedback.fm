@@ -140,12 +140,12 @@ export class UserResolver {
 		return "";
 	}
 
-	@FieldResolver(() => [Song])
+	@FieldResolver(() => [Song], { nullable: true })
 	async songs(@Root() user: User, @Ctx() { req }: MyContext): Promise<Song[]> {
 		return Song.find({ ownerId: req.session.userId });
 	}
 
-	@FieldResolver(() => [Comment])
+	@FieldResolver(() => [Comment], { nullable: true })
 	async receivedComments(
 		@Root() user: User,
 		@Ctx() { req }: MyContext
@@ -157,7 +157,7 @@ export class UserResolver {
 		throw new Error("Not logged in");
 	}
 
-	@FieldResolver(() => [Comment])
+	@FieldResolver(() => [Comment], { nullable: true })
 	async sentComments(
 		@Root() user: User,
 		@Ctx() { req }: MyContext

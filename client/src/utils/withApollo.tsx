@@ -17,8 +17,8 @@ const createClient = (ctx: NextPageContext) =>
 			typePolicies: {
 				Query: {
 					fields: {
-						posts: {
-							// keyArgs: [],
+						songs: {
+							keyArgs: [],
 							// merge(
 							// 	existing: PaginatedPosts | undefined,
 							// 	incoming: PaginatedPosts
@@ -30,7 +30,10 @@ const createClient = (ctx: NextPageContext) =>
 							// 			...incoming.posts,
 							// 		],
 							// 	};
-							// },
+						},
+
+						comments: {
+							keyArgs: [],
 						},
 					},
 				},

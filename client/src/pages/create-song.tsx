@@ -19,9 +19,9 @@ const CreateSong: React.FC<{}> = ({}) => {
 				onSubmit={async (values) => {
 					const { errors } = await createSong({
 						variables: { input: values },
-						// update: (cache) => {
-						// 	cache.evict({ fieldName: "posts:{}" });
-						// },
+						update: (cache) => {
+							cache.evict({ fieldName: "songs:{}" });
+						},
 					});
 					if (!errors) {
 						router.push("/");

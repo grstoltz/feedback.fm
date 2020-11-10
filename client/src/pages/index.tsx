@@ -1,7 +1,8 @@
 import { Layout } from "../components/Layout";
+import NextLink from "next/link";
 import { withApollo } from "../utils/withApollo";
 import { useSongsQuery } from "../generated/graphql";
-import { Stack } from "@chakra-ui/core";
+import { Stack, Link } from "@chakra-ui/core";
 
 const Index = () => {
 	const { data, error, loading } = useSongsQuery();
@@ -17,13 +18,17 @@ const Index = () => {
 
 	return (
 		<Layout>
-			<div>Hello World</div>;
+			<div>Hello World</div>
 			{!data && loading ? (
 				<div>loading...</div>
 			) : (
 				<Stack spacing={8}>
 					{data?.songs.map((s) => (
-						<div key={s.id}>{s.title}</div>
+						<div key={s.id}>
+							<NextLink href={`/song/${s.id}`}>
+								<Link mr={2}>{s.title}</Link>
+							</NextLink>
+						</div>
 					))}
 				</Stack>
 			)}

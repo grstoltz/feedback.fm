@@ -1,5 +1,5 @@
-query Comment($id: Int!) {
-	comment(id: $id) {
+query Comments($id: Int!) {
+	comments(id: $id) {
 		id
 		createdAt
 		updatedAt

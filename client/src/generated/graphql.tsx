@@ -20,10 +20,22 @@ export type Query = {
   songs: Array<Song>;
   song?: Maybe<Song>;
   me?: Maybe<User>;
+  comments: Array<Comment>;
+  comment?: Maybe<Comment>;
 };
 
 
 export type QuerySongArgs = {
+  id: Scalars['Int'];
+};
+
+
+export type QueryCommentsArgs = {
+  id: Scalars['Int'];
+};
+
+
+export type QueryCommentArgs = {
   id: Scalars['Int'];
 };
 
@@ -35,6 +47,7 @@ export type Song = {
   genre: Scalars['String'];
   ownerId: Scalars['Float'];
   owner: User;
+  comments: Comment;
   createdAt: Scalars['String'];
   updatedAt: Scalars['String'];
 };
@@ -46,7 +59,25 @@ export type User = {
   email: Scalars['String'];
   createdAt: Scalars['String'];
   updatedAt: Scalars['String'];
-  songs: Array<Song>;
+  songs?: Maybe<Array<Song>>;
+  receivedComments?: Maybe<Array<Comment>>;
+  sentComments?: Maybe<Array<Comment>>;
+};
+
+export type Comment = {
+  __typename?: 'Comment';
+  id: Scalars['Float'];
+  parentId: Scalars['Float'];
+  senderId: Scalars['Float'];
+  receiverId: Scalars['Float'];
+  body: Scalars['String'];
+  read: Scalars['Boolean'];
+  active: Scalars['Boolean'];
+  sender: User;
+  receiver: User;
+  parent: Song;
+  createdAt: Scalars['String'];
+  updatedAt: Scalars['String'];
 };
 
 export type Mutation = {
@@ -59,6 +90,8 @@ export type Mutation = {
   register: UserResponse;
   login: UserResponse;
   logout: Scalars['Boolean'];
+  createComment: Comment;
+  deleteComment: Scalars['Boolean'];
 };
 
 
@@ -101,6 +134,16 @@ export type MutationLoginArgs = {
   usernameOrEmail: Scalars['String'];
 };
 
+
+export type MutationCreateCommentArgs = {
+  input: CommentInput;
+};
+
+
+export type MutationDeleteCommentArgs = {
+  id: Scalars['Int'];
+};
+
 export type SongInput = {
   title: Scalars['String'];
   mediaUrl: Scalars['String'];
@@ -123,6 +166,13 @@ export type UsernamePasswordInput = {
   email: Scalars['String'];
   username: Scalars['String'];
   password: Scalars['String'];
+};
+
+export type CommentInput = {
+  parentId: Scalars['Float'];
+  receiverId: Scalars['Float'];
+  senderId: Scalars['Float'];
+  body: Scalars['String'];
 };
 
 export type RegularErrorFragment = (
@@ -166,6 +216,19 @@ export type ChangePasswordMutation = (
   & { changePassword: (
     { __typename?: 'UserResponse' }
     & RegularUserResponseFragment
+  ) }
+);
+
+export type CreateCommentMutationVariables = Exact<{
+  input: CommentInput;
+}>;
+
+
+export type CreateCommentMutation = (
+  { __typename?: 'Mutation' }
+  & { createComment: (
+    { __typename?: 'Comment' }
+    & Pick<Comment, 'id' | 'parentId' | 'senderId' | 'receiverId' | 'body'>
   ) }
 );
 
@@ -225,6 +288,29 @@ export type RegisterMutation = (
     { __typename?: 'UserResponse' }
     & RegularUserResponseFragment
   ) }
+);
+
+export type CommentsQueryVariables = Exact<{
+  id: Scalars['Int'];
+}>;
+
+
+export type CommentsQuery = (
+  { __typename?: 'Query' }
+  & { comments: Array<(
+    { __typename?: 'Comment' }
+    & Pick<Comment, 'id' | 'createdAt' | 'updatedAt' | 'body'>
+    & { sender: (
+      { __typename?: 'User' }
+      & Pick<User, 'id' | 'username'>
+    ), receiver: (
+      { __typename?: 'User' }
+      & Pick<User, 'id' | 'username'>
+    ), parent: (
+      { __typename?: 'Song' }
+      & Pick<Song, 'id' | 'title'>
+    ) }
+  )> }
 );
 
 export type MeQueryVariables = Exact<{ [key: string]: never; }>;
@@ -346,6 +432,48 @@ export function useChangePasswordMutation(baseOptions?: Apollo.MutationHookOptio
 export type ChangePasswordMutationHookResult = ReturnType<typeof useChangePasswordMutation>;
 export type ChangePasswordMutationResult = Apollo.MutationResult<ChangePasswordMutation>;
 export type ChangePasswordMutationOptions = Apollo.BaseMutationOptions<ChangePasswordMutation, ChangePasswordMutationVariables>;
+export const CreateCommentDocument = gql`
+    mutation CreateComment($input: CommentInput!) {
+  createComment(input: $input) {
+    id
+    parentId
+    senderId
+    receiverId
+    body
+  }
+}
+    `;
+export type CreateCommentMutationFn = Apollo.MutationFunction<CreateCommentMutation, CreateCommentMutationVariables>;
+export type CreateCommentComponentProps = Omit<ApolloReactComponents.MutationComponentOptions<CreateCommentMutation, CreateCommentMutationVariables>, 'mutation'>;
+
+    export const CreateCommentComponent = (props: CreateCommentComponentProps) => (
+      <ApolloReactComponents.Mutation<CreateCommentMutation, CreateCommentMutationVariables> mutation={CreateCommentDocument} {...props} />
+    );
+    
+
+/**
+ * __useCreateCommentMutation__
+ *
+ * To run a mutation, you first call `useCreateCommentMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateCommentMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createCommentMutation, { data, loading, error }] = useCreateCommentMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useCreateCommentMutation(baseOptions?: Apollo.MutationHookOptions<CreateCommentMutation, CreateCommentMutationVariables>) {
+        return Apollo.useMutation<CreateCommentMutation, CreateCommentMutationVariables>(CreateCommentDocument, baseOptions);
+      }
+export type CreateCommentMutationHookResult = ReturnType<typeof useCreateCommentMutation>;
+export type CreateCommentMutationResult = Apollo.MutationResult<CreateCommentMutation>;
+export type CreateCommentMutationOptions = Apollo.BaseMutationOptions<CreateCommentMutation, CreateCommentMutationVariables>;
 export const CreateSongDocument = gql`
     mutation CreateSong($input: SongInput!) {
   createSong(input: $input) {
@@ -536,6 +664,60 @@ export function useRegisterMutation(baseOptions?: Apollo.MutationHookOptions<Reg
 export type RegisterMutationHookResult = ReturnType<typeof useRegisterMutation>;
 export type RegisterMutationResult = Apollo.MutationResult<RegisterMutation>;
 export type RegisterMutationOptions = Apollo.BaseMutationOptions<RegisterMutation, RegisterMutationVariables>;
+export const CommentsDocument = gql`
+    query Comments($id: Int!) {
+  comments(id: $id) {
+    id
+    createdAt
+    updatedAt
+    body
+    sender {
+      id
+      username
+    }
+    receiver {
+      id
+      username
+    }
+    parent {
+      id
+      title
+    }
+  }
+}
+    `;
+export type CommentsComponentProps = Omit<ApolloReactComponents.QueryComponentOptions<CommentsQuery, CommentsQueryVariables>, 'query'> & ({ variables: CommentsQueryVariables; skip?: boolean; } | { skip: boolean; });
+
+    export const CommentsComponent = (props: CommentsComponentProps) => (
+      <ApolloReactComponents.Query<CommentsQuery, CommentsQueryVariables> query={CommentsDocument} {...props} />
+    );
+    
+
+/**
+ * __useCommentsQuery__
+ *
+ * To run a query within a React component, call `useCommentsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useCommentsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useCommentsQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useCommentsQuery(baseOptions?: Apollo.QueryHookOptions<CommentsQuery, CommentsQueryVariables>) {
+        return Apollo.useQuery<CommentsQuery, CommentsQueryVariables>(CommentsDocument, baseOptions);
+      }
+export function useCommentsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<CommentsQuery, CommentsQueryVariables>) {
+          return Apollo.useLazyQuery<CommentsQuery, CommentsQueryVariables>(CommentsDocument, baseOptions);
+        }
+export type CommentsQueryHookResult = ReturnType<typeof useCommentsQuery>;
+export type CommentsLazyQueryHookResult = ReturnType<typeof useCommentsLazyQuery>;
+export type CommentsQueryResult = Apollo.QueryResult<CommentsQuery, CommentsQueryVariables>;
 export const MeDocument = gql`
     query Me {
   me {

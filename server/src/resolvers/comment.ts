@@ -29,14 +29,19 @@ class CommentInput {
 	receiverId: number;
 
 	@Field()
+	senderId: number;
+
+	@Field()
 	body: string;
 }
 
 @Resolver(Comment)
 export class CommentResolver {
 	@Query(() => [Comment])
-	async songs(): Promise<Comment[]> {
-		return Comment.find();
+	async comments(
+		@Arg("id", () => Int) id: number
+	): Promise<Comment[] | undefined> {
+		return Comment.find({ parentId: id });
 	}
 
 	@FieldResolver(() => User)

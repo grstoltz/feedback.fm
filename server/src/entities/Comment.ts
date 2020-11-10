@@ -13,8 +13,9 @@ import { User } from "./User";
 import { Song } from "./Song";
 
 @ObjectType()
-@Entity("Comment")
+@Entity()
 export class Comment extends BaseEntity {
+	@Field()
 	@PrimaryGeneratedColumn()
 	id: number;
 
