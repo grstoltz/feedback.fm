@@ -19,6 +19,8 @@ export type Query = {
   hello: Scalars['String'];
   songs: Array<Song>;
   song?: Maybe<Song>;
+  admin?: Maybe<User>;
+  user?: Maybe<User>;
   me?: Maybe<User>;
   comments: Array<Comment>;
   comment?: Maybe<Comment>;
@@ -26,6 +28,11 @@ export type Query = {
 
 
 export type QuerySongArgs = {
+  id: Scalars['Int'];
+};
+
+
+export type QueryUserArgs = {
   id: Scalars['Int'];
 };
 
@@ -288,6 +295,38 @@ export type RegisterMutation = (
     { __typename?: 'UserResponse' }
     & RegularUserResponseFragment
   ) }
+);
+
+export type AdminQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type AdminQuery = (
+  { __typename?: 'Query' }
+  & { admin?: Maybe<(
+    { __typename?: 'User' }
+    & Pick<User, 'id' | 'username' | 'email' | 'createdAt' | 'updatedAt'>
+    & { songs?: Maybe<Array<(
+      { __typename?: 'Song' }
+      & Pick<Song, 'id' | 'title'>
+    )>>, sentComments?: Maybe<Array<(
+      { __typename?: 'Comment' }
+      & Pick<Comment, 'id' | 'parentId' | 'body'>
+      & { receiver: (
+        { __typename?: 'User' }
+        & Pick<User, 'id' | 'username'>
+      ), parent: (
+        { __typename?: 'Song' }
+        & Pick<Song, 'id' | 'title'>
+      ) }
+    )>>, receivedComments?: Maybe<Array<(
+      { __typename?: 'Comment' }
+      & Pick<Comment, 'id' | 'parentId' | 'body'>
+      & { parent: (
+        { __typename?: 'Song' }
+        & Pick<Song, 'id' | 'title'>
+      ) }
+    )>> }
+  )> }
 );
 
 export type CommentsQueryVariables = Exact<{
@@ -664,6 +703,74 @@ export function useRegisterMutation(baseOptions?: Apollo.MutationHookOptions<Reg
 export type RegisterMutationHookResult = ReturnType<typeof useRegisterMutation>;
 export type RegisterMutationResult = Apollo.MutationResult<RegisterMutation>;
 export type RegisterMutationOptions = Apollo.BaseMutationOptions<RegisterMutation, RegisterMutationVariables>;
+export const AdminDocument = gql`
+    query Admin {
+  admin {
+    id
+    username
+    email
+    createdAt
+    updatedAt
+    songs {
+      id
+      title
+    }
+    sentComments {
+      id
+      parentId
+      receiver {
+        id
+        username
+      }
+      parent {
+        id
+        title
+      }
+      body
+    }
+    receivedComments {
+      id
+      parentId
+      parent {
+        id
+        title
+      }
+      body
+    }
+  }
+}
+    `;
+export type AdminComponentProps = Omit<ApolloReactComponents.QueryComponentOptions<AdminQuery, AdminQueryVariables>, 'query'>;
+
+    export const AdminComponent = (props: AdminComponentProps) => (
+      <ApolloReactComponents.Query<AdminQuery, AdminQueryVariables> query={AdminDocument} {...props} />
+    );
+    
+
+/**
+ * __useAdminQuery__
+ *
+ * To run a query within a React component, call `useAdminQuery` and pass it any options that fit your needs.
+ * When your component renders, `useAdminQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useAdminQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useAdminQuery(baseOptions?: Apollo.QueryHookOptions<AdminQuery, AdminQueryVariables>) {
+        return Apollo.useQuery<AdminQuery, AdminQueryVariables>(AdminDocument, baseOptions);
+      }
+export function useAdminLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<AdminQuery, AdminQueryVariables>) {
+          return Apollo.useLazyQuery<AdminQuery, AdminQueryVariables>(AdminDocument, baseOptions);
+        }
+export type AdminQueryHookResult = ReturnType<typeof useAdminQuery>;
+export type AdminLazyQueryHookResult = ReturnType<typeof useAdminLazyQuery>;
+export type AdminQueryResult = Apollo.QueryResult<AdminQuery, AdminQueryVariables>;
 export const CommentsDocument = gql`
     query Comments($id: Int!) {
   comments(id: $id) {

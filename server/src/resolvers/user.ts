@@ -8,6 +8,7 @@ import {
 	Ctx,
 	FieldResolver,
 	Root,
+	Int,
 } from "type-graphql";
 import { getConnection } from "typeorm";
 import argon2 from "argon2";
@@ -43,6 +44,21 @@ class UserResponse {
 
 @Resolver(User)
 export class UserResolver {
+	@Query(() => User, { nullable: true })
+	async admin(@Ctx() { req }: MyContext): Promise<User | undefined> {
+		if (!req.session.userId) {
+			return undefined;
+		}
+
+		const user = await User.findOne({ id: req.session.userId });
+		return user;
+	}
+
+	@Query(() => User, { nullable: true })
+	user(@Arg("id", () => Int) id: number): Promise<User | undefined> {
+		return User.findOne(id);
+	}
+
 	@Mutation(() => Boolean)
 	async forgotPassword(
 		@Arg("email") email: string,
@@ -142,6 +158,9 @@ export class UserResolver {
 
 	@FieldResolver(() => [Song], { nullable: true })
 	async songs(@Root() user: User, @Ctx() { req }: MyContext): Promise<Song[]> {
+		const result = await Song.find({ ownerId: req.session.userId });
+
+		console.log(result);
 		return Song.find({ ownerId: req.session.userId });
 	}
 

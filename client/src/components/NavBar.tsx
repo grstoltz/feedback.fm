@@ -42,6 +42,12 @@ export const NavBar: React.FC<NavBarProps> = ({}) => {
 					</Button>
 				</NextLink>
 				<Box mr={2}>{data.me.username}</Box>
+
+				<NextLink href="/admin">
+					<Button variant="link" as={Link} mr={4}>
+						Admin
+					</Button>
+				</NextLink>
 				<Button
 					onClick={async () => {
 						await logout();

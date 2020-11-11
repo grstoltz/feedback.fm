@@ -1,0 +1,35 @@
+query Admin {
+	admin {
+		id
+		username
+		email
+		createdAt
+		updatedAt
+		songs {
+			id
+			title
+		}
+		sentComments {
+			id
+			parentId
+			receiver {
+				id
+				username
+			}
+			parent {
+				id
+				title
+			}
+			body
+		}
+		receivedComments {
+			id
+			parentId
+			parent {
+				id
+				title
+			}
+			body
+		}
+	}
+}
