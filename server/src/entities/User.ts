@@ -29,6 +29,13 @@ export class User extends BaseEntity {
 	@Column()
 	password!: string;
 
+	@Field()
+	@Column({
+		default:
+			"https://res.cloudinary.com/dedeo0s30/image/upload/v1605156898/default-profile-icon-16.png",
+	})
+	avatarURL: string;
+
 	@OneToMany(() => Song, (song) => song.owner)
 	songs: Song[];
 

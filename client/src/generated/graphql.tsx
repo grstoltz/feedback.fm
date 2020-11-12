@@ -64,6 +64,7 @@ export type User = {
   id: Scalars['Float'];
   username: Scalars['String'];
   email: Scalars['String'];
+  avatarURL: Scalars['String'];
   createdAt: Scalars['String'];
   updatedAt: Scalars['String'];
   songs?: Maybe<Array<Song>>;
@@ -304,7 +305,7 @@ export type AdminQuery = (
   { __typename?: 'Query' }
   & { admin?: Maybe<(
     { __typename?: 'User' }
-    & Pick<User, 'id' | 'username' | 'email' | 'createdAt' | 'updatedAt'>
+    & Pick<User, 'id' | 'username' | 'email' | 'avatarURL' | 'createdAt' | 'updatedAt'>
     & { songs?: Maybe<Array<(
       { __typename?: 'Song' }
       & Pick<Song, 'id' | 'title'>
@@ -709,6 +710,7 @@ export const AdminDocument = gql`
     id
     username
     email
+    avatarURL
     createdAt
     updatedAt
     songs {

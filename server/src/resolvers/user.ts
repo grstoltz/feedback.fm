@@ -220,6 +220,8 @@ export class UserResolver {
 					username: options.username,
 					email: options.email,
 					password: hashedPassword,
+					avatarURL:
+						"https://res.cloudinary.com/dedeo0s30/image/upload/v1605156898/default-profile-icon-16.png",
 					//active: true,
 				})
 				.returning("*")
