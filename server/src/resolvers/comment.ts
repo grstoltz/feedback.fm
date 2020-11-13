@@ -54,7 +54,7 @@ export class CommentResolver {
 		return userLoader.load(comment.receiverId);
 	}
 
-	@FieldResolver(() => Song)
+	@FieldResolver(() => Song, { nullable: true })
 	parent(@Root() comment: Comment) {
 		return Song.findOne(comment.parentId);
 	}

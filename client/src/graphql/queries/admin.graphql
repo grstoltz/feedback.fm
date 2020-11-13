@@ -8,6 +8,7 @@ query Admin {
 		updatedAt
 		songs {
 			id
+			ownerId
 			title
 		}
 		sentComments {
@@ -29,6 +30,10 @@ query Admin {
 			parent {
 				id
 				title
+			}
+			sender {
+				id
+				username
 			}
 			body
 		}

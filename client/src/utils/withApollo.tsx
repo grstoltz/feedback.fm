@@ -31,8 +31,14 @@ const createClient = (ctx: NextPageContext) =>
 							// 		],
 							// 	};
 						},
+						user: {
+							keyArgs: [],
+						},
 
 						comments: {
+							keyArgs: [],
+						},
+						admin: {
 							keyArgs: [],
 						},
 					},

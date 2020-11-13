@@ -253,6 +253,26 @@ export type CreateSongMutation = (
   ) }
 );
 
+export type DeleteCommentMutationVariables = Exact<{
+  id: Scalars['Int'];
+}>;
+
+
+export type DeleteCommentMutation = (
+  { __typename?: 'Mutation' }
+  & Pick<Mutation, 'deleteComment'>
+);
+
+export type DeleteSongMutationVariables = Exact<{
+  id: Scalars['Int'];
+}>;
+
+
+export type DeleteSongMutation = (
+  { __typename?: 'Mutation' }
+  & Pick<Mutation, 'deleteSong'>
+);
+
 export type ForgotPasswordMutationVariables = Exact<{
   email: Scalars['String'];
 }>;
@@ -308,7 +328,7 @@ export type AdminQuery = (
     & Pick<User, 'id' | 'username' | 'email' | 'avatarURL' | 'createdAt' | 'updatedAt'>
     & { songs?: Maybe<Array<(
       { __typename?: 'Song' }
-      & Pick<Song, 'id' | 'title'>
+      & Pick<Song, 'id' | 'ownerId' | 'title'>
     )>>, sentComments?: Maybe<Array<(
       { __typename?: 'Comment' }
       & Pick<Comment, 'id' | 'parentId' | 'body'>
@@ -325,6 +345,9 @@ export type AdminQuery = (
       & { parent: (
         { __typename?: 'Song' }
         & Pick<Song, 'id' | 'title'>
+      ), sender: (
+        { __typename?: 'User' }
+        & Pick<User, 'id' | 'username'>
       ) }
     )>> }
   )> }
@@ -556,6 +579,78 @@ export function useCreateSongMutation(baseOptions?: Apollo.MutationHookOptions<C
 export type CreateSongMutationHookResult = ReturnType<typeof useCreateSongMutation>;
 export type CreateSongMutationResult = Apollo.MutationResult<CreateSongMutation>;
 export type CreateSongMutationOptions = Apollo.BaseMutationOptions<CreateSongMutation, CreateSongMutationVariables>;
+export const DeleteCommentDocument = gql`
+    mutation DeleteComment($id: Int!) {
+  deleteComment(id: $id)
+}
+    `;
+export type DeleteCommentMutationFn = Apollo.MutationFunction<DeleteCommentMutation, DeleteCommentMutationVariables>;
+export type DeleteCommentComponentProps = Omit<ApolloReactComponents.MutationComponentOptions<DeleteCommentMutation, DeleteCommentMutationVariables>, 'mutation'>;
+
+    export const DeleteCommentComponent = (props: DeleteCommentComponentProps) => (
+      <ApolloReactComponents.Mutation<DeleteCommentMutation, DeleteCommentMutationVariables> mutation={DeleteCommentDocument} {...props} />
+    );
+    
+
+/**
+ * __useDeleteCommentMutation__
+ *
+ * To run a mutation, you first call `useDeleteCommentMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteCommentMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteCommentMutation, { data, loading, error }] = useDeleteCommentMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useDeleteCommentMutation(baseOptions?: Apollo.MutationHookOptions<DeleteCommentMutation, DeleteCommentMutationVariables>) {
+        return Apollo.useMutation<DeleteCommentMutation, DeleteCommentMutationVariables>(DeleteCommentDocument, baseOptions);
+      }
+export type DeleteCommentMutationHookResult = ReturnType<typeof useDeleteCommentMutation>;
+export type DeleteCommentMutationResult = Apollo.MutationResult<DeleteCommentMutation>;
+export type DeleteCommentMutationOptions = Apollo.BaseMutationOptions<DeleteCommentMutation, DeleteCommentMutationVariables>;
+export const DeleteSongDocument = gql`
+    mutation DeleteSong($id: Int!) {
+  deleteSong(id: $id)
+}
+    `;
+export type DeleteSongMutationFn = Apollo.MutationFunction<DeleteSongMutation, DeleteSongMutationVariables>;
+export type DeleteSongComponentProps = Omit<ApolloReactComponents.MutationComponentOptions<DeleteSongMutation, DeleteSongMutationVariables>, 'mutation'>;
+
+    export const DeleteSongComponent = (props: DeleteSongComponentProps) => (
+      <ApolloReactComponents.Mutation<DeleteSongMutation, DeleteSongMutationVariables> mutation={DeleteSongDocument} {...props} />
+    );
+    
+
+/**
+ * __useDeleteSongMutation__
+ *
+ * To run a mutation, you first call `useDeleteSongMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteSongMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteSongMutation, { data, loading, error }] = useDeleteSongMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useDeleteSongMutation(baseOptions?: Apollo.MutationHookOptions<DeleteSongMutation, DeleteSongMutationVariables>) {
+        return Apollo.useMutation<DeleteSongMutation, DeleteSongMutationVariables>(DeleteSongDocument, baseOptions);
+      }
+export type DeleteSongMutationHookResult = ReturnType<typeof useDeleteSongMutation>;
+export type DeleteSongMutationResult = Apollo.MutationResult<DeleteSongMutation>;
+export type DeleteSongMutationOptions = Apollo.BaseMutationOptions<DeleteSongMutation, DeleteSongMutationVariables>;
 export const ForgotPasswordDocument = gql`
     mutation ForgotPassword($email: String!) {
   forgotPassword(email: $email)
@@ -715,6 +810,7 @@ export const AdminDocument = gql`
     updatedAt
     songs {
       id
+      ownerId
       title
     }
     sentComments {
@@ -736,6 +832,10 @@ export const AdminDocument = gql`
       parent {
         id
         title
+      }
+      sender {
+        id
+        username
       }
       body
     }

@@ -19,13 +19,12 @@ import { useAdminQuery } from "../generated/graphql";
 import { toErrorMap } from "../utils/toErrorMap";
 import { withApollo } from "../utils/withApollo";
 import { Layout } from "../components/Layout";
+import { DeleteButton } from "../components/DeleteButton";
 
 interface registerProps {}
 
 const Admin: React.FC<registerProps> = ({}) => {
 	const { data, loading, error } = useAdminQuery();
-
-	console.log(data);
 
 	if (loading) {
 		return (
@@ -39,21 +38,23 @@ const Admin: React.FC<registerProps> = ({}) => {
 		return <div>{error.message}</div>;
 	}
 
-	if (!data) {
+	if (!data.admin) {
 		return (
 			<Layout>
 				<Box>could not find User</Box>
 			</Layout>
 		);
 	}
+
 	return (
 		<Layout>
-			<Text fontSize="6xl">Control Panel</Text>
+			<Text fontSize="4xl">Control Panel</Text>
 			<Tabs>
 				<TabList>
 					<Tab>Home</Tab>
 					<Tab>Received Messages</Tab>
 					<Tab>Sent Messages</Tab>
+					<Tab>My Songs</Tab>
 				</TabList>
 
 				<TabPanels>
@@ -69,7 +70,40 @@ const Admin: React.FC<registerProps> = ({}) => {
 					</TabPanel>
 					<TabPanel>
 						<Box>
-							{data.admin.receivedComments?.map((element) => {
+							{data.admin.receivedComments.length ? (
+								data.admin.receivedComments?.map((element) => {
+									return (
+										<Box
+											marginTop={2}
+											minW="lg"
+											borderWidth="1px"
+											rounded="lg"
+											overflow="hidden"
+											key={element.id}
+										>
+											<Flex>
+												<Text fontWeight="bold" fontSize="lg">
+													{element.parent.title}
+												</Text>
+												<DeleteButton
+													id={element.id}
+													creatorId={data.admin?.id}
+													contentType="comment"
+												/>
+											</Flex>
+											<Text>Sent By: {element.sender.username}</Text>
+											<Text>{element.body}</Text>
+										</Box>
+									);
+								})
+							) : (
+								<Box>You have no receieved comments!</Box>
+							)}
+						</Box>
+					</TabPanel>
+					<TabPanel>
+						{data.admin.sentComments.length ? (
+							data.admin.sentComments?.map((element) => {
 								return (
 									<Box
 										marginTop={2}
@@ -79,33 +113,53 @@ const Admin: React.FC<registerProps> = ({}) => {
 										overflow="hidden"
 										key={element.id}
 									>
-										<Text fontWeight="bold" fontSize="lg">
-											{element.parent.title}
-										</Text>
+										<Flex>
+											<Text fontWeight="bold" fontSize="lg">
+												{element.parent.title}
+											</Text>
+											<DeleteButton
+												id={element.id}
+												creatorId={data.admin?.id}
+												contentType="comment"
+											/>
+										</Flex>
+
 										<Text>{element.body}</Text>
 									</Box>
 								);
-							})}
-						</Box>
+							})
+						) : (
+							<Box>You have no sent comments!</Box>
+						)}
 					</TabPanel>
 					<TabPanel>
-						{data.admin.sentComments?.map((element) => {
-							return (
-								<Box
-									marginTop={2}
-									minW="lg"
-									borderWidth="1px"
-									rounded="lg"
-									overflow="hidden"
-									key={element.id}
-								>
-									<Text fontWeight="bold" fontSize="lg">
-										{element.parent.title}
-									</Text>
-									<Text>{element.body}</Text>
-								</Box>
-							);
-						})}
+						{data.admin.songs.length ? (
+							data.admin.songs?.map((element) => {
+								return (
+									<Box
+										marginTop={2}
+										minW="lg"
+										borderWidth="1px"
+										rounded="lg"
+										overflow="hidden"
+										key={element.id}
+									>
+										<Flex>
+											<Text fontWeight="bold" fontSize="lg">
+												{element.title}
+											</Text>
+											<DeleteButton
+												id={element.id}
+												creatorId={data.admin?.id}
+												contentType="song"
+											/>
+										</Flex>
+									</Box>
+								);
+							})
+						) : (
+							<Box>You have no songs!</Box>
+						)}
 					</TabPanel>
 				</TabPanels>
 			</Tabs>

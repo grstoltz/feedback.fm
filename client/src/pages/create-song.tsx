@@ -20,7 +20,8 @@ const CreateSong: React.FC<{}> = ({}) => {
 					const { errors } = await createSong({
 						variables: { input: values },
 						update: (cache) => {
-							cache.evict({ fieldName: "songs:{}" });
+							cache.evict({ fieldName: "songs" });
+							cache.evict({ fieldName: "admin" });
 						},
 					});
 					if (!errors) {

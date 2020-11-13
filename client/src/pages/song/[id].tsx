@@ -71,18 +71,12 @@ const Song: React.FC<songProps> = () => {
 		);
 	}
 
-	return (
-		<Layout>
-			<Heading mb={4}>{songData.song.title}</Heading>
-			<Box mb={4}>{songData.song.mediaUrl}</Box>
-			<Stack spacing={8}>
-				{commentsData?.comments.map((s) => (
-					<div style={{ marginTop: "8px" }} key={s.id}>
-						<div>{`Author: ${s.sender.username}`}</div>
-						{s.body}
-					</div>
-				))}
-			</Stack>
+	let commentSection;
+
+	if (!meData.me) {
+		commentSection = null;
+	} else if (songData.song.owner.id === meData.me.id) {
+		commentSection = (
 			<Formik
 				initialValues={initialValues}
 				onSubmit={async (
@@ -127,6 +121,22 @@ const Song: React.FC<songProps> = () => {
 					</Form>
 				)}
 			</Formik>
+		);
+	}
+
+	return (
+		<Layout>
+			<Heading mb={4}>{songData.song.title}</Heading>
+			<Box mb={4}>{songData.song.mediaUrl}</Box>
+			<Stack spacing={8}>
+				{commentsData?.comments.map((s) => (
+					<div style={{ marginTop: "8px" }} key={s.id}>
+						<div>{`Author: ${s.sender.username}`}</div>
+						{s.body}
+					</div>
+				))}
+			</Stack>
+			{/* If this is the user's own song, dont allow them to comment on it */}
 		</Layout>
 	);
 };
