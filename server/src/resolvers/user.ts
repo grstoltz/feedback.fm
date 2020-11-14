@@ -10,7 +10,7 @@ import {
 	Root,
 	Int,
 } from "type-graphql";
-import { getConnection } from "typeorm";
+import { getConnection, getManager } from "typeorm";
 import argon2 from "argon2";
 import { v4 } from "uuid";
 
@@ -24,6 +24,7 @@ import { COOKIE_NAME, FORGET_PASSWORD_PREFIX } from "../constants";
 import { User } from "../entities/User";
 import { Song } from "../entities/Song";
 import { Comment } from "../entities/Comment";
+import { Transaction } from "../entities/Transaction";
 
 @ObjectType()
 class FieldError {
@@ -154,6 +155,29 @@ export class UserResolver {
 		}
 		// current user wants to see someone elses email
 		return "";
+	}
+
+	@FieldResolver(() => Number)
+	async balance(
+		@Root() user: User,
+		@Ctx() { req }: MyContext
+	): Promise<number> {
+		// this is the current user and its ok to show them their own email
+		if (req.session.userId === user.id) {
+			const entityManager = getManager();
+			const balance = await entityManager.query(
+				`
+			SELECT transaction.openingBalance + transaction.transactionAmount as balance 
+			FROM transaction
+			WHERE userId = $1  
+			ORDER By createdAt DESC;
+			`,
+				[user.id, 1]
+			);
+			return balance[0] as number;
+		}
+		// current user wants to see someone elses account baalance
+		return 0;
 	}
 
 	@FieldResolver(() => [Song], { nullable: true })

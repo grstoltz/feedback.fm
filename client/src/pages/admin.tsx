@@ -85,11 +85,6 @@ const Admin: React.FC<registerProps> = ({}) => {
 												<Text fontWeight="bold" fontSize="lg">
 													{element.parent.title}
 												</Text>
-												<DeleteButton
-													id={element.id}
-													creatorId={data.admin?.id}
-													contentType="comment"
-												/>
 											</Flex>
 											<Text>Sent By: {element.sender.username}</Text>
 											<Text>{element.body}</Text>
@@ -113,7 +108,7 @@ const Admin: React.FC<registerProps> = ({}) => {
 										overflow="hidden"
 										key={element.id}
 									>
-										<Flex>
+										<Flex justifyContent="space-between">
 											<Text fontWeight="bold" fontSize="lg">
 												{element.parent.title}
 											</Text>

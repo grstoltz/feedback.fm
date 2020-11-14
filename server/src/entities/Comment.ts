@@ -40,6 +40,10 @@ export class Comment extends BaseEntity {
 	read: boolean;
 
 	@Field()
+	@Column({ default: false })
+	approved: boolean;
+
+	@Field()
 	@Column({ default: true })
 	active: boolean;
 

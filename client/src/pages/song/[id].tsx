@@ -66,7 +66,7 @@ const Song: React.FC<songProps> = () => {
 	if (!songData?.song) {
 		return (
 			<Layout>
-				<Box>could not find post</Box>
+				<Box>Could not find song...</Box>
 			</Layout>
 		);
 	}
@@ -75,7 +75,8 @@ const Song: React.FC<songProps> = () => {
 
 	if (!meData.me) {
 		commentSection = null;
-	} else if (songData.song.owner.id === meData.me.id) {
+	}
+	if (songData.song.owner.id !== meData.me.id) {
 		commentSection = (
 			<Formik
 				initialValues={initialValues}
@@ -136,7 +137,7 @@ const Song: React.FC<songProps> = () => {
 					</div>
 				))}
 			</Stack>
-			{/* If this is the user's own song, dont allow them to comment on it */}
+			{commentSection}
 		</Layout>
 	);
 };

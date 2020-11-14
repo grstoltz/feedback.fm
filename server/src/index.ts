@@ -18,6 +18,7 @@ import { buildSchema } from "type-graphql";
 import { User } from "./entities/User";
 import { Comment } from "./entities/Comment";
 import { Song } from "./entities/Song";
+import { Transaction } from "./entities/Transaction";
 
 import { HelloResolver } from "./resolvers/hello";
 import { SongResolver } from "./resolvers/song";
@@ -36,7 +37,7 @@ const main = async () => {
 		logging: true,
 		synchronize: true,
 		migrations: [path.join(__dirname, "./migrations/*.js")],
-		entities: [User, Song, Comment],
+		entities: [User, Song, Comment, Transaction],
 	});
 
 	const app = express();

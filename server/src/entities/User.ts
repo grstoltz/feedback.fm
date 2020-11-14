@@ -36,6 +36,9 @@ export class User extends BaseEntity {
 	})
 	avatarURL: string;
 
+	@Field()
+	balance: number;
+
 	@OneToMany(() => Song, (song) => song.owner)
 	songs: Song[];
 
