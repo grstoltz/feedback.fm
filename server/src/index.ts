@@ -26,6 +26,7 @@ import { UserResolver } from "./resolvers/user";
 import { CommentResolver } from "./resolvers/comment";
 
 import { createUserLoader } from "./utils/createUserLoader";
+import { TransactionResolver } from "./resolvers/transaction";
 
 const main = async () => {
 	const conn = await createConnection({
@@ -78,6 +79,7 @@ const main = async () => {
 				SongResolver,
 				UserResolver,
 				CommentResolver,
+				TransactionResolver,
 			],
 			validate: false,
 		}),

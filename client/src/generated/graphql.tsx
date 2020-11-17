@@ -65,6 +65,7 @@ export type User = {
   username: Scalars['String'];
   email: Scalars['String'];
   avatarURL: Scalars['String'];
+  balance: Scalars['Float'];
   createdAt: Scalars['String'];
   updatedAt: Scalars['String'];
   songs?: Maybe<Array<Song>>;
@@ -80,6 +81,7 @@ export type Comment = {
   receiverId: Scalars['Float'];
   body: Scalars['String'];
   read: Scalars['Boolean'];
+  approved: Scalars['Boolean'];
   active: Scalars['Boolean'];
   sender: User;
   receiver: User;
@@ -99,7 +101,9 @@ export type Mutation = {
   login: UserResponse;
   logout: Scalars['Boolean'];
   createComment: Comment;
+  approveComment: Comment;
   deleteComment: Scalars['Boolean'];
+  createTransaction: Transaction;
 };
 
 
@@ -148,8 +152,18 @@ export type MutationCreateCommentArgs = {
 };
 
 
+export type MutationApproveCommentArgs = {
+  id: Scalars['Int'];
+};
+
+
 export type MutationDeleteCommentArgs = {
   id: Scalars['Int'];
+};
+
+
+export type MutationCreateTransactionArgs = {
+  transactionAmount: Scalars['Int'];
 };
 
 export type SongInput = {
@@ -183,6 +197,16 @@ export type CommentInput = {
   body: Scalars['String'];
 };
 
+export type Transaction = {
+  __typename?: 'Transaction';
+  id: Scalars['Float'];
+  userId: Scalars['Float'];
+  openingBalance: Scalars['Float'];
+  transactionAmount: Scalars['Float'];
+  createdAt: Scalars['String'];
+  updatedAt: Scalars['String'];
+};
+
 export type RegularErrorFragment = (
   { __typename?: 'FieldError' }
   & Pick<FieldError, 'field' | 'message'>
@@ -210,6 +234,19 @@ export type SongSnippetFragment = (
   & { owner: (
     { __typename?: 'User' }
     & Pick<User, 'id' | 'username'>
+  ) }
+);
+
+export type ApproveCommentMutationVariables = Exact<{
+  id: Scalars['Int'];
+}>;
+
+
+export type ApproveCommentMutation = (
+  { __typename?: 'Mutation' }
+  & { approveComment: (
+    { __typename?: 'Comment' }
+    & Pick<Comment, 'id' | 'approved'>
   ) }
 );
 
@@ -250,6 +287,19 @@ export type CreateSongMutation = (
   & { createSong: (
     { __typename?: 'Song' }
     & Pick<Song, 'id' | 'title' | 'mediaUrl' | 'genre' | 'ownerId'>
+  ) }
+);
+
+export type CreateTransactionMutationVariables = Exact<{
+  transactionAmount: Scalars['Int'];
+}>;
+
+
+export type CreateTransactionMutation = (
+  { __typename?: 'Mutation' }
+  & { createTransaction: (
+    { __typename?: 'Transaction' }
+    & Pick<Transaction, 'id'>
   ) }
 );
 
@@ -318,6 +368,22 @@ export type RegisterMutation = (
   ) }
 );
 
+export type UpdateCommentMutationVariables = Exact<{
+  id: Scalars['Int'];
+  title: Scalars['String'];
+  mediaUrl: Scalars['String'];
+  genre: Scalars['String'];
+}>;
+
+
+export type UpdateCommentMutation = (
+  { __typename?: 'Mutation' }
+  & { updateSong?: Maybe<(
+    { __typename?: 'Song' }
+    & Pick<Song, 'id' | 'title' | 'mediaUrl' | 'genre'>
+  )> }
+);
+
 export type AdminQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -350,6 +416,40 @@ export type AdminQuery = (
         & Pick<User, 'id' | 'username'>
       ) }
     )>> }
+  )> }
+);
+
+export type BalanceQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type BalanceQuery = (
+  { __typename?: 'Query' }
+  & { me?: Maybe<(
+    { __typename?: 'User' }
+    & Pick<User, 'id' | 'username' | 'balance'>
+  )> }
+);
+
+export type CommentQueryVariables = Exact<{
+  id: Scalars['Int'];
+}>;
+
+
+export type CommentQuery = (
+  { __typename?: 'Query' }
+  & { comment?: Maybe<(
+    { __typename?: 'Comment' }
+    & Pick<Comment, 'id' | 'createdAt' | 'updatedAt' | 'body'>
+    & { sender: (
+      { __typename?: 'User' }
+      & Pick<User, 'id' | 'username'>
+    ), receiver: (
+      { __typename?: 'User' }
+      & Pick<User, 'id' | 'username'>
+    ), parent: (
+      { __typename?: 'Song' }
+      & Pick<Song, 'id' | 'title'>
+    ) }
   )> }
 );
 
@@ -456,6 +556,45 @@ export const SongSnippetFragmentDoc = gql`
   }
 }
     `;
+export const ApproveCommentDocument = gql`
+    mutation approveComment($id: Int!) {
+  approveComment(id: $id) {
+    id
+    approved
+  }
+}
+    `;
+export type ApproveCommentMutationFn = Apollo.MutationFunction<ApproveCommentMutation, ApproveCommentMutationVariables>;
+export type ApproveCommentComponentProps = Omit<ApolloReactComponents.MutationComponentOptions<ApproveCommentMutation, ApproveCommentMutationVariables>, 'mutation'>;
+
+    export const ApproveCommentComponent = (props: ApproveCommentComponentProps) => (
+      <ApolloReactComponents.Mutation<ApproveCommentMutation, ApproveCommentMutationVariables> mutation={ApproveCommentDocument} {...props} />
+    );
+    
+
+/**
+ * __useApproveCommentMutation__
+ *
+ * To run a mutation, you first call `useApproveCommentMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useApproveCommentMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [approveCommentMutation, { data, loading, error }] = useApproveCommentMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useApproveCommentMutation(baseOptions?: Apollo.MutationHookOptions<ApproveCommentMutation, ApproveCommentMutationVariables>) {
+        return Apollo.useMutation<ApproveCommentMutation, ApproveCommentMutationVariables>(ApproveCommentDocument, baseOptions);
+      }
+export type ApproveCommentMutationHookResult = ReturnType<typeof useApproveCommentMutation>;
+export type ApproveCommentMutationResult = Apollo.MutationResult<ApproveCommentMutation>;
+export type ApproveCommentMutationOptions = Apollo.BaseMutationOptions<ApproveCommentMutation, ApproveCommentMutationVariables>;
 export const ChangePasswordDocument = gql`
     mutation ChangePassword($token: String!, $newPassword: String!) {
   changePassword(token: $token, newPassword: $newPassword) {
@@ -579,6 +718,44 @@ export function useCreateSongMutation(baseOptions?: Apollo.MutationHookOptions<C
 export type CreateSongMutationHookResult = ReturnType<typeof useCreateSongMutation>;
 export type CreateSongMutationResult = Apollo.MutationResult<CreateSongMutation>;
 export type CreateSongMutationOptions = Apollo.BaseMutationOptions<CreateSongMutation, CreateSongMutationVariables>;
+export const CreateTransactionDocument = gql`
+    mutation CreateTransaction($transactionAmount: Int!) {
+  createTransaction(transactionAmount: $transactionAmount) {
+    id
+  }
+}
+    `;
+export type CreateTransactionMutationFn = Apollo.MutationFunction<CreateTransactionMutation, CreateTransactionMutationVariables>;
+export type CreateTransactionComponentProps = Omit<ApolloReactComponents.MutationComponentOptions<CreateTransactionMutation, CreateTransactionMutationVariables>, 'mutation'>;
+
+    export const CreateTransactionComponent = (props: CreateTransactionComponentProps) => (
+      <ApolloReactComponents.Mutation<CreateTransactionMutation, CreateTransactionMutationVariables> mutation={CreateTransactionDocument} {...props} />
+    );
+    
+
+/**
+ * __useCreateTransactionMutation__
+ *
+ * To run a mutation, you first call `useCreateTransactionMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateTransactionMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createTransactionMutation, { data, loading, error }] = useCreateTransactionMutation({
+ *   variables: {
+ *      transactionAmount: // value for 'transactionAmount'
+ *   },
+ * });
+ */
+export function useCreateTransactionMutation(baseOptions?: Apollo.MutationHookOptions<CreateTransactionMutation, CreateTransactionMutationVariables>) {
+        return Apollo.useMutation<CreateTransactionMutation, CreateTransactionMutationVariables>(CreateTransactionDocument, baseOptions);
+      }
+export type CreateTransactionMutationHookResult = ReturnType<typeof useCreateTransactionMutation>;
+export type CreateTransactionMutationResult = Apollo.MutationResult<CreateTransactionMutation>;
+export type CreateTransactionMutationOptions = Apollo.BaseMutationOptions<CreateTransactionMutation, CreateTransactionMutationVariables>;
 export const DeleteCommentDocument = gql`
     mutation DeleteComment($id: Int!) {
   deleteComment(id: $id)
@@ -799,6 +976,50 @@ export function useRegisterMutation(baseOptions?: Apollo.MutationHookOptions<Reg
 export type RegisterMutationHookResult = ReturnType<typeof useRegisterMutation>;
 export type RegisterMutationResult = Apollo.MutationResult<RegisterMutation>;
 export type RegisterMutationOptions = Apollo.BaseMutationOptions<RegisterMutation, RegisterMutationVariables>;
+export const UpdateCommentDocument = gql`
+    mutation UpdateComment($id: Int!, $title: String!, $mediaUrl: String!, $genre: String!) {
+  updateSong(id: $id, title: $title, mediaUrl: $mediaUrl, genre: $genre) {
+    id
+    title
+    mediaUrl
+    genre
+  }
+}
+    `;
+export type UpdateCommentMutationFn = Apollo.MutationFunction<UpdateCommentMutation, UpdateCommentMutationVariables>;
+export type UpdateCommentComponentProps = Omit<ApolloReactComponents.MutationComponentOptions<UpdateCommentMutation, UpdateCommentMutationVariables>, 'mutation'>;
+
+    export const UpdateCommentComponent = (props: UpdateCommentComponentProps) => (
+      <ApolloReactComponents.Mutation<UpdateCommentMutation, UpdateCommentMutationVariables> mutation={UpdateCommentDocument} {...props} />
+    );
+    
+
+/**
+ * __useUpdateCommentMutation__
+ *
+ * To run a mutation, you first call `useUpdateCommentMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateCommentMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateCommentMutation, { data, loading, error }] = useUpdateCommentMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *      title: // value for 'title'
+ *      mediaUrl: // value for 'mediaUrl'
+ *      genre: // value for 'genre'
+ *   },
+ * });
+ */
+export function useUpdateCommentMutation(baseOptions?: Apollo.MutationHookOptions<UpdateCommentMutation, UpdateCommentMutationVariables>) {
+        return Apollo.useMutation<UpdateCommentMutation, UpdateCommentMutationVariables>(UpdateCommentDocument, baseOptions);
+      }
+export type UpdateCommentMutationHookResult = ReturnType<typeof useUpdateCommentMutation>;
+export type UpdateCommentMutationResult = Apollo.MutationResult<UpdateCommentMutation>;
+export type UpdateCommentMutationOptions = Apollo.BaseMutationOptions<UpdateCommentMutation, UpdateCommentMutationVariables>;
 export const AdminDocument = gql`
     query Admin {
   admin {
@@ -873,6 +1094,100 @@ export function useAdminLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<Admi
 export type AdminQueryHookResult = ReturnType<typeof useAdminQuery>;
 export type AdminLazyQueryHookResult = ReturnType<typeof useAdminLazyQuery>;
 export type AdminQueryResult = Apollo.QueryResult<AdminQuery, AdminQueryVariables>;
+export const BalanceDocument = gql`
+    query Balance {
+  me {
+    id
+    username
+    balance
+  }
+}
+    `;
+export type BalanceComponentProps = Omit<ApolloReactComponents.QueryComponentOptions<BalanceQuery, BalanceQueryVariables>, 'query'>;
+
+    export const BalanceComponent = (props: BalanceComponentProps) => (
+      <ApolloReactComponents.Query<BalanceQuery, BalanceQueryVariables> query={BalanceDocument} {...props} />
+    );
+    
+
+/**
+ * __useBalanceQuery__
+ *
+ * To run a query within a React component, call `useBalanceQuery` and pass it any options that fit your needs.
+ * When your component renders, `useBalanceQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useBalanceQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useBalanceQuery(baseOptions?: Apollo.QueryHookOptions<BalanceQuery, BalanceQueryVariables>) {
+        return Apollo.useQuery<BalanceQuery, BalanceQueryVariables>(BalanceDocument, baseOptions);
+      }
+export function useBalanceLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<BalanceQuery, BalanceQueryVariables>) {
+          return Apollo.useLazyQuery<BalanceQuery, BalanceQueryVariables>(BalanceDocument, baseOptions);
+        }
+export type BalanceQueryHookResult = ReturnType<typeof useBalanceQuery>;
+export type BalanceLazyQueryHookResult = ReturnType<typeof useBalanceLazyQuery>;
+export type BalanceQueryResult = Apollo.QueryResult<BalanceQuery, BalanceQueryVariables>;
+export const CommentDocument = gql`
+    query Comment($id: Int!) {
+  comment(id: $id) {
+    id
+    createdAt
+    updatedAt
+    body
+    sender {
+      id
+      username
+    }
+    receiver {
+      id
+      username
+    }
+    parent {
+      id
+      title
+    }
+  }
+}
+    `;
+export type CommentComponentProps = Omit<ApolloReactComponents.QueryComponentOptions<CommentQuery, CommentQueryVariables>, 'query'> & ({ variables: CommentQueryVariables; skip?: boolean; } | { skip: boolean; });
+
+    export const CommentComponent = (props: CommentComponentProps) => (
+      <ApolloReactComponents.Query<CommentQuery, CommentQueryVariables> query={CommentDocument} {...props} />
+    );
+    
+
+/**
+ * __useCommentQuery__
+ *
+ * To run a query within a React component, call `useCommentQuery` and pass it any options that fit your needs.
+ * When your component renders, `useCommentQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useCommentQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useCommentQuery(baseOptions?: Apollo.QueryHookOptions<CommentQuery, CommentQueryVariables>) {
+        return Apollo.useQuery<CommentQuery, CommentQueryVariables>(CommentDocument, baseOptions);
+      }
+export function useCommentLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<CommentQuery, CommentQueryVariables>) {
+          return Apollo.useLazyQuery<CommentQuery, CommentQueryVariables>(CommentDocument, baseOptions);
+        }
+export type CommentQueryHookResult = ReturnType<typeof useCommentQuery>;
+export type CommentLazyQueryHookResult = ReturnType<typeof useCommentLazyQuery>;
+export type CommentQueryResult = Apollo.QueryResult<CommentQuery, CommentQueryVariables>;
 export const CommentsDocument = gql`
     query Comments($id: Int!) {
   comments(id: $id) {

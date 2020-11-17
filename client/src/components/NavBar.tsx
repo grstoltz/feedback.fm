@@ -1,7 +1,11 @@
 import React from "react";
-import { Box, Link, Flex, Button, Heading } from "@chakra-ui/core";
+import { Box, Link, Flex, Button, Heading, Text } from "@chakra-ui/core";
 import NextLink from "next/link";
-import { useMeQuery, useLogoutMutation } from "../generated/graphql";
+import {
+	useMeQuery,
+	useLogoutMutation,
+	useBalanceQuery,
+} from "../generated/graphql";
 import { isServer } from "../utils/isServer";
 import { useRouter } from "next/router";
 import { useApolloClient } from "@apollo/client";
@@ -16,7 +20,17 @@ export const NavBar: React.FC<NavBarProps> = ({}) => {
 		skip: isServer(),
 	});
 
+	const { data: balanceData, loading: balanceLoading } = useBalanceQuery({
+		skip: isServer(),
+	});
+
 	let body = null;
+
+	let balance = 0;
+
+	if (balanceData) {
+		balance = balanceData.me.balance;
+	}
 
 	// data is loading
 	if (loading) {
@@ -43,6 +57,7 @@ export const NavBar: React.FC<NavBarProps> = ({}) => {
 				</NextLink>
 				<Box mr={2}>{data.me.username}</Box>
 
+				<Text mr={2}>{`Balance: ${balance}`}</Text>
 				<NextLink href="/admin">
 					<Button variant="link" as={Link} mr={4}>
 						Admin

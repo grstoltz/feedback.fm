@@ -19,6 +19,7 @@ import { Song } from "../entities/Song";
 import { MyContext } from "../types";
 
 import { isAuth } from "../middleware/isAuth";
+import { getConnection } from "typeorm";
 
 @InputType()
 class CommentInput {
@@ -74,6 +75,26 @@ export class CommentResolver {
 			...input,
 			senderId: req.session.userId,
 		}).save();
+	}
+
+	@Mutation(() => Comment)
+	@UseMiddleware(isAuth)
+	async approveComment(
+		@Arg("id", () => Int) id: number,
+		@Ctx() { req }: MyContext
+	): Promise<Comment> {
+		const result = await getConnection()
+			.createQueryBuilder()
+			.update(Comment)
+			.set({ approved: true })
+			.where('id = :id and "creatorId" = :creatorId', {
+				id,
+				creatorId: req.session.userId,
+			})
+			.returning("*")
+			.execute();
+
+		return result.raw[0];
 	}
 
 	@Mutation(() => Boolean)

@@ -13,38 +13,46 @@ const createClient = (ctx: NextPageContext) =>
 					? ctx?.req?.headers.cookie
 					: undefined) || "",
 		},
-		cache: new InMemoryCache({
-			typePolicies: {
-				Query: {
-					fields: {
-						songs: {
-							keyArgs: [],
-							// merge(
-							// 	existing: PaginatedPosts | undefined,
-							// 	incoming: PaginatedPosts
-							// ): PaginatedPosts {
-							// 	return {
-							// 		...incoming,
-							// 		posts: [
-							// 			...(existing?.posts || []),
-							// 			...incoming.posts,
-							// 		],
-							// 	};
-						},
-						user: {
-							keyArgs: [],
-						},
-
-						comments: {
-							keyArgs: [],
-						},
-						admin: {
-							keyArgs: [],
-						},
-					},
-				},
+		defaultOptions: {
+			query: {
+				fetchPolicy: "network-only",
 			},
-		}),
+			//watchQuery: { fetchPolicy: "no-cache" },
+		},
+		cache: new InMemoryCache(),
+
+		// cache: new InMemoryCache({
+		// 	typePolicies: {
+		// 		Query: {
+		// 			fields: {
+		// 				songs: {
+		// 					keyArgs: [],
+		// 					// merge(
+		// 					// 	existing: PaginatedPosts | undefined,
+		// 					// 	incoming: PaginatedPosts
+		// 					// ): PaginatedPosts {
+		// 					// 	return {
+		// 					// 		...incoming,
+		// 					// 		posts: [
+		// 					// 			...(existing?.posts || []),
+		// 					// 			...incoming.posts,
+		// 					// 		],
+		// 					// 	};
+		// 				},
+		// 				user: {
+		// 					keyArgs: [],
+		// 				},
+
+		// 				comments: {
+		// 					keyArgs: [],
+		// 				},
+		// 				admin: {
+		// 					keyArgs: [],
+		// 				},
+		// 			},
+		// 		},
+		// 	},
+		// }),
 	});
 
 export const withApollo = createWithApollo(createClient);

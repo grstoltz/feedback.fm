@@ -10,7 +10,7 @@ import {
 	Root,
 	Int,
 } from "type-graphql";
-import { getConnection, getManager } from "typeorm";
+import { getConnection, getManager, getRepository } from "typeorm";
 import argon2 from "argon2";
 import { v4 } from "uuid";
 
@@ -164,19 +164,24 @@ export class UserResolver {
 	): Promise<number> {
 		// this is the current user and its ok to show them their own email
 		if (req.session.userId === user.id) {
-			const entityManager = getManager();
-			const balance = await entityManager.query(
-				`
-			SELECT transaction.openingBalance + transaction.transactionAmount as balance 
-			FROM transaction
-			WHERE userId = $1  
-			ORDER By createdAt DESC;
-			`,
-				[user.id, 1]
-			);
-			return balance[0] as number;
+			const user = await getConnection()
+				.createQueryBuilder()
+				.select("transaction")
+				.from(Transaction, "transaction")
+				.where("transaction.userId = :id", { id: req.session.userId })
+				.orderBy("transaction.createdAt", "DESC")
+				.getOne();
+
+			let balance;
+
+			user
+				? (balance = user.openingBalance + user.transactionAmount)
+				: (balance = 0);
+
+			// return balance as number
+			return balance;
 		}
-		// current user wants to see someone elses account baalance
+		// current user wants to see someone elses account balance
 		return 0;
 	}
 

@@ -1,0 +1,13 @@
+mutation UpdateComment(
+	$id: Int!
+	$title: String!
+	$mediaUrl: String!
+	$genre: String!
+) {
+	updateSong(id: $id, title: $title, mediaUrl: $mediaUrl, genre: $genre) {
+		id
+		title
+		mediaUrl
+		genre
+	}
+}
