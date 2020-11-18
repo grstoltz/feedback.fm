@@ -81,7 +81,7 @@ export type Comment = {
   receiverId: Scalars['Float'];
   body: Scalars['String'];
   read: Scalars['Boolean'];
-  approved: Scalars['Boolean'];
+  status: Scalars['String'];
   active: Scalars['Boolean'];
   sender: User;
   receiver: User;
@@ -101,7 +101,7 @@ export type Mutation = {
   login: UserResponse;
   logout: Scalars['Boolean'];
   createComment: Comment;
-  approveComment: Comment;
+  reviewComment: Comment;
   deleteComment: Scalars['Boolean'];
   createTransaction: Transaction;
 };
@@ -152,7 +152,8 @@ export type MutationCreateCommentArgs = {
 };
 
 
-export type MutationApproveCommentArgs = {
+export type MutationReviewCommentArgs = {
+  status: Scalars['String'];
   id: Scalars['Int'];
 };
 
@@ -234,19 +235,6 @@ export type SongSnippetFragment = (
   & { owner: (
     { __typename?: 'User' }
     & Pick<User, 'id' | 'username'>
-  ) }
-);
-
-export type ApproveCommentMutationVariables = Exact<{
-  id: Scalars['Int'];
-}>;
-
-
-export type ApproveCommentMutation = (
-  { __typename?: 'Mutation' }
-  & { approveComment: (
-    { __typename?: 'Comment' }
-    & Pick<Comment, 'id' | 'approved'>
   ) }
 );
 
@@ -368,6 +356,20 @@ export type RegisterMutation = (
   ) }
 );
 
+export type ReviewCommentMutationVariables = Exact<{
+  id: Scalars['Int'];
+  status: Scalars['String'];
+}>;
+
+
+export type ReviewCommentMutation = (
+  { __typename?: 'Mutation' }
+  & { reviewComment: (
+    { __typename?: 'Comment' }
+    & Pick<Comment, 'id' | 'status'>
+  ) }
+);
+
 export type UpdateCommentMutationVariables = Exact<{
   id: Scalars['Int'];
   title: Scalars['String'];
@@ -439,7 +441,7 @@ export type CommentQuery = (
   { __typename?: 'Query' }
   & { comment?: Maybe<(
     { __typename?: 'Comment' }
-    & Pick<Comment, 'id' | 'createdAt' | 'updatedAt' | 'body'>
+    & Pick<Comment, 'id' | 'createdAt' | 'updatedAt' | 'body' | 'status'>
     & { sender: (
       { __typename?: 'User' }
       & Pick<User, 'id' | 'username'>
@@ -556,45 +558,6 @@ export const SongSnippetFragmentDoc = gql`
   }
 }
     `;
-export const ApproveCommentDocument = gql`
-    mutation approveComment($id: Int!) {
-  approveComment(id: $id) {
-    id
-    approved
-  }
-}
-    `;
-export type ApproveCommentMutationFn = Apollo.MutationFunction<ApproveCommentMutation, ApproveCommentMutationVariables>;
-export type ApproveCommentComponentProps = Omit<ApolloReactComponents.MutationComponentOptions<ApproveCommentMutation, ApproveCommentMutationVariables>, 'mutation'>;
-
-    export const ApproveCommentComponent = (props: ApproveCommentComponentProps) => (
-      <ApolloReactComponents.Mutation<ApproveCommentMutation, ApproveCommentMutationVariables> mutation={ApproveCommentDocument} {...props} />
-    );
-    
-
-/**
- * __useApproveCommentMutation__
- *
- * To run a mutation, you first call `useApproveCommentMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useApproveCommentMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [approveCommentMutation, { data, loading, error }] = useApproveCommentMutation({
- *   variables: {
- *      id: // value for 'id'
- *   },
- * });
- */
-export function useApproveCommentMutation(baseOptions?: Apollo.MutationHookOptions<ApproveCommentMutation, ApproveCommentMutationVariables>) {
-        return Apollo.useMutation<ApproveCommentMutation, ApproveCommentMutationVariables>(ApproveCommentDocument, baseOptions);
-      }
-export type ApproveCommentMutationHookResult = ReturnType<typeof useApproveCommentMutation>;
-export type ApproveCommentMutationResult = Apollo.MutationResult<ApproveCommentMutation>;
-export type ApproveCommentMutationOptions = Apollo.BaseMutationOptions<ApproveCommentMutation, ApproveCommentMutationVariables>;
 export const ChangePasswordDocument = gql`
     mutation ChangePassword($token: String!, $newPassword: String!) {
   changePassword(token: $token, newPassword: $newPassword) {
@@ -976,6 +939,46 @@ export function useRegisterMutation(baseOptions?: Apollo.MutationHookOptions<Reg
 export type RegisterMutationHookResult = ReturnType<typeof useRegisterMutation>;
 export type RegisterMutationResult = Apollo.MutationResult<RegisterMutation>;
 export type RegisterMutationOptions = Apollo.BaseMutationOptions<RegisterMutation, RegisterMutationVariables>;
+export const ReviewCommentDocument = gql`
+    mutation ReviewComment($id: Int!, $status: String!) {
+  reviewComment(id: $id, status: $status) {
+    id
+    status
+  }
+}
+    `;
+export type ReviewCommentMutationFn = Apollo.MutationFunction<ReviewCommentMutation, ReviewCommentMutationVariables>;
+export type ReviewCommentComponentProps = Omit<ApolloReactComponents.MutationComponentOptions<ReviewCommentMutation, ReviewCommentMutationVariables>, 'mutation'>;
+
+    export const ReviewCommentComponent = (props: ReviewCommentComponentProps) => (
+      <ApolloReactComponents.Mutation<ReviewCommentMutation, ReviewCommentMutationVariables> mutation={ReviewCommentDocument} {...props} />
+    );
+    
+
+/**
+ * __useReviewCommentMutation__
+ *
+ * To run a mutation, you first call `useReviewCommentMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useReviewCommentMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [reviewCommentMutation, { data, loading, error }] = useReviewCommentMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *      status: // value for 'status'
+ *   },
+ * });
+ */
+export function useReviewCommentMutation(baseOptions?: Apollo.MutationHookOptions<ReviewCommentMutation, ReviewCommentMutationVariables>) {
+        return Apollo.useMutation<ReviewCommentMutation, ReviewCommentMutationVariables>(ReviewCommentDocument, baseOptions);
+      }
+export type ReviewCommentMutationHookResult = ReturnType<typeof useReviewCommentMutation>;
+export type ReviewCommentMutationResult = Apollo.MutationResult<ReviewCommentMutation>;
+export type ReviewCommentMutationOptions = Apollo.BaseMutationOptions<ReviewCommentMutation, ReviewCommentMutationVariables>;
 export const UpdateCommentDocument = gql`
     mutation UpdateComment($id: Int!, $title: String!, $mediaUrl: String!, $genre: String!) {
   updateSong(id: $id, title: $title, mediaUrl: $mediaUrl, genre: $genre) {
@@ -1141,6 +1144,7 @@ export const CommentDocument = gql`
     createdAt
     updatedAt
     body
+    status
     sender {
       id
       username

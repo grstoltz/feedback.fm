@@ -26,9 +26,9 @@ export const NavBar: React.FC<NavBarProps> = ({}) => {
 
 	let body = null;
 
-	let balance = 0;
+	let balance = null;
 
-	if (balanceData) {
+	if (balanceData?.me) {
 		balance = balanceData.me.balance;
 	}
 

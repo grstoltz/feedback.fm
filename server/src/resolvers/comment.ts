@@ -79,17 +79,18 @@ export class CommentResolver {
 
 	@Mutation(() => Comment)
 	@UseMiddleware(isAuth)
-	async approveComment(
+	async reviewComment(
 		@Arg("id", () => Int) id: number,
+		@Arg("status", () => String) status: string,
 		@Ctx() { req }: MyContext
 	): Promise<Comment> {
 		const result = await getConnection()
 			.createQueryBuilder()
 			.update(Comment)
-			.set({ approved: true })
-			.where('id = :id and "creatorId" = :creatorId', {
+			.set({ status })
+			.where('id = :id and "receiverId" = :receiverId', {
 				id,
-				creatorId: req.session.userId,
+				receiverId: req.session.userId,
 			})
 			.returning("*")
 			.execute();

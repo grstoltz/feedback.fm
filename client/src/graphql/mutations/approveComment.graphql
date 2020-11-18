@@ -1,6 +1,0 @@
-mutation approveComment($id: Int!) {
-	approveComment(id: $id) {
-		id
-		approved
-	}
-}

@@ -7,7 +7,7 @@ import { Box, Button, Link, Flex, Heading, Stack } from "@chakra-ui/core";
 import {
 	useCommentQuery,
 	useMeQuery,
-	useUpdateCommentMutation,
+	useReviewCommentMutation,
 } from "../../generated/graphql";
 
 import { useRouter } from "next/router";
@@ -19,7 +19,7 @@ interface commentProps {}
 const Comment: React.FC<commentProps> = () => {
 	const router = useRouter();
 
-	const [updateComment] = useUpdateCommentMutation();
+	const [reviewComment] = useReviewCommentMutation();
 
 	const intId =
 		typeof router.query.id === "string" ? parseInt(router.query.id) : -1;
@@ -39,7 +39,7 @@ const Comment: React.FC<commentProps> = () => {
 
 	const initialValues = { body: "" };
 
-	if (commentLoading || meData) {
+	if (commentLoading) {
 		return (
 			<Layout>
 				<div>loading...</div>
@@ -55,18 +55,16 @@ const Comment: React.FC<commentProps> = () => {
 		return (
 			<Layout>
 				<Box>Could not find this comment...</Box>
-				<Button color="teal">Approve</Button>
-				<Button color="red">Deny</Button>
 			</Layout>
 		);
 	}
 
-	if (
-		commentData.comment.receiver.id !== meData.me.id ||
-		commentData.comment.sender.id !== meData.me.id
-	) {
-		return <div>You aren't allowed to see this</div>;
-	}
+	// if (
+	// 	commentData.comment.receiver.id !== meData.me.id ||
+	// 	commentData.comment.sender.id !== meData.me.id
+	// ) {
+	// 	return <div>You aren't allowed to see this</div>;
+	// }
 
 	let commentSection;
 
@@ -75,7 +73,42 @@ const Comment: React.FC<commentProps> = () => {
 	}
 
 	if (commentData.comment.receiver.id === meData.me.id) {
-		commentSection = <div>Approve this comment?</div>;
+		if (commentData.comment.status === "Approved") {
+			commentSection = <div>Comment approved!</div>;
+		} else if (commentData.comment.status === "Rejected") {
+			commentSection = <div>Comment rejected :(</div>;
+		} else {
+			commentSection = (
+				<Flex justifyContent="space-between">
+					<Button
+						onClick={async () => {
+							const { errors } = await reviewComment({
+								variables: {
+									id: intId,
+									status: "Approved",
+								},
+							});
+						}}
+						color="teal"
+					>
+						Approve
+					</Button>
+					<Button
+						onClick={async () => {
+							const { errors } = await reviewComment({
+								variables: {
+									id: intId,
+									status: "Rejected",
+								},
+							});
+						}}
+						color="red"
+					>
+						Deny
+					</Button>
+				</Flex>
+			);
+		}
 	}
 
 	return (

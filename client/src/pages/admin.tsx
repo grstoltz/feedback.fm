@@ -12,6 +12,8 @@ import {
 	Tabs,
 	Text,
 } from "@chakra-ui/core";
+import NextLink from "next/link";
+
 import { Wrapper } from "../components/Wrapper";
 import { InputField } from "../components/InputField";
 import { useRouter } from "next/router";
@@ -38,7 +40,7 @@ const Admin: React.FC<registerProps> = ({}) => {
 		return <div>{error.message}</div>;
 	}
 
-	if (!data.admin) {
+	if (!data?.admin) {
 		return (
 			<Layout>
 				<Box>could not find User</Box>
@@ -73,22 +75,26 @@ const Admin: React.FC<registerProps> = ({}) => {
 							{data.admin.receivedComments.length ? (
 								data.admin.receivedComments?.map((element) => {
 									return (
-										<Box
-											marginTop={2}
-											minW="lg"
-											borderWidth="1px"
-											rounded="lg"
-											overflow="hidden"
-											key={element.id}
-										>
-											<Flex>
-												<Text fontWeight="bold" fontSize="lg">
-													{element.parent.title}
+										<NextLink href={`/comment/${element.id}`}>
+											<Box
+												marginTop={2}
+												minW="lg"
+												borderWidth="1px"
+												rounded="lg"
+												overflow="hidden"
+												key={element.id}
+											>
+												<Flex>
+													<Text fontWeight="bold" fontSize="lg">
+														{element.parent.title}
+													</Text>
+												</Flex>
+												<Text>
+													Sent By: {element.sender.username}
 												</Text>
-											</Flex>
-											<Text>Sent By: {element.sender.username}</Text>
-											<Text>{element.body}</Text>
-										</Box>
+												<Text>{element.body}</Text>
+											</Box>
+										</NextLink>
 									);
 								})
 							) : (
@@ -100,27 +106,29 @@ const Admin: React.FC<registerProps> = ({}) => {
 						{data.admin.sentComments.length ? (
 							data.admin.sentComments?.map((element) => {
 								return (
-									<Box
-										marginTop={2}
-										minW="lg"
-										borderWidth="1px"
-										rounded="lg"
-										overflow="hidden"
-										key={element.id}
-									>
-										<Flex justifyContent="space-between">
-											<Text fontWeight="bold" fontSize="lg">
-												{element.parent.title}
-											</Text>
-											<DeleteButton
-												id={element.id}
-												creatorId={data.admin?.id}
-												contentType="comment"
-											/>
-										</Flex>
+									<NextLink href={`/comment/${element.id}`}>
+										<Box
+											marginTop={2}
+											minW="lg"
+											borderWidth="1px"
+											rounded="lg"
+											overflow="hidden"
+											key={element.id}
+										>
+											<Flex justifyContent="space-between">
+												<Text fontWeight="bold" fontSize="lg">
+													{element.parent.title}
+												</Text>
+												<DeleteButton
+													id={element.id}
+													creatorId={data.admin?.id}
+													contentType="comment"
+												/>
+											</Flex>
 
-										<Text>{element.body}</Text>
-									</Box>
+											<Text>{element.body}</Text>
+										</Box>
+									</NextLink>
 								);
 							})
 						) : (
