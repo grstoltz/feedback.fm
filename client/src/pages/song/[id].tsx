@@ -73,10 +73,10 @@ const Song: React.FC<songProps> = () => {
 
 	let commentSection;
 
-	if (!meData.me) {
+	if (!meData?.me) {
 		commentSection = null;
 	}
-	if (songData.song.owner.id !== meData.me.id) {
+	if (songData.song.owner.id !== meData?.me?.id) {
 		commentSection = (
 			<Formik
 				initialValues={initialValues}

@@ -8,6 +8,7 @@ import {
 	useCommentQuery,
 	useMeQuery,
 	useReviewCommentMutation,
+	useCreateTransactionMutation,
 } from "../../generated/graphql";
 
 import { useRouter } from "next/router";
@@ -20,6 +21,7 @@ const Comment: React.FC<commentProps> = () => {
 	const router = useRouter();
 
 	const [reviewComment] = useReviewCommentMutation();
+	const [createTransaction] = useCreateTransactionMutation();
 
 	const intId =
 		typeof router.query.id === "string" ? parseInt(router.query.id) : -1;
@@ -35,11 +37,11 @@ const Comment: React.FC<commentProps> = () => {
 		},
 	});
 
-	const { data: meData, error: meError } = useMeQuery();
+	const { data: meData, loading: meLoading, error: meError } = useMeQuery();
 
 	const initialValues = { body: "" };
 
-	if (commentLoading) {
+	if (commentLoading || meLoading) {
 		return (
 			<Layout>
 				<div>loading...</div>
@@ -59,12 +61,15 @@ const Comment: React.FC<commentProps> = () => {
 		);
 	}
 
-	// if (
-	// 	commentData.comment.receiver.id !== meData.me.id ||
-	// 	commentData.comment.sender.id !== meData.me.id
-	// ) {
-	// 	return <div>You aren't allowed to see this</div>;
-	// }
+	if (
+		commentData.comment.receiver.id !== meData.me?.id &&
+		commentData.comment.sender.id !== meData.me?.id
+	) {
+		console.log("sender", commentData.comment.sender.id);
+		console.log("receiver", commentData.comment.receiver.id);
+		console.log("me", meData.me?.id);
+		return <div>You aren't allowed to see this</div>;
+	}
 
 	let commentSection;
 
@@ -88,6 +93,21 @@ const Comment: React.FC<commentProps> = () => {
 									status: "Approved",
 								},
 							});
+
+							if (!errors) {
+								await createTransaction({
+									variables: {
+										id: commentData.comment.receiver.id as number,
+										transactionAmount: 5,
+									},
+								});
+								await createTransaction({
+									variables: {
+										id: commentData.comment.sender.id as number,
+										transactionAmount: 20,
+									},
+								});
+							}
 						}}
 						color="teal"
 					>

@@ -165,6 +165,7 @@ export type MutationDeleteCommentArgs = {
 
 export type MutationCreateTransactionArgs = {
   transactionAmount: Scalars['Int'];
+  id: Scalars['Int'];
 };
 
 export type SongInput = {
@@ -279,6 +280,7 @@ export type CreateSongMutation = (
 );
 
 export type CreateTransactionMutationVariables = Exact<{
+  id: Scalars['Int'];
   transactionAmount: Scalars['Int'];
 }>;
 
@@ -682,8 +684,8 @@ export type CreateSongMutationHookResult = ReturnType<typeof useCreateSongMutati
 export type CreateSongMutationResult = Apollo.MutationResult<CreateSongMutation>;
 export type CreateSongMutationOptions = Apollo.BaseMutationOptions<CreateSongMutation, CreateSongMutationVariables>;
 export const CreateTransactionDocument = gql`
-    mutation CreateTransaction($transactionAmount: Int!) {
-  createTransaction(transactionAmount: $transactionAmount) {
+    mutation CreateTransaction($id: Int!, $transactionAmount: Int!) {
+  createTransaction(id: $id, transactionAmount: $transactionAmount) {
     id
   }
 }
@@ -709,6 +711,7 @@ export type CreateTransactionComponentProps = Omit<ApolloReactComponents.Mutatio
  * @example
  * const [createTransactionMutation, { data, loading, error }] = useCreateTransactionMutation({
  *   variables: {
+ *      id: // value for 'id'
  *      transactionAmount: // value for 'transactionAmount'
  *   },
  * });

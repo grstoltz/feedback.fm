@@ -1,5 +1,5 @@
-mutation CreateTransaction($transactionAmount: Int!) {
-	createTransaction(transactionAmount: $transactionAmount) {
+mutation CreateTransaction($id: Int!, $transactionAmount: Int!) {
+	createTransaction(id: $id, transactionAmount: $transactionAmount) {
 		id
 	}
 }
