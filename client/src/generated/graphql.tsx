@@ -401,7 +401,7 @@ export type AdminQuery = (
       & Pick<Song, 'id' | 'ownerId' | 'title'>
     )>>, sentComments?: Maybe<Array<(
       { __typename?: 'Comment' }
-      & Pick<Comment, 'id' | 'parentId' | 'body'>
+      & Pick<Comment, 'id' | 'parentId' | 'body' | 'status'>
       & { receiver: (
         { __typename?: 'User' }
         & Pick<User, 'id' | 'username'>
@@ -411,7 +411,7 @@ export type AdminQuery = (
       ) }
     )>>, receivedComments?: Maybe<Array<(
       { __typename?: 'Comment' }
-      & Pick<Comment, 'id' | 'parentId' | 'body'>
+      & Pick<Comment, 'id' | 'parentId' | 'body' | 'status'>
       & { parent: (
         { __typename?: 'Song' }
         & Pick<Song, 'id' | 'title'>
@@ -466,7 +466,7 @@ export type CommentsQuery = (
   { __typename?: 'Query' }
   & { comments: Array<(
     { __typename?: 'Comment' }
-    & Pick<Comment, 'id' | 'createdAt' | 'updatedAt' | 'body'>
+    & Pick<Comment, 'id' | 'createdAt' | 'updatedAt' | 'body' | 'status'>
     & { sender: (
       { __typename?: 'User' }
       & Pick<User, 'id' | 'username'>
@@ -1052,6 +1052,7 @@ export const AdminDocument = gql`
         title
       }
       body
+      status
     }
     receivedComments {
       id
@@ -1065,6 +1066,7 @@ export const AdminDocument = gql`
         username
       }
       body
+      status
     }
   }
 }
@@ -1202,6 +1204,7 @@ export const CommentsDocument = gql`
     createdAt
     updatedAt
     body
+    status
     sender {
       id
       username

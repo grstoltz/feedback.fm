@@ -1,13 +1,4 @@
-import { MyContext } from "src/types";
-import {
-	Resolver,
-	Query,
-	UseMiddleware,
-	Mutation,
-	Int,
-	Ctx,
-	Arg,
-} from "type-graphql";
+import { Resolver, UseMiddleware, Mutation, Int, Arg } from "type-graphql";
 import { getConnection } from "typeorm";
 import { Transaction } from "../entities/Transaction";
 
@@ -18,14 +9,14 @@ export class TransactionResolver {
 	@Mutation(() => Transaction)
 	@UseMiddleware(isAuth)
 	async createTransaction(
-		@Arg("transactionAmount", () => Int) transactionAmount: number,
-		@Ctx() { req }: MyContext
+		@Arg("id", () => Int) id: number,
+		@Arg("transactionAmount", () => Int) transactionAmount: number
 	): Promise<Transaction> {
 		const user = await getConnection()
 			.createQueryBuilder()
 			.select("transaction")
 			.from(Transaction, "transaction")
-			.where("transaction.userId = :id", { id: req.session.userId })
+			.where("transaction.userId = :id", { id })
 			.orderBy("transaction.createdAt", "DESC")
 			.getOne();
 
@@ -36,7 +27,7 @@ export class TransactionResolver {
 			: (openingBalance = 0);
 
 		return Transaction.create({
-			userId: req.session.userId,
+			userId: id,
 			transactionAmount,
 			openingBalance,
 		}).save();

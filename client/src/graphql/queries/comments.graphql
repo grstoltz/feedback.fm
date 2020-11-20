@@ -4,6 +4,7 @@ query Comments($id: Int!) {
 		createdAt
 		updatedAt
 		body
+		status
 		sender {
 			id
 			username

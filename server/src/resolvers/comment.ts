@@ -15,6 +15,7 @@ import {
 import { Comment } from "../entities/Comment";
 import { User } from "../entities/User";
 import { Song } from "../entities/Song";
+import { Transaction } from "../entities/Transaction";
 
 import { MyContext } from "../types";
 
@@ -94,6 +95,8 @@ export class CommentResolver {
 			})
 			.returning("*")
 			.execute();
+
+		Transaction;
 
 		return result.raw[0];
 	}

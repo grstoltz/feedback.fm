@@ -10,6 +10,7 @@ import {
 	TabPanel,
 	TabPanels,
 	Tabs,
+	Tag,
 	Text,
 } from "@chakra-ui/core";
 import NextLink from "next/link";
@@ -88,6 +89,7 @@ const Admin: React.FC<registerProps> = ({}) => {
 													<Text fontWeight="bold" fontSize="lg">
 														{element.parent.title}
 													</Text>
+													<Tag size="md">{element.status}</Tag>
 												</Flex>
 												<Text>
 													Sent By: {element.sender.username}
@@ -119,6 +121,8 @@ const Admin: React.FC<registerProps> = ({}) => {
 												<Text fontWeight="bold" fontSize="lg">
 													{element.parent.title}
 												</Text>
+												<Tag size="md">{element.status}</Tag>
+
 												<DeleteButton
 													id={element.id}
 													creatorId={data.admin?.id}
@@ -151,6 +155,7 @@ const Admin: React.FC<registerProps> = ({}) => {
 											<Text fontWeight="bold" fontSize="lg">
 												{element.title}
 											</Text>
+
 											<DeleteButton
 												id={element.id}
 												creatorId={data.admin?.id}

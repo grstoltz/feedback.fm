@@ -36,14 +36,6 @@ export class Comment extends BaseEntity {
 	body: string;
 
 	@Field()
-	@Column({ default: false })
-	read: boolean;
-
-	// @Field()
-	// @Column({ default: false })
-	// approved: boolean;
-
-	@Field()
 	@Column({ default: "Pending" })
 	status: string;
 
