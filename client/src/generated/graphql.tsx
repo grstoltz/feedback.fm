@@ -80,7 +80,6 @@ export type Comment = {
   senderId: Scalars['Float'];
   receiverId: Scalars['Float'];
   body: Scalars['String'];
-  read: Scalars['Boolean'];
   status: Scalars['String'];
   active: Scalars['Boolean'];
   sender: User;
@@ -104,6 +103,7 @@ export type Mutation = {
   reviewComment: Comment;
   deleteComment: Scalars['Boolean'];
   createTransaction: Transaction;
+  createNotification: Notification;
 };
 
 
@@ -168,6 +168,11 @@ export type MutationCreateTransactionArgs = {
   id: Scalars['Int'];
 };
 
+
+export type MutationCreateNotificationArgs = {
+  input: NotificationInput;
+};
+
 export type SongInput = {
   title: Scalars['String'];
   mediaUrl: Scalars['String'];
@@ -207,6 +212,23 @@ export type Transaction = {
   transactionAmount: Scalars['Float'];
   createdAt: Scalars['String'];
   updatedAt: Scalars['String'];
+};
+
+export type Notification = {
+  __typename?: 'Notification';
+  id: Scalars['Float'];
+  receiverId: Scalars['Float'];
+  senderId: Scalars['Float'];
+  message: Scalars['String'];
+  read: Scalars['Boolean'];
+  createdAt: Scalars['String'];
+  updatedAt: Scalars['String'];
+};
+
+export type NotificationInput = {
+  receiverId: Scalars['Float'];
+  senderId: Scalars['Float'];
+  message: Scalars['String'];
 };
 
 export type RegularErrorFragment = (
@@ -263,6 +285,19 @@ export type CreateCommentMutation = (
   & { createComment: (
     { __typename?: 'Comment' }
     & Pick<Comment, 'id' | 'parentId' | 'senderId' | 'receiverId' | 'body'>
+  ) }
+);
+
+export type CreateNotificationMutationVariables = Exact<{
+  input: NotificationInput;
+}>;
+
+
+export type CreateNotificationMutation = (
+  { __typename?: 'Mutation' }
+  & { createNotification: (
+    { __typename?: 'Notification' }
+    & Pick<Notification, 'id' | 'senderId' | 'receiverId' | 'message'>
   ) }
 );
 
@@ -641,6 +676,47 @@ export function useCreateCommentMutation(baseOptions?: Apollo.MutationHookOption
 export type CreateCommentMutationHookResult = ReturnType<typeof useCreateCommentMutation>;
 export type CreateCommentMutationResult = Apollo.MutationResult<CreateCommentMutation>;
 export type CreateCommentMutationOptions = Apollo.BaseMutationOptions<CreateCommentMutation, CreateCommentMutationVariables>;
+export const CreateNotificationDocument = gql`
+    mutation CreateNotification($input: NotificationInput!) {
+  createNotification(input: $input) {
+    id
+    senderId
+    receiverId
+    message
+  }
+}
+    `;
+export type CreateNotificationMutationFn = Apollo.MutationFunction<CreateNotificationMutation, CreateNotificationMutationVariables>;
+export type CreateNotificationComponentProps = Omit<ApolloReactComponents.MutationComponentOptions<CreateNotificationMutation, CreateNotificationMutationVariables>, 'mutation'>;
+
+    export const CreateNotificationComponent = (props: CreateNotificationComponentProps) => (
+      <ApolloReactComponents.Mutation<CreateNotificationMutation, CreateNotificationMutationVariables> mutation={CreateNotificationDocument} {...props} />
+    );
+    
+
+/**
+ * __useCreateNotificationMutation__
+ *
+ * To run a mutation, you first call `useCreateNotificationMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateNotificationMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createNotificationMutation, { data, loading, error }] = useCreateNotificationMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useCreateNotificationMutation(baseOptions?: Apollo.MutationHookOptions<CreateNotificationMutation, CreateNotificationMutationVariables>) {
+        return Apollo.useMutation<CreateNotificationMutation, CreateNotificationMutationVariables>(CreateNotificationDocument, baseOptions);
+      }
+export type CreateNotificationMutationHookResult = ReturnType<typeof useCreateNotificationMutation>;
+export type CreateNotificationMutationResult = Apollo.MutationResult<CreateNotificationMutation>;
+export type CreateNotificationMutationOptions = Apollo.BaseMutationOptions<CreateNotificationMutation, CreateNotificationMutationVariables>;
 export const CreateSongDocument = gql`
     mutation CreateSong($input: SongInput!) {
   createSong(input: $input) {

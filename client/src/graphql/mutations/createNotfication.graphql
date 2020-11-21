@@ -1,0 +1,8 @@
+mutation CreateNotification($input: NotificationInput!) {
+	createNotification(input: $input) {
+		id
+		senderId
+		receiverId
+		message
+	}
+}

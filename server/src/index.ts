@@ -19,6 +19,7 @@ import { User } from "./entities/User";
 import { Comment } from "./entities/Comment";
 import { Song } from "./entities/Song";
 import { Transaction } from "./entities/Transaction";
+import { Notification } from "./entities/Notification";
 
 import { HelloResolver } from "./resolvers/hello";
 import { SongResolver } from "./resolvers/song";
@@ -27,6 +28,7 @@ import { CommentResolver } from "./resolvers/comment";
 
 import { createUserLoader } from "./utils/createUserLoader";
 import { TransactionResolver } from "./resolvers/transaction";
+import { NotificationResolver } from "./resolvers/notification";
 
 const main = async () => {
 	const conn = await createConnection({
@@ -38,7 +40,7 @@ const main = async () => {
 		logging: true,
 		synchronize: true,
 		migrations: [path.join(__dirname, "./migrations/*.js")],
-		entities: [User, Song, Comment, Transaction],
+		entities: [User, Song, Comment, Transaction, Notification],
 	});
 
 	const app = express();
@@ -80,6 +82,7 @@ const main = async () => {
 				UserResolver,
 				CommentResolver,
 				TransactionResolver,
+				NotificationResolver,
 			],
 			validate: false,
 		}),

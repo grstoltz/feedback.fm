@@ -10,6 +10,7 @@ import {
 } from "typeorm";
 import { Song } from "./Song";
 import { Comment } from "./Comment";
+import { Notification } from "./Notification";
 
 @ObjectType()
 @Entity()
@@ -38,6 +39,9 @@ export class User extends BaseEntity {
 
 	@Field()
 	balance: number;
+
+	@OneToMany(() => Notification, (notification) => notification.receiverId)
+	notifications: Notification[];
 
 	@OneToMany(() => Song, (song) => song.owner)
 	songs: Song[];

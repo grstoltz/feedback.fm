@@ -18,7 +18,7 @@ export class Notification extends BaseEntity {
 
 	@Field()
 	@Column()
-	receieverId!: number;
+	receiverId!: number;
 
 	@Field()
 	@Column()
