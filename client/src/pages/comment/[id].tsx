@@ -9,6 +9,7 @@ import {
 	useMeQuery,
 	useReviewCommentMutation,
 	useCreateTransactionMutation,
+	useCreateNotificationMutation,
 } from "../../generated/graphql";
 
 import { useRouter } from "next/router";
@@ -22,6 +23,7 @@ const Comment: React.FC<commentProps> = () => {
 
 	const [reviewComment] = useReviewCommentMutation();
 	const [createTransaction] = useCreateTransactionMutation();
+	const [createNotification] = useCreateNotificationMutation();
 
 	const intId =
 		typeof router.query.id === "string" ? parseInt(router.query.id) : -1;
@@ -107,6 +109,15 @@ const Comment: React.FC<commentProps> = () => {
 										transactionAmount: 20,
 									},
 								});
+								await createNotification({
+									variables: {
+										input: {
+											senderId: meData.me.id,
+											receiverId: commentData.comment.sender.id,
+											message: "approved your comment",
+										},
+									},
+								});
 							}
 						}}
 						color="teal"
@@ -121,6 +132,18 @@ const Comment: React.FC<commentProps> = () => {
 									status: "Rejected",
 								},
 							});
+
+							if (!errors) {
+								await createNotification({
+									variables: {
+										input: {
+											senderId: meData.me.id,
+											receiverId: commentData.comment.sender.id,
+											message: "did not approve your comment",
+										},
+									},
+								});
+							}
 						}}
 						color="red"
 					>

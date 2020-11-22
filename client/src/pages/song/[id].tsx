@@ -9,6 +9,7 @@ import {
 	useCommentsQuery,
 	useSongQuery,
 	useMeQuery,
+	useCreateNotificationMutation,
 } from "../../generated/graphql";
 
 import { useRouter } from "next/router";
@@ -21,6 +22,7 @@ const Song: React.FC<songProps> = () => {
 	const router = useRouter();
 
 	const [createComment] = useCreateCommentMutation();
+	const [createNotification] = useCreateNotificationMutation();
 
 	const intId =
 		typeof router.query.id === "string" ? parseInt(router.query.id) : -1;
@@ -98,6 +100,15 @@ const Song: React.FC<songProps> = () => {
 						},
 					});
 					if (!errors) {
+						createNotification({
+							variables: {
+								input: {
+									senderId: meData.me.id,
+									receiverId: songData.song.owner.id,
+									message: "left a comment",
+								},
+							},
+						});
 						resetForm();
 					}
 				}}
