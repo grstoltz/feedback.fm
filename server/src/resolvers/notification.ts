@@ -7,8 +7,11 @@ import {
 	Field,
 	Ctx,
 	InputType,
+	FieldResolver,
+	Root,
 } from "type-graphql";
 import { Notification } from "../entities/Notification";
+import { User } from "../entities/User";
 
 import { isAuth } from "../middleware/isAuth";
 
@@ -36,5 +39,18 @@ export class NotificationResolver {
 			...input,
 			senderId: req.session.userId,
 		}).save();
+	}
+
+	@FieldResolver(() => User)
+	sender(@Root() notificaion: Notification, @Ctx() { userLoader }: MyContext) {
+		return userLoader.load(notificaion.senderId);
+	}
+
+	@FieldResolver(() => User)
+	receiver(
+		@Root() notificaion: Notification,
+		@Ctx() { userLoader }: MyContext
+	) {
+		return userLoader.load(notificaion.receiverId);
 	}
 }

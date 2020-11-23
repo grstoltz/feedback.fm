@@ -25,6 +25,7 @@ import { User } from "../entities/User";
 import { Song } from "../entities/Song";
 import { Comment } from "../entities/Comment";
 import { Transaction } from "../entities/Transaction";
+import { Notification } from "../entities/Notification";
 
 @ObjectType()
 class FieldError {
@@ -187,7 +188,18 @@ export class UserResolver {
 
 	@FieldResolver(() => [Song], { nullable: true })
 	async songs(@Root() user: User, @Ctx() { req }: MyContext): Promise<Song[]> {
-		const result = await Song.find({ ownerId: req.session.userId });
+		return Song.find({ ownerId: req.session.userId });
+	}
+
+	@FieldResolver(() => [Notification], { nullable: true })
+	async notifications(
+		@Root() user: User,
+		@Ctx() { req }: MyContext
+	): Promise<Song[]> {
+		const result = await Notification.find({
+			receiverId: req.session.userId,
+			read: false,
+		});
 
 		console.log(result);
 		return Song.find({ ownerId: req.session.userId });

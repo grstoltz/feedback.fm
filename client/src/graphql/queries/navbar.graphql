@@ -1,0 +1,18 @@
+query NavBar {
+	me {
+		id
+		username
+		balance
+		notifications {
+			sender {
+				id
+				username
+			}
+			receiver {
+				id
+				username
+			}
+			message
+		}
+	}
+}

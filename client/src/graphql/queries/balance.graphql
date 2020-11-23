@@ -1,7 +1,0 @@
-query Balance {
-	me {
-		id
-		username
-		balance
-	}
-}
