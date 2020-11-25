@@ -21,9 +21,6 @@ class NotificationInput {
 	receiverId!: number;
 
 	@Field()
-	senderId!: number;
-
-	@Field()
 	message!: string;
 }
 

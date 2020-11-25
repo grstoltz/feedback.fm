@@ -195,14 +195,13 @@ export class UserResolver {
 	async notifications(
 		@Root() user: User,
 		@Ctx() { req }: MyContext
-	): Promise<Song[]> {
+	): Promise<Notification[]> {
 		const result = await Notification.find({
 			receiverId: req.session.userId,
 			read: false,
 		});
 
-		console.log(result);
-		return Song.find({ ownerId: req.session.userId });
+		return result;
 	}
 
 	@FieldResolver(() => [Comment], { nullable: true })
