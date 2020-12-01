@@ -104,7 +104,6 @@ export class SongResolver {
 
 		// await Updoot.delete({ postId: id });
 		// await Post.delete({ id });
-		console.log(req.session.userId);
 		//CHANGE TO AFTER AUTH:
 		await Song.delete({ id, ownerId: req.session.userId });
 		return true;

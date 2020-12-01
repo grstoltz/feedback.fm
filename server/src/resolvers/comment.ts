@@ -96,7 +96,7 @@ export class CommentResolver {
 			.returning("*")
 			.execute();
 
-		Transaction;
+		Transaction.create
 
 		return result.raw[0];
 	}

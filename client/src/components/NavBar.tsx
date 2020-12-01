@@ -4,7 +4,7 @@ import NextLink from "next/link";
 import {
 	useMeQuery,
 	useLogoutMutation,
-	useBalanceQuery,
+	useNavBarQuery,
 } from "../generated/graphql";
 import { isServer } from "../utils/isServer";
 import { useRouter } from "next/router";
@@ -16,11 +16,8 @@ export const NavBar: React.FC<NavBarProps> = ({}) => {
 	const router = useRouter();
 	const [logout, { loading: logoutFetching }] = useLogoutMutation();
 	const apolloClient = useApolloClient();
-	const { data, loading } = useMeQuery({
-		skip: isServer(),
-	});
 
-	const { data: balanceData, loading: balanceLoading } = useBalanceQuery({
+	const { data, loading } = useNavBarQuery({
 		skip: isServer(),
 	});
 
@@ -28,8 +25,8 @@ export const NavBar: React.FC<NavBarProps> = ({}) => {
 
 	let balance = null;
 
-	if (balanceData?.me) {
-		balance = balanceData.me.balance;
+	if (data?.me?.balance) {
+		balance = data.me.balance;
 	}
 
 	// data is loading
@@ -58,6 +55,9 @@ export const NavBar: React.FC<NavBarProps> = ({}) => {
 				<Box mr={2}>{data.me.username}</Box>
 
 				<Text mr={2}>{`Balance: ${balance}`}</Text>
+				<Text mr={2}>{`Notifications ${
+					data.me.notifications.length + 1
+				}`}</Text>
 				<NextLink href="/admin">
 					<Button variant="link" as={Link} mr={4}>
 						Admin

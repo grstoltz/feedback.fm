@@ -69,8 +69,22 @@ export type User = {
   createdAt: Scalars['String'];
   updatedAt: Scalars['String'];
   songs?: Maybe<Array<Song>>;
+  notifications?: Maybe<Array<Notification>>;
   receivedComments?: Maybe<Array<Comment>>;
   sentComments?: Maybe<Array<Comment>>;
+};
+
+export type Notification = {
+  __typename?: 'Notification';
+  id: Scalars['Float'];
+  receiverId: Scalars['Float'];
+  senderId: Scalars['Float'];
+  message: Scalars['String'];
+  sender: User;
+  receiver: User;
+  read: Scalars['Boolean'];
+  createdAt: Scalars['String'];
+  updatedAt: Scalars['String'];
 };
 
 export type Comment = {
@@ -214,20 +228,8 @@ export type Transaction = {
   updatedAt: Scalars['String'];
 };
 
-export type Notification = {
-  __typename?: 'Notification';
-  id: Scalars['Float'];
-  receiverId: Scalars['Float'];
-  senderId: Scalars['Float'];
-  message: Scalars['String'];
-  read: Scalars['Boolean'];
-  createdAt: Scalars['String'];
-  updatedAt: Scalars['String'];
-};
-
 export type NotificationInput = {
   receiverId: Scalars['Float'];
-  senderId: Scalars['Float'];
   message: Scalars['String'];
 };
 
@@ -458,17 +460,6 @@ export type AdminQuery = (
   )> }
 );
 
-export type BalanceQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type BalanceQuery = (
-  { __typename?: 'Query' }
-  & { me?: Maybe<(
-    { __typename?: 'User' }
-    & Pick<User, 'id' | 'username' | 'balance'>
-  )> }
-);
-
 export type CommentQueryVariables = Exact<{
   id: Scalars['Int'];
 }>;
@@ -523,6 +514,28 @@ export type MeQuery = (
   & { me?: Maybe<(
     { __typename?: 'User' }
     & Pick<User, 'id' | 'username'>
+  )> }
+);
+
+export type NavBarQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type NavBarQuery = (
+  { __typename?: 'Query' }
+  & { me?: Maybe<(
+    { __typename?: 'User' }
+    & Pick<User, 'id' | 'username' | 'balance'>
+    & { notifications?: Maybe<Array<(
+      { __typename?: 'Notification' }
+      & Pick<Notification, 'message'>
+      & { sender: (
+        { __typename?: 'User' }
+        & Pick<User, 'id' | 'username'>
+      ), receiver: (
+        { __typename?: 'User' }
+        & Pick<User, 'id' | 'username'>
+      ) }
+    )>> }
   )> }
 );
 
@@ -1178,46 +1191,6 @@ export function useAdminLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<Admi
 export type AdminQueryHookResult = ReturnType<typeof useAdminQuery>;
 export type AdminLazyQueryHookResult = ReturnType<typeof useAdminLazyQuery>;
 export type AdminQueryResult = Apollo.QueryResult<AdminQuery, AdminQueryVariables>;
-export const BalanceDocument = gql`
-    query Balance {
-  me {
-    id
-    username
-    balance
-  }
-}
-    `;
-export type BalanceComponentProps = Omit<ApolloReactComponents.QueryComponentOptions<BalanceQuery, BalanceQueryVariables>, 'query'>;
-
-    export const BalanceComponent = (props: BalanceComponentProps) => (
-      <ApolloReactComponents.Query<BalanceQuery, BalanceQueryVariables> query={BalanceDocument} {...props} />
-    );
-    
-
-/**
- * __useBalanceQuery__
- *
- * To run a query within a React component, call `useBalanceQuery` and pass it any options that fit your needs.
- * When your component renders, `useBalanceQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useBalanceQuery({
- *   variables: {
- *   },
- * });
- */
-export function useBalanceQuery(baseOptions?: Apollo.QueryHookOptions<BalanceQuery, BalanceQueryVariables>) {
-        return Apollo.useQuery<BalanceQuery, BalanceQueryVariables>(BalanceDocument, baseOptions);
-      }
-export function useBalanceLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<BalanceQuery, BalanceQueryVariables>) {
-          return Apollo.useLazyQuery<BalanceQuery, BalanceQueryVariables>(BalanceDocument, baseOptions);
-        }
-export type BalanceQueryHookResult = ReturnType<typeof useBalanceQuery>;
-export type BalanceLazyQueryHookResult = ReturnType<typeof useBalanceLazyQuery>;
-export type BalanceQueryResult = Apollo.QueryResult<BalanceQuery, BalanceQueryVariables>;
 export const CommentDocument = gql`
     query Comment($id: Int!) {
   comment(id: $id) {
@@ -1367,6 +1340,57 @@ export function useMeLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<MeQuery
 export type MeQueryHookResult = ReturnType<typeof useMeQuery>;
 export type MeLazyQueryHookResult = ReturnType<typeof useMeLazyQuery>;
 export type MeQueryResult = Apollo.QueryResult<MeQuery, MeQueryVariables>;
+export const NavBarDocument = gql`
+    query NavBar {
+  me {
+    id
+    username
+    balance
+    notifications {
+      sender {
+        id
+        username
+      }
+      receiver {
+        id
+        username
+      }
+      message
+    }
+  }
+}
+    `;
+export type NavBarComponentProps = Omit<ApolloReactComponents.QueryComponentOptions<NavBarQuery, NavBarQueryVariables>, 'query'>;
+
+    export const NavBarComponent = (props: NavBarComponentProps) => (
+      <ApolloReactComponents.Query<NavBarQuery, NavBarQueryVariables> query={NavBarDocument} {...props} />
+    );
+    
+
+/**
+ * __useNavBarQuery__
+ *
+ * To run a query within a React component, call `useNavBarQuery` and pass it any options that fit your needs.
+ * When your component renders, `useNavBarQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useNavBarQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useNavBarQuery(baseOptions?: Apollo.QueryHookOptions<NavBarQuery, NavBarQueryVariables>) {
+        return Apollo.useQuery<NavBarQuery, NavBarQueryVariables>(NavBarDocument, baseOptions);
+      }
+export function useNavBarLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<NavBarQuery, NavBarQueryVariables>) {
+          return Apollo.useLazyQuery<NavBarQuery, NavBarQueryVariables>(NavBarDocument, baseOptions);
+        }
+export type NavBarQueryHookResult = ReturnType<typeof useNavBarQuery>;
+export type NavBarLazyQueryHookResult = ReturnType<typeof useNavBarLazyQuery>;
+export type NavBarQueryResult = Apollo.QueryResult<NavBarQuery, NavBarQueryVariables>;
 export const SongDocument = gql`
     query Song($id: Int!) {
   song(id: $id) {

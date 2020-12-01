@@ -103,9 +103,8 @@ const Song: React.FC<songProps> = () => {
 						createNotification({
 							variables: {
 								input: {
-									senderId: meData.me.id,
 									receiverId: songData.song.owner.id,
-									message: "left a comment",
+									message: `${meData.me.username} left a comment on ${songData.song.title}.`,
 								},
 							},
 						});

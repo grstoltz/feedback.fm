@@ -114,7 +114,7 @@ const Comment: React.FC<commentProps> = () => {
 										input: {
 											senderId: meData.me.id,
 											receiverId: commentData.comment.sender.id,
-											message: "approved your comment",
+											message: `${commentData.comment.receiver.username} approved your comment on ${commentData.comment.parent.title}.`,
 										},
 									},
 								});
@@ -139,7 +139,7 @@ const Comment: React.FC<commentProps> = () => {
 										input: {
 											senderId: meData.me.id,
 											receiverId: commentData.comment.sender.id,
-											message: "did not approve your comment",
+											message: `${commentData.comment.receiver.username} did not approve your comment on ${commentData.comment.parent.title}.`,
 										},
 									},
 								});
