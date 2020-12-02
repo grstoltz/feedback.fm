@@ -1,5 +1,15 @@
 import React from "react";
-import { Box, Link, Flex, Button, Heading, Text } from "@chakra-ui/core";
+import {
+	Box,
+	Link,
+	Flex,
+	Button,
+	Heading,
+	Text,
+	PopoverTrigger,
+	Popover,
+	IconButton,
+} from "@chakra-ui/react";
 import NextLink from "next/link";
 import {
 	useMeQuery,
@@ -9,6 +19,7 @@ import {
 import { isServer } from "../utils/isServer";
 import { useRouter } from "next/router";
 import { useApolloClient } from "@apollo/client";
+import { EditIcon } from "@chakra-ui/icons/dist/types/Edit";
 
 interface NavBarProps {}
 
@@ -58,6 +69,13 @@ export const NavBar: React.FC<NavBarProps> = ({}) => {
 				<Text mr={2}>{`Notifications ${
 					data.me.notifications.length + 1
 				}`}</Text>
+
+				<Popover>
+					<PopoverTrigger>
+						<IconButton aria-label="edit" size="sm" icon={<EditIcon />} />
+					</PopoverTrigger>
+				</Popover>
+
 				<NextLink href="/admin">
 					<Button variant="link" as={Link} mr={4}>
 						Admin

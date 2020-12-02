@@ -112,7 +112,6 @@ const Comment: React.FC<commentProps> = () => {
 								await createNotification({
 									variables: {
 										input: {
-											senderId: meData.me.id,
 											receiverId: commentData.comment.sender.id,
 											message: `${commentData.comment.receiver.username} approved your comment on ${commentData.comment.parent.title}.`,
 										},
@@ -137,7 +136,6 @@ const Comment: React.FC<commentProps> = () => {
 								await createNotification({
 									variables: {
 										input: {
-											senderId: meData.me.id,
 											receiverId: commentData.comment.sender.id,
 											message: `${commentData.comment.receiver.username} did not approve your comment on ${commentData.comment.parent.title}.`,
 										},
