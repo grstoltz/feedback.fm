@@ -9,6 +9,11 @@ import {
 	PopoverTrigger,
 	Popover,
 	IconButton,
+	PopoverContent,
+	PopoverBody,
+	PopoverCloseButton,
+	PopoverHeader,
+	PopoverArrow,
 } from "@chakra-ui/react";
 import NextLink from "next/link";
 import {
@@ -19,7 +24,8 @@ import {
 import { isServer } from "../utils/isServer";
 import { useRouter } from "next/router";
 import { useApolloClient } from "@apollo/client";
-import { EditIcon } from "@chakra-ui/icons/dist/types/Edit";
+import { NotificationPopover } from "./NotificationPopover";
+import { EmailIcon } from "@chakra-ui/icons";
 
 interface NavBarProps {}
 
@@ -28,9 +34,7 @@ export const NavBar: React.FC<NavBarProps> = ({}) => {
 	const [logout, { loading: logoutFetching }] = useLogoutMutation();
 	const apolloClient = useApolloClient();
 
-	const { data, loading } = useNavBarQuery({
-		skip: isServer(),
-	});
+	const { data, loading } = useNavBarQuery();
 
 	let body = null;
 
@@ -66,15 +70,13 @@ export const NavBar: React.FC<NavBarProps> = ({}) => {
 				<Box mr={2}>{data.me.username}</Box>
 
 				<Text mr={2}>{`Balance: ${balance}`}</Text>
-				<Text mr={2}>{`Notifications ${
-					data.me.notifications.length + 1
-				}`}</Text>
+				<Text
+					mr={2}
+				>{`Notifications ${data.me.notifications.length}`}</Text>
 
-				<Popover>
-					<PopoverTrigger>
-						<IconButton aria-label="edit" size="sm" icon={<EditIcon />} />
-					</PopoverTrigger>
-				</Popover>
+				<Box>
+					<NotificationPopover notifications={data.me.notifications} />
+				</Box>
 
 				<NextLink href="/admin">
 					<Button variant="link" as={Link} mr={4}>
@@ -96,7 +98,7 @@ export const NavBar: React.FC<NavBarProps> = ({}) => {
 	}
 
 	return (
-		<Flex zIndex={1} position="sticky" top={0} bg="tan" p={4}>
+		<Flex zIndex={1} position="sticky" top={0} bg="grey" p={4}>
 			<Flex flex={1} m="auto" align="center" maxW={800}>
 				<NextLink href="/">
 					<Link>

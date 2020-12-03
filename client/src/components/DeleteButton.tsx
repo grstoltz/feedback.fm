@@ -1,6 +1,5 @@
 import React from "react";
-import { Box, IconButton, Link } from "@chakra-ui/core";
-import NextLink from "next/link";
+import { Box, IconButton, Link } from "@chakra-ui/react";
 import {
 	useDeleteSongMutation,
 	useDeleteCommentMutation,

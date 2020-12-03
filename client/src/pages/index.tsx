@@ -2,7 +2,7 @@ import { Layout } from "../components/Layout";
 import NextLink from "next/link";
 import { withApollo } from "../utils/withApollo";
 import { useSongsQuery } from "../generated/graphql";
-import { Stack, Link } from "@chakra-ui/core";
+import { Stack, Link } from "@chakra-ui/react";
 
 const Index = () => {
 	const { data, error, loading } = useSongsQuery();
