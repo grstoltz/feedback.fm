@@ -5,6 +5,7 @@ import {
 	useDeleteCommentMutation,
 	useMeQuery,
 } from "../generated/graphql";
+import { DeleteIcon } from "@chakra-ui/icons";
 
 interface DeleteButtonProps {
 	id: number;
@@ -29,7 +30,7 @@ export const DeleteButton: React.FC<DeleteButtonProps> = ({
 	if (contentType === "song") {
 		deleteButton = (
 			<IconButton
-				icon="delete"
+				icon={<DeleteIcon />}
 				aria-label="Delete Song"
 				onClick={() => {
 					deleteSong({
@@ -44,7 +45,7 @@ export const DeleteButton: React.FC<DeleteButtonProps> = ({
 	} else if (contentType === "comment") {
 		deleteButton = (
 			<IconButton
-				icon="delete"
+				icon={<DeleteIcon />}
 				aria-label="Delete Comment"
 				onClick={() => {
 					deleteComment({

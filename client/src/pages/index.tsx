@@ -1,8 +1,8 @@
 import { Layout } from "../components/Layout";
-import NextLink from "next/link";
+import Link from "next/link";
 import { withApollo } from "../utils/withApollo";
 import { useSongsQuery } from "../generated/graphql";
-import { Stack, Link } from "@chakra-ui/react";
+import { Stack, Link as ChakraLink } from "@chakra-ui/react";
 
 const Index = () => {
 	const { data, error, loading } = useSongsQuery();
@@ -23,12 +23,23 @@ const Index = () => {
 				<div>loading...</div>
 			) : (
 				<Stack spacing={8}>
-					{data?.songs.map((s) => (
-						<div key={s.id}>
-							<NextLink href={`/song/${s.id}`}>
-								<Link mr={2}>{s.title}</Link>
-							</NextLink>
-						</div>
+					{data?.songs.map((song, index) => (
+						<>
+							<Link
+								href={`/song/${encodeURIComponent(song.id)}`}
+								passHref
+							>
+								<ChakraLink>{song.title}</ChakraLink>
+							</Link>
+							<Link
+								href={{
+									pathname: "/song/[id]",
+									query: { id: song.id },
+								}}
+							>
+								<ChakraLink>{song.title}</ChakraLink>
+							</Link>
+						</>
 					))}
 				</Stack>
 			)}

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Formik, Form } from "formik";
 import { toErrorMap } from "../../utils/toErrorMap";
 import { InputField } from "../../components/InputField";
-import { Box, Button, Link, Flex, Heading, Stack } from "@chakra-ui/core";
+import { Box, Button, Link, Flex, Heading, Stack } from "@chakra-ui/react";
 
 import {
 	useCreateCommentMutation,
@@ -49,11 +49,11 @@ const Song: React.FC<songProps> = () => {
 		},
 	});
 
-	const { data: meData, error: meError } = useMeQuery();
+	const { data: meData, loading: meLoading, error: meError } = useMeQuery();
 
 	const initialValues = { body: "" };
 
-	if (songLoading) {
+	if (songLoading || commentsLoading || meLoading) {
 		return (
 			<Layout>
 				<div>loading...</div>
@@ -78,6 +78,15 @@ const Song: React.FC<songProps> = () => {
 	if (!meData?.me) {
 		commentSection = null;
 	}
+
+	console.log("Comment", commentsData.comments);
+
+	console.log("me", meData?.me?.id);
+
+	console.log(
+		commentsData.comments.some((el) => el.sender.id !== meData?.me?.id)
+	);
+
 	if (songData.song.owner.id !== meData?.me?.id) {
 		commentSection = (
 			<Formik
@@ -135,10 +144,16 @@ const Song: React.FC<songProps> = () => {
 		);
 	}
 
+	if (commentsData.comments.some((el) => el.sender.id === meData?.me?.id)) {
+		commentSection = <Box mt={2}>You've already commented on this song!</Box>;
+	}
+
 	return (
 		<Layout>
 			<Heading mb={4}>{songData.song.title}</Heading>
 			<Box mb={4}>{songData.song.mediaUrl}</Box>
+			<Box mb={4}>Uploaded By: {songData.song.owner.username}</Box>
+
 			<Stack spacing={8}>
 				{commentsData?.comments.map((s) => (
 					<div style={{ marginTop: "8px" }} key={s.id}>

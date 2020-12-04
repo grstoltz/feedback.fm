@@ -23,8 +23,10 @@ export const InputField: React.FC<InputFieldProps> = ({
 	size: _,
 	...props
 }) => {
-	let InputOrTextarea = Input;
-	if (textarea) {
+	let InputOrTextarea;
+
+	if (!textarea) InputOrTextarea = Input;
+	else {
 		InputOrTextarea = Textarea;
 	}
 	const [field, { error }] = useField(props);
