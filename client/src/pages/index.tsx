@@ -24,13 +24,7 @@ const Index = () => {
 			) : (
 				<Stack spacing={8}>
 					{data?.songs.map((song, index) => (
-						<>
-							<Link
-								href={`/song/${encodeURIComponent(song.id)}`}
-								passHref
-							>
-								<ChakraLink>{song.title}</ChakraLink>
-							</Link>
+						<div id={index.toString()}>
 							<Link
 								href={{
 									pathname: "/song/[id]",
@@ -39,7 +33,7 @@ const Index = () => {
 							>
 								<ChakraLink>{song.title}</ChakraLink>
 							</Link>
-						</>
+						</div>
 					))}
 				</Stack>
 			)}

@@ -12,7 +12,7 @@ import {
 	Tabs,
 	Tag,
 	Text,
-} from "@chakra-ui/core";
+} from "@chakra-ui/react";
 import NextLink from "next/link";
 
 import { Wrapper } from "../components/Wrapper";

@@ -1,7 +1,7 @@
 import React from "react";
 import {
 	Box,
-	Link,
+	Link as ChakraLink,
 	Flex,
 	Button,
 	Heading,
@@ -15,7 +15,7 @@ import {
 	PopoverHeader,
 	PopoverArrow,
 } from "@chakra-ui/react";
-import NextLink from "next/link";
+import Link from "next/link";
 import {
 	useMeQuery,
 	useLogoutMutation,
@@ -38,7 +38,7 @@ export const NavBar: React.FC<NavBarProps> = ({}) => {
 
 	let body = null;
 
-	let balance = null;
+	let balance = 0;
 
 	if (data?.me?.balance) {
 		balance = data.me.balance;
@@ -50,23 +50,23 @@ export const NavBar: React.FC<NavBarProps> = ({}) => {
 	} else if (!data?.me) {
 		body = (
 			<>
-				<NextLink href="/login">
-					<Link mr={2}>Login</Link>
-				</NextLink>
-				<NextLink href="/register">
-					<Link>Register</Link>
-				</NextLink>
+				<Link href="/login">
+					<ChakraLink mr={2}>Login</ChakraLink>
+				</Link>
+				<Link href="/register">
+					<ChakraLink>Register</ChakraLink>
+				</Link>
 			</>
 		);
 		// user is logged in
 	} else {
 		body = (
 			<Flex align="center">
-				<NextLink href="/create-song">
-					<Button as={Link} mr={4}>
+				<Link href="/create-song">
+					<Button as={ChakraLink} mr={4}>
 						Create Song
 					</Button>
-				</NextLink>
+				</Link>
 				<Box mr={2}>{data.me.username}</Box>
 
 				<Text mr={2}>{`Balance: ${balance}`}</Text>
@@ -78,18 +78,18 @@ export const NavBar: React.FC<NavBarProps> = ({}) => {
 					<NotificationPopover notifications={data.me.notifications} />
 				</Box>
 
-				<NextLink href="/admin">
-					<Button variant="link" as={Link} mr={4}>
+				<Link href="/admin">
+					<Button variant="ChakraLink" as={ChakraLink} mr={4}>
 						Admin
 					</Button>
-				</NextLink>
+				</Link>
 				<Button
 					onClick={async () => {
 						await logout();
 						await apolloClient.resetStore();
 					}}
 					isLoading={logoutFetching}
-					variant="link"
+					variant="ChakraLink"
 				>
 					Logout
 				</Button>
@@ -100,11 +100,11 @@ export const NavBar: React.FC<NavBarProps> = ({}) => {
 	return (
 		<Flex zIndex={1} position="sticky" top={0} bg="grey" p={4}>
 			<Flex flex={1} m="auto" align="center" maxW={800}>
-				<NextLink href="/">
-					<Link>
+				<Link href="/">
+					<ChakraLink>
 						<Heading>Feedback</Heading>
-					</Link>
-				</NextLink>
+					</ChakraLink>
+				</Link>
 				<Box ml={"auto"}>{body}</Box>
 			</Flex>
 		</Flex>

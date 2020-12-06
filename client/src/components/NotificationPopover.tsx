@@ -30,7 +30,7 @@ export const NotificationPopover: React.FC<NotificationPopoverProps> = ({
 				<PopoverArrow />
 				<PopoverCloseButton />
 				<PopoverBody>
-					{notifications
+					{notifications.length
 						? notifications.map((notification) => {
 								return <NotificationItem data={notification} />;
 						  })

@@ -6,8 +6,6 @@ import {
 	UpdateDateColumn,
 	Column,
 	BaseEntity,
-	OneToMany,
-	ManyToOne,
 } from "typeorm";
 import { User } from "./User";
 
@@ -29,6 +27,14 @@ export class Notification extends BaseEntity {
 	@Field()
 	@Column()
 	message!: string;
+
+	@Field()
+	@Column()
+	parentType!: string;
+
+	@Field()
+	@Column()
+	parentId!: number;
 
 	@Field(() => User)
 	sender: User;
