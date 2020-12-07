@@ -22,6 +22,12 @@ class NotificationInput {
 
 	@Field()
 	message!: string;
+
+	@Field()
+	parentId!: number;
+
+	@Field()
+	parentType!: string;
 }
 
 @Resolver(Notification)

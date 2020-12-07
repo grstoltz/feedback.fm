@@ -4,6 +4,8 @@ import * as React from 'react';
 import * as ApolloReactComponents from '@apollo/client/react/components';
 export type Maybe<T> = T | null;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
+export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
+export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
 export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
@@ -80,6 +82,8 @@ export type Notification = {
   receiverId: Scalars['Float'];
   senderId: Scalars['Float'];
   message: Scalars['String'];
+  parentType: Scalars['String'];
+  parentId: Scalars['Float'];
   sender: User;
   receiver: User;
   read: Scalars['Boolean'];
@@ -231,6 +235,8 @@ export type Transaction = {
 export type NotificationInput = {
   receiverId: Scalars['Float'];
   message: Scalars['String'];
+  parentId: Scalars['Float'];
+  parentType: Scalars['String'];
 };
 
 export type RegularErrorFragment = (
@@ -299,7 +305,7 @@ export type CreateNotificationMutation = (
   { __typename?: 'Mutation' }
   & { createNotification: (
     { __typename?: 'Notification' }
-    & Pick<Notification, 'id' | 'senderId' | 'receiverId' | 'message'>
+    & Pick<Notification, 'id' | 'senderId' | 'receiverId' | 'message' | 'parentId' | 'parentType'>
   ) }
 );
 
@@ -696,6 +702,8 @@ export const CreateNotificationDocument = gql`
     senderId
     receiverId
     message
+    parentId
+    parentType
   }
 }
     `;
@@ -1237,7 +1245,7 @@ export type CommentComponentProps = Omit<ApolloReactComponents.QueryComponentOpt
  *   },
  * });
  */
-export function useCommentQuery(baseOptions?: Apollo.QueryHookOptions<CommentQuery, CommentQueryVariables>) {
+export function useCommentQuery(baseOptions: Apollo.QueryHookOptions<CommentQuery, CommentQueryVariables>) {
         return Apollo.useQuery<CommentQuery, CommentQueryVariables>(CommentDocument, baseOptions);
       }
 export function useCommentLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<CommentQuery, CommentQueryVariables>) {
@@ -1292,7 +1300,7 @@ export type CommentsComponentProps = Omit<ApolloReactComponents.QueryComponentOp
  *   },
  * });
  */
-export function useCommentsQuery(baseOptions?: Apollo.QueryHookOptions<CommentsQuery, CommentsQueryVariables>) {
+export function useCommentsQuery(baseOptions: Apollo.QueryHookOptions<CommentsQuery, CommentsQueryVariables>) {
         return Apollo.useQuery<CommentsQuery, CommentsQueryVariables>(CommentsDocument, baseOptions);
       }
 export function useCommentsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<CommentsQuery, CommentsQueryVariables>) {
@@ -1430,7 +1438,7 @@ export type SongComponentProps = Omit<ApolloReactComponents.QueryComponentOption
  *   },
  * });
  */
-export function useSongQuery(baseOptions?: Apollo.QueryHookOptions<SongQuery, SongQueryVariables>) {
+export function useSongQuery(baseOptions: Apollo.QueryHookOptions<SongQuery, SongQueryVariables>) {
         return Apollo.useQuery<SongQuery, SongQueryVariables>(SongDocument, baseOptions);
       }
 export function useSongLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<SongQuery, SongQueryVariables>) {

@@ -114,6 +114,8 @@ const Comment: React.FC<commentProps> = () => {
 										input: {
 											receiverId: commentData.comment.sender.id,
 											message: `${commentData.comment.receiver.username} approved your comment on ${commentData.comment.parent.title}.`,
+											parentId: commentData.comment.id,
+											parentType: "comment",
 										},
 									},
 								});
@@ -138,6 +140,8 @@ const Comment: React.FC<commentProps> = () => {
 										input: {
 											receiverId: commentData.comment.sender.id,
 											message: `${commentData.comment.receiver.username} did not approve your comment on ${commentData.comment.parent.title}.`,
+											parentId: commentData.comment.id,
+											parentType: "comment",
 										},
 									},
 								});

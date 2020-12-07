@@ -95,7 +95,7 @@ const Song: React.FC<songProps> = () => {
 					values,
 					{ setErrors, setFieldError, resetForm }
 				) => {
-					const { errors } = await createComment({
+					const { errors, context } = await createComment({
 						variables: {
 							input: {
 								parentId: songData.song.id,
@@ -114,6 +114,8 @@ const Song: React.FC<songProps> = () => {
 								input: {
 									receiverId: songData.song.owner.id,
 									message: `${meData.me.username} left a comment on ${songData.song.title}.`,
+									parentId: context.id,
+									parentType: "comment",
 								},
 							},
 						});
