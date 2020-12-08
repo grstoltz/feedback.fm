@@ -24,8 +24,12 @@ export class Song extends BaseEntity {
 	title!: string;
 
 	@Field()
-	@Column()
+	@Column({ unique: true })
 	mediaUrl!: string;
+
+	@Field()
+	@Column()
+	mediaType!: string;
 
 	@Field()
 	@Column()

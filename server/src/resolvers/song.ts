@@ -19,13 +19,26 @@ import { MyContext } from "../types";
 
 import { isAuth } from "../middleware/isAuth";
 
+interface File {
+	id: Number;
+	filename: String;
+	mimetype: String;
+	path: String;
+}
+
 @InputType()
 class SongInput {
 	@Field()
 	title: string;
 
 	@Field()
-	mediaUrl: string;
+	mediaUrl?: string;
+
+	@Field()
+	file?: File;
+
+	@Field()
+	mediaType: string;
 
 	@Field()
 	genre: string;
@@ -54,13 +67,27 @@ export class SongResolver {
 		@Arg("input") input: SongInput,
 		@Ctx() { req }: MyContext
 	): Promise<Song> {
-		return Song.create({
-			//Add after Auth
-
-			ownerId: req.session.userId,
-			//active: true,
-			...input,
-		}).save();
+		if (input.file) {
+			//Upload file
+			//update mediaURL field
+			input.mediaUrl;
+			//set as audio file
+			input.mediaType = "file";
+			//create song
+			return Song.create({
+				ownerId: req.session.userId,
+				//active: true,
+				...input,
+			}).save();
+		} else if (input.mediaUrl) {
+			return Song.create({
+				ownerId: req.session.userId,
+				//active: true,
+				...input,
+			}).save();
+		} else {
+			throw new Error("No file or URL provided.");
+		}
 	}
 
 	@Mutation(() => Song, { nullable: true })
