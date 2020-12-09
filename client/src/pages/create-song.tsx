@@ -2,6 +2,7 @@ import { Box, Button } from "@chakra-ui/react";
 import { Form, Formik } from "formik";
 import { useRouter } from "next/router";
 import React from "react";
+import { FileField } from "../components/FileField";
 import { InputField } from "../components/InputField";
 import { Layout } from "../components/Layout";
 import { useCreateSongMutation } from "../generated/graphql";
@@ -38,7 +39,7 @@ const CreateSong: React.FC<{}> = ({}) => {
 							label="Song URL"
 						/>
 						<InputField name="genre" placeholder="Genre" label="Genre" />
-
+						<FileField type="file" name="file" label="Upload a File" />
 						<Button
 							mt={4}
 							type="submit"

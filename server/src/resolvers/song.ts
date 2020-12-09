@@ -11,6 +11,7 @@ import {
 	Ctx,
 	UseMiddleware,
 } from "type-graphql";
+import { GraphQLUpload, FileUpload } from "graphql-upload";
 import { Song } from "../entities/Song";
 import { User } from "../entities/User";
 
@@ -18,13 +19,7 @@ import { getConnection } from "typeorm";
 import { MyContext } from "../types";
 
 import { isAuth } from "../middleware/isAuth";
-
-interface File {
-	id: Number;
-	filename: String;
-	mimetype: String;
-	path: String;
-}
+import { createWriteStream } from "fs";
 
 @InputType()
 class SongInput {
@@ -33,9 +28,6 @@ class SongInput {
 
 	@Field()
 	mediaUrl?: string;
-
-	@Field()
-	file?: File;
 
 	@Field()
 	mediaType: string;
@@ -67,27 +59,12 @@ export class SongResolver {
 		@Arg("input") input: SongInput,
 		@Ctx() { req }: MyContext
 	): Promise<Song> {
-		if (input.file) {
-			//Upload file
-			//update mediaURL field
-			input.mediaUrl;
-			//set as audio file
-			input.mediaType = "file";
-			//create song
-			return Song.create({
-				ownerId: req.session.userId,
-				//active: true,
-				...input,
-			}).save();
-		} else if (input.mediaUrl) {
-			return Song.create({
-				ownerId: req.session.userId,
-				//active: true,
-				...input,
-			}).save();
-		} else {
-			throw new Error("No file or URL provided.");
-		}
+		//create song
+		return Song.create({
+			ownerId: req.session.userId,
+			//active: true,
+			...input,
+		}).save();
 	}
 
 	@Mutation(() => Song, { nullable: true })
@@ -112,6 +89,23 @@ export class SongResolver {
 			.execute();
 
 		return result.raw[0];
+	}
+
+	@Mutation(() => Boolean)
+	async singleUpload(
+		@Arg("file", () => GraphQLUpload) file: FileUpload
+	): Promise<Boolean> {
+		const { createReadStream, filename } = await file;
+		const writableStream = createWriteStream(
+			`${__dirname}/../../../files/images/${filename}`,
+			{ autoClose: true }
+		);
+		return new Promise((res, rej) => {
+			createReadStream()
+				.pipe(writableStream)
+				.on("finish", () => res(true))
+				.on("error", () => rej(false));
+		});
 	}
 
 	@Mutation(() => Boolean)
