@@ -1,0 +1,3 @@
+mutation Upload($file: GraphQLUpload) {
+	upload(file: $file)
+}

@@ -92,7 +92,7 @@ export class SongResolver {
 	}
 
 	@Mutation(() => Boolean)
-	async singleUpload(
+	async upload(
 		@Arg("file", () => GraphQLUpload) file: FileUpload
 	): Promise<Boolean> {
 		const { createReadStream, filename } = await file;
