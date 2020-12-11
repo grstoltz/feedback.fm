@@ -5,7 +5,7 @@ import React from "react";
 import { FileField } from "../components/FileField";
 import { InputField } from "../components/InputField";
 import { Layout } from "../components/Layout";
-import { useCreateSongMutation } from "../generated/graphql";
+import { useCreateSongMutation, useUploadMutation } from "../generated/graphql";
 import { useIsAuth } from "../utils/useIsAuth";
 import { withApollo } from "../utils/withApollo";
 
@@ -16,7 +16,11 @@ const CreateSong: React.FC<{}> = ({}) => {
 	return (
 		<Layout variant="small">
 			<Formik
-				initialValues={{ title: "", mediaUrl: "", genre: "" }}
+				initialValues={{
+					title: "",
+					mediaUrl: "",
+					genre: "",
+				}}
 				onSubmit={async (values) => {
 					const { errors } = await createSong({
 						variables: { input: values },

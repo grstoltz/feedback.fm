@@ -30,9 +30,6 @@ class SongInput {
 	mediaUrl?: string;
 
 	@Field()
-	mediaType: string;
-
-	@Field()
 	genre: string;
 }
 

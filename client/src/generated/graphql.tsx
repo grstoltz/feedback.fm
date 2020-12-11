@@ -14,6 +14,8 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
+  /** The `Upload` scalar type represents a file upload. */
+  Upload: any;
 };
 
 export type Query = {
@@ -53,6 +55,7 @@ export type Song = {
   id: Scalars['Float'];
   title: Scalars['String'];
   mediaUrl: Scalars['String'];
+  mediaType: Scalars['String'];
   genre: Scalars['String'];
   ownerId: Scalars['Float'];
   owner: User;
@@ -111,6 +114,7 @@ export type Mutation = {
   __typename?: 'Mutation';
   createSong: Song;
   updateSong?: Maybe<Song>;
+  upload: Scalars['Boolean'];
   deleteSong: Scalars['Boolean'];
   forgotPassword: Scalars['Boolean'];
   changePassword: UserResponse;
@@ -135,6 +139,11 @@ export type MutationUpdateSongArgs = {
   mediaUrl: Scalars['String'];
   title: Scalars['String'];
   id: Scalars['Int'];
+};
+
+
+export type MutationUploadArgs = {
+  file: Scalars['Upload'];
 };
 
 
@@ -196,6 +205,7 @@ export type SongInput = {
   mediaUrl: Scalars['String'];
   genre: Scalars['String'];
 };
+
 
 export type UserResponse = {
   __typename?: 'UserResponse';
@@ -429,6 +439,16 @@ export type UpdateCommentMutation = (
     { __typename?: 'Song' }
     & Pick<Song, 'id' | 'title' | 'mediaUrl' | 'genre'>
   )> }
+);
+
+export type UploadMutationVariables = Exact<{
+  file: Scalars['Upload'];
+}>;
+
+
+export type UploadMutation = (
+  { __typename?: 'Mutation' }
+  & Pick<Mutation, 'upload'>
 );
 
 export type AdminQueryVariables = Exact<{ [key: string]: never; }>;
@@ -1123,6 +1143,42 @@ export function useUpdateCommentMutation(baseOptions?: Apollo.MutationHookOption
 export type UpdateCommentMutationHookResult = ReturnType<typeof useUpdateCommentMutation>;
 export type UpdateCommentMutationResult = Apollo.MutationResult<UpdateCommentMutation>;
 export type UpdateCommentMutationOptions = Apollo.BaseMutationOptions<UpdateCommentMutation, UpdateCommentMutationVariables>;
+export const UploadDocument = gql`
+    mutation Upload($file: Upload!) {
+  upload(file: $file)
+}
+    `;
+export type UploadMutationFn = Apollo.MutationFunction<UploadMutation, UploadMutationVariables>;
+export type UploadComponentProps = Omit<ApolloReactComponents.MutationComponentOptions<UploadMutation, UploadMutationVariables>, 'mutation'>;
+
+    export const UploadComponent = (props: UploadComponentProps) => (
+      <ApolloReactComponents.Mutation<UploadMutation, UploadMutationVariables> mutation={UploadDocument} {...props} />
+    );
+    
+
+/**
+ * __useUploadMutation__
+ *
+ * To run a mutation, you first call `useUploadMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUploadMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [uploadMutation, { data, loading, error }] = useUploadMutation({
+ *   variables: {
+ *      file: // value for 'file'
+ *   },
+ * });
+ */
+export function useUploadMutation(baseOptions?: Apollo.MutationHookOptions<UploadMutation, UploadMutationVariables>) {
+        return Apollo.useMutation<UploadMutation, UploadMutationVariables>(UploadDocument, baseOptions);
+      }
+export type UploadMutationHookResult = ReturnType<typeof useUploadMutation>;
+export type UploadMutationResult = Apollo.MutationResult<UploadMutation>;
+export type UploadMutationOptions = Apollo.BaseMutationOptions<UploadMutation, UploadMutationVariables>;
 export const AdminDocument = gql`
     query Admin {
   admin {
