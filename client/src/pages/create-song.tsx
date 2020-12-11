@@ -20,8 +20,19 @@ const CreateSong: React.FC<{}> = ({}) => {
 					title: "",
 					mediaUrl: "",
 					genre: "",
+					file: null,
 				}}
 				onSubmit={async (values) => {
+					if (values.file) {
+						//upload file
+						//get response URL
+						//add to media URL
+						//change mediaType to audio
+						//send create song request
+					} else if (!values.file) {
+						//detect the URL type
+					}
+
 					const { errors } = await createSong({
 						variables: { input: values },
 						update: (cache) => {
