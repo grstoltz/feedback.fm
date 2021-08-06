@@ -10,7 +10,7 @@ import {
 	Root,
 	Int,
 } from "type-graphql";
-import { getConnection, getManager, getRepository } from "typeorm";
+import { getConnection } from "typeorm";
 import argon2 from "argon2";
 import { v4 } from "uuid";
 
@@ -333,7 +333,7 @@ export class UserResolver {
 	@Mutation(() => Boolean)
 	logout(@Ctx() { req, res }: MyContext) {
 		return new Promise((resolve) =>
-			req.session.destroy((err) => {
+			req.session.destroy((err: any) => {
 				res.clearCookie(COOKIE_NAME);
 				if (err) {
 					console.log(err);
