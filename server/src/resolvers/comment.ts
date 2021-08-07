@@ -12,15 +12,13 @@ import {
 	UseMiddleware,
 } from "type-graphql";
 
-import { Comment } from "../entities/Comment";
-import { User } from "../entities/User";
-import { Song } from "../entities/Song";
-import { Transaction } from "../entities/Transaction";
+import { Song } from "../generated/type-graphql/models/Song";
+import { Comment } from "../generated/type-graphql/models/Comment";
+import { User } from "../generated/type-graphql/models/User";
 
 import { MyContext } from "../types";
 
 import { isAuth } from "../middleware/isAuth";
-import { getConnection } from "typeorm";
 
 @InputType()
 class CommentInput {
@@ -31,9 +29,6 @@ class CommentInput {
 	receiverId: number;
 
 	@Field()
-	senderId: number;
-
-	@Field()
 	body: string;
 }
 
@@ -41,9 +36,10 @@ class CommentInput {
 export class CommentResolver {
 	@Query(() => [Comment])
 	async comments(
-		@Arg("id", () => Int) id: number
+		@Arg("id", () => Int) id: number,
+		@Ctx() { prisma }: MyContext
 	): Promise<Comment[] | undefined> {
-		return Comment.find({ parentId: id });
+		return prisma.comment.findMany({ where: { parentId: id } });
 	}
 
 	@FieldResolver(() => User)
@@ -57,25 +53,32 @@ export class CommentResolver {
 	}
 
 	@FieldResolver(() => Song, { nullable: true })
-	parent(@Root() comment: Comment) {
-		return Song.findOne(comment.parentId);
+	parent(@Root() comment: Comment, @Ctx() { prisma }: MyContext) {
+		return prisma.song.findUnique({ where: { id: comment.parentId } });
 	}
 
 	@Query(() => Comment, { nullable: true })
-	comment(@Arg("id", () => Int) id: number): Promise<Comment | undefined> {
-		return Comment.findOne(id);
+	comment(
+		@Arg("id", () => Int) id: number,
+		@Ctx() { prisma }: MyContext
+	): Promise<Comment | null> {
+		return prisma.comment.findUnique({ where: { id } });
 	}
 
 	@Mutation(() => Comment)
 	@UseMiddleware(isAuth)
 	async createComment(
 		@Arg("input") input: CommentInput,
-		@Ctx() { req }: MyContext
+		@Ctx() { prisma, req }: MyContext
 	): Promise<Comment> {
-		return Comment.create({
-			...input,
-			senderId: req.session.userId,
-		}).save();
+		return prisma.comment.create({
+			data: {
+				...input,
+				active: true,
+				approved: false,
+				senderId: req.session.userId,
+			},
+		});
 	}
 
 	@Mutation(() => Comment)
@@ -83,29 +86,26 @@ export class CommentResolver {
 	async reviewComment(
 		@Arg("id", () => Int) id: number,
 		@Arg("status", () => String) status: string,
-		@Ctx() { req }: MyContext
-	): Promise<Comment> {
-		const result = await getConnection()
-			.createQueryBuilder()
-			.update(Comment)
-			.set({ status })
-			.where('id = :id and "receiverId" = :receiverId', {
+		@Ctx() { prisma, req }: MyContext
+	): Promise<number> {
+		const updatedComment = await prisma.comment.updateMany({
+			where: {
 				id,
 				receiverId: req.session.userId,
-			})
-			.returning("*")
-			.execute();
+			},
+			data: {
+				approved: status === "approved" ? true : false,
+			},
+		});
 
-		Transaction.create
-
-		return result.raw[0];
+		return updatedComment?.count;
 	}
 
 	@Mutation(() => Boolean)
 	@UseMiddleware(isAuth)
 	async deleteComment(
 		@Arg("id", () => Int) id: number,
-		@Ctx() { req }: MyContext
+		@Ctx() { prisma, req }: MyContext
 	): Promise<boolean> {
 		// not cascade way
 		// const post = await Post.findOne(id);
@@ -120,7 +120,9 @@ export class CommentResolver {
 		// await Post.delete({ id });
 
 		//CHANGE TO AFTER AUTH:
-		await Comment.delete({ id, senderId: req.session.userId });
+		await prisma.comment.deleteMany({
+			where: { id, senderId: req.session.userId },
+		});
 		return true;
 	}
 }

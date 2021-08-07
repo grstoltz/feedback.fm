@@ -5,20 +5,20 @@ import { useSongsQuery } from "../generated/graphql";
 import { Stack, Link as ChakraLink } from "@chakra-ui/react";
 
 const Index = () => {
-	const { data, error, loading } = useSongsQuery();
+	// const { data, error, loading } = useSongsQuery();
 
-	if (!loading && !data) {
-		return (
-			<div>
-				<div>you got query failed for some reason</div>
-				<div>{error?.message}</div>
-			</div>
-		);
-	}
+	// if (!loading && !data) {
+	// 	return (
+	// 		<div>
+	// 			<div>you got query failed for some reason</div>
+	// 			<div>{error?.message}</div>
+	// 		</div>
+	// 	);
+	// }
 
 	return (
 		<Layout>
-			<div>Hello World</div>
+			{/* <div>Hello World</div>
 			{!data && loading ? (
 				<div>loading...</div>
 			) : (
@@ -36,7 +36,8 @@ const Index = () => {
 						</div>
 					))}
 				</Stack>
-			)}
+			)} */}
+			<div>Hello!</div>
 		</Layout>
 	);
 };

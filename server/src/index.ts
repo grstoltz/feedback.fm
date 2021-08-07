@@ -2,9 +2,7 @@ import "reflect-metadata";
 import * as dotenv from "dotenv";
 dotenv.config();
 
-import { createConnection } from "typeorm";
 import { __prod__, COOKIE_NAME } from "./constants";
-import path from "path";
 
 import express from "express";
 import session from "express-session";
@@ -12,14 +10,10 @@ import Redis from "ioredis";
 import connectRedis from "connect-redis";
 import cors from "cors";
 
+import { PrismaClient } from "@prisma/client";
+
 import { ApolloServer } from "apollo-server-express";
 import { buildSchema } from "type-graphql";
-
-import { User } from "./entities/User";
-import { Comment } from "./entities/Comment";
-import { Song } from "./entities/Song";
-import { Transaction } from "./entities/Transaction";
-import { Notification } from "./entities/Notification";
 
 import { HelloResolver } from "./resolvers/hello";
 import { SongResolver } from "./resolvers/song";
@@ -31,17 +25,18 @@ import { TransactionResolver } from "./resolvers/transaction";
 import { NotificationResolver } from "./resolvers/notification";
 
 const main = async () => {
-	const conn = await createConnection({
-		type: "postgres",
-		host: "localhost",
-		port: 5432,
-		username: "postgres",
-		database: process.env.DATABASE_URL,
-		logging: true,
-		synchronize: true,
-		migrations: [path.join(__dirname, "./migrations/*.js")],
-		entities: [User, Song, Comment, Transaction, Notification],
-	});
+	const prisma = new PrismaClient();
+	// const conn = await createConnection({
+	// 	type: "postgres",
+	// 	host: "localhost",
+	// 	port: 5432,
+	// 	username: "postgres",
+	// 	database: process.env.DATABASE_URL,
+	// 	logging: true,
+	// 	synchronize: true,
+	// 	migrations: [path.join(__dirname, "./migrations/*.js")],
+	// 	entities: [User, Song, Comment, Transaction, Notification],
+	// });
 
 	const app = express();
 
@@ -66,7 +61,7 @@ const main = async () => {
 				httpOnly: true,
 				sameSite: "lax", // csrf
 				secure: __prod__, // cookie only works in https
-				domain: __prod__ ? ".codeponder.com" : undefined,
+				domain: __prod__ ? ".grantstoltz.com" : undefined,
 			},
 			saveUninitialized: false,
 			secret: process.env.SESSION_SECRET as string,
@@ -90,6 +85,7 @@ const main = async () => {
 			req,
 			res,
 			redis,
+			prisma,
 			userLoader: createUserLoader(),
 		}),
 	});

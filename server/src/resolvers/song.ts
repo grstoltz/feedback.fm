@@ -12,10 +12,9 @@ import {
 	UseMiddleware,
 } from "type-graphql";
 import { GraphQLUpload, FileUpload } from "graphql-upload";
-import { Song } from "../entities/Song";
-import { User } from "../entities/User";
+import { User } from "../generated/type-graphql/models/User";
+import { Song } from "../generated/type-graphql/models/Song";
 
-import { getConnection } from "typeorm";
 import { MyContext } from "../types";
 
 import { isAuth } from "../middleware/isAuth";
@@ -27,17 +26,20 @@ class SongInput {
 	title: string;
 
 	@Field()
-	mediaUrl?: string;
+	mediaUrl: string;
 
 	@Field()
 	genre: string;
+
+	@Field()
+	mediaType: string;
 }
 
 @Resolver(Song)
 export class SongResolver {
 	@Query(() => [Song])
-	async songs(): Promise<Song[]> {
-		return Song.find();
+	async songs(@Ctx() { prisma }: MyContext): Promise<Song[]> {
+		return prisma.song.findMany();
 	}
 
 	@FieldResolver(() => User)
@@ -46,46 +48,51 @@ export class SongResolver {
 	}
 
 	@Query(() => Song, { nullable: true })
-	song(@Arg("id", () => Int) id: number): Promise<Song | undefined> {
-		return Song.findOne(id);
+	song(
+		@Ctx() { prisma }: MyContext,
+		@Arg("id", () => Int) id: number
+	): Promise<Song | null> {
+		return prisma.song.findUnique({ where: { id } });
 	}
 
 	@Mutation(() => Song)
 	@UseMiddleware(isAuth)
 	createSong(
 		@Arg("input") input: SongInput,
-		@Ctx() { req }: MyContext
+		@Ctx() { prisma, req }: MyContext
 	): Promise<Song> {
 		//create song
-		return Song.create({
-			ownerId: req.session.userId,
-			//active: true,
-			...input,
-		}).save();
+		return prisma.song.create({
+			data: {
+				ownerId: req.session.userId,
+				//active: true,
+				...input,
+			},
+		});
 	}
 
-	@Mutation(() => Song, { nullable: true })
+	@Mutation(() => Number, { nullable: true })
 	@UseMiddleware(isAuth)
 	async updateSong(
 		@Arg("id", () => Int) id: number,
 		@Arg("title") title: string,
 		@Arg("mediaUrl") mediaUrl: string,
 		@Arg("genre") genre: string,
-		@Ctx() { req }: MyContext
-	): Promise<Song | null> {
-		const result = await getConnection()
-			.createQueryBuilder()
-			.update(Song)
-			.set({ title, mediaUrl, genre })
-			.where('id = :id and "ownerId" = :ownerId', {
+		@Ctx() { prisma, req }: MyContext
+	): Promise<number | null> {
+		const updatedSong = await prisma.song.updateMany({
+			where: {
 				id,
-				//CHANGE TO AFTER AUTH:
 				ownerId: req.session.userId,
-			})
-			.returning("*")
-			.execute();
+			},
+			data: {
+				title,
+				mediaUrl,
+				genre,
+			},
+		});
 
-		return result.raw[0];
+		return updatedSong?.count;
 	}
 
 	@Mutation(() => Boolean)
@@ -109,7 +116,7 @@ export class SongResolver {
 	@UseMiddleware(isAuth)
 	async deleteSong(
 		@Arg("id", () => Int) id: number,
-		@Ctx() { req }: MyContext
+		@Ctx() { prisma, req }: MyContext
 	): Promise<boolean> {
 		// not cascade way
 		// const post = await Post.findOne(id);
@@ -123,7 +130,9 @@ export class SongResolver {
 		// await Updoot.delete({ postId: id });
 		// await Post.delete({ id });
 		//CHANGE TO AFTER AUTH:
-		await Song.delete({ id, ownerId: req.session.userId });
+		await prisma.song.deleteMany({
+			where: { id, ownerId: req.session.userId },
+		});
 		return true;
 	}
 }

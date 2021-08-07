@@ -1,6 +1,6 @@
-import { Resolver, UseMiddleware, Mutation, Int, Arg } from "type-graphql";
-import { getConnection } from "typeorm";
-import { Transaction } from "../entities/Transaction";
+import { MyContext } from "src/types";
+import { Resolver, UseMiddleware, Mutation, Int, Arg, Ctx } from "type-graphql";
+import { Transaction } from "../generated/type-graphql/models/Transaction";
 
 import { isAuth } from "../middleware/isAuth";
 
@@ -10,26 +10,31 @@ export class TransactionResolver {
 	@UseMiddleware(isAuth)
 	async createTransaction(
 		@Arg("id", () => Int) id: number,
-		@Arg("transactionAmount", () => Int) transactionAmount: number
+		@Arg("transactionAmount", () => Int) transactionAmount: number,
+		@Ctx() { prisma }: MyContext
 	): Promise<Transaction> {
-		const user = await getConnection()
-			.createQueryBuilder()
-			.select("transaction")
-			.from(Transaction, "transaction")
-			.where("transaction.userId = :id", { id })
-			.orderBy("transaction.createdAt", "DESC")
-			.getOne();
+		const transaction = await prisma.transaction.findFirst({
+			where: {
+				userId: id,
+			},
+			orderBy: {
+				createdAt: "desc",
+			},
+		});
 
-		let openingBalance;
+		let balance;
 
-		user
-			? (openingBalance = user.openingBalance + user.transactionAmount)
-			: (openingBalance = 0);
+		transaction
+			? (balance =
+					transaction.openingBalance + transaction.transactionAmount)
+			: (balance = 0);
 
-		return Transaction.create({
-			userId: id,
-			transactionAmount,
-			openingBalance,
-		}).save();
+		return prisma.transaction.create({
+			data: {
+				userId: id,
+				transactionAmount,
+				openingBalance: balance,
+			},
+		});
 	}
 }

@@ -10,7 +10,6 @@ import {
 	Root,
 	Int,
 } from "type-graphql";
-import { getConnection } from "typeorm";
 import argon2 from "argon2";
 import { v4 } from "uuid";
 
@@ -21,11 +20,11 @@ import { validateRegister } from "../utils/validateRegister";
 import { sendEmail } from "../utils/sendEmail";
 import { COOKIE_NAME, FORGET_PASSWORD_PREFIX } from "../constants";
 
-import { User } from "../entities/User";
-import { Song } from "../entities/Song";
-import { Comment } from "../entities/Comment";
-import { Transaction } from "../entities/Transaction";
-import { Notification } from "../entities/Notification";
+import { User } from "../generated/type-graphql/models/User";
+
+import { Song } from "../generated/type-graphql/models/Song";
+import { Comment } from "../generated/type-graphql/models/Comment";
+import { Notification } from "../generated/type-graphql/models/Notification";
 
 @ObjectType()
 class FieldError {
@@ -47,26 +46,38 @@ class UserResponse {
 @Resolver(User)
 export class UserResolver {
 	@Query(() => User, { nullable: true })
-	async admin(@Ctx() { req }: MyContext): Promise<User | undefined> {
+	async admin(
+		@Ctx() { req, prisma }: MyContext
+	): Promise<User | undefined | null> {
 		if (!req.session.userId) {
 			return undefined;
 		}
 
-		const user = await User.findOne({ id: req.session.userId });
+		const user = await prisma.user.findUnique({
+			where: { id: req.session.userId },
+		});
 		return user;
 	}
 
 	@Query(() => User, { nullable: true })
-	user(@Arg("id", () => Int) id: number): Promise<User | undefined> {
-		return User.findOne(id);
+	async user(
+		@Ctx() { prisma }: MyContext,
+		@Arg("id", () => Int) id: number
+	): Promise<User | null> {
+		const user = await prisma.user.findUnique({
+			where: { id },
+		});
+		return user;
 	}
 
 	@Mutation(() => Boolean)
 	async forgotPassword(
 		@Arg("email") email: string,
-		@Ctx() { redis }: MyContext
+		@Ctx() { redis, prisma }: MyContext
 	) {
-		const user = await User.findOne({ where: { email } });
+		const user = await prisma.user.findUnique({
+			where: { email },
+		});
 		if (!user) {
 			// the email is not in the db
 			return true;
@@ -93,7 +104,7 @@ export class UserResolver {
 	async changePassword(
 		@Arg("token") token: string,
 		@Arg("newPassword") newPassword: string,
-		@Ctx() { redis, req }: MyContext
+		@Ctx() { prisma, redis, req }: MyContext
 	): Promise<UserResponse> {
 		if (newPassword.length <= 2) {
 			return {
@@ -120,7 +131,9 @@ export class UserResolver {
 		}
 
 		const userIdNum = parseInt(userId);
-		const user = await User.findOne(userIdNum);
+		const user = await prisma.user.findUnique({
+			where: { id: userIdNum },
+		});
 
 		if (!user) {
 			return {
@@ -133,12 +146,14 @@ export class UserResolver {
 			};
 		}
 
-		await User.update(
-			{ id: userIdNum },
-			{
+		await prisma.user.update({
+			where: {
+				id: userIdNum,
+			},
+			data: {
 				password: await argon2.hash(newPassword),
-			}
-		);
+			},
+		});
 
 		await redis.del(key);
 
@@ -161,22 +176,24 @@ export class UserResolver {
 	@FieldResolver(() => Number)
 	async balance(
 		@Root() user: User,
-		@Ctx() { req }: MyContext
+		@Ctx() { req, prisma }: MyContext
 	): Promise<number> {
-		// this is the current user and its ok to show them their own email
+		// this is the current user and its ok to show them their own balance
 		if (req.session.userId === user.id) {
-			const user = await getConnection()
-				.createQueryBuilder()
-				.select("transaction")
-				.from(Transaction, "transaction")
-				.where("transaction.userId = :id", { id: req.session.userId })
-				.orderBy("transaction.createdAt", "DESC")
-				.getOne();
+			const transaction = await prisma.transaction.findFirst({
+				where: {
+					userId: user.id,
+				},
+				orderBy: {
+					createdAt: "desc",
+				},
+			});
 
 			let balance;
 
-			user
-				? (balance = user.openingBalance + user.transactionAmount)
+			transaction
+				? (balance =
+						transaction.openingBalance + transaction.transactionAmount)
 				: (balance = 0);
 
 			// return balance as number
@@ -187,18 +204,23 @@ export class UserResolver {
 	}
 
 	@FieldResolver(() => [Song], { nullable: true })
-	async songs(@Root() user: User, @Ctx() { req }: MyContext): Promise<Song[]> {
-		return Song.find({ ownerId: req.session.userId });
+	async songs(
+		//@Root() user: User,
+		@Ctx() { prisma, req }: MyContext
+	): Promise<Song[] | null> {
+		return prisma.song.findMany({ where: { ownerId: req.session.userId } });
 	}
 
 	@FieldResolver(() => [Notification], { nullable: true })
 	async notifications(
-		@Root() user: User,
-		@Ctx() { req }: MyContext
+		//@Root() user: User,
+		@Ctx() { prisma, req }: MyContext
 	): Promise<Notification[]> {
-		const result = await Notification.find({
-			receiverId: req.session.userId,
-			read: false,
+		const result = await prisma.notification.findMany({
+			where: {
+				receiverId: req.session.userId,
+				read: false,
+			},
 		});
 
 		return result;
@@ -207,10 +229,12 @@ export class UserResolver {
 	@FieldResolver(() => [Comment], { nullable: true })
 	async receivedComments(
 		@Root() user: User,
-		@Ctx() { req }: MyContext
+		@Ctx() { prisma, req }: MyContext
 	): Promise<Comment[]> {
 		if (req.session.userId === user.id) {
-			return Comment.find({ receiverId: req.session.userId });
+			return prisma.comment.findMany({
+				where: { receiverId: req.session.userId },
+			});
 		}
 
 		throw new Error("Not logged in");
@@ -219,29 +243,33 @@ export class UserResolver {
 	@FieldResolver(() => [Comment], { nullable: true })
 	async sentComments(
 		@Root() user: User,
-		@Ctx() { req }: MyContext
+		@Ctx() { req, prisma }: MyContext
 	): Promise<Comment[]> {
 		if (req.session.userId === user.id) {
-			return Comment.find({ senderId: req.session.userId });
+			return prisma.comment.findMany({
+				where: { senderId: req.session.userId },
+			});
 		}
 
 		throw new Error("Not logged in");
 	}
 
 	@Query(() => User, { nullable: true })
-	async me(@Ctx() { req }: MyContext) {
+	async me(@Ctx() { prisma, req }: MyContext) {
 		if (!req.session.userId) {
 			return null;
 		}
 
-		const user = await User.findOne({ id: req.session.userId });
+		const user = await prisma.user.findUnique({
+			where: { id: req.session.userId },
+		});
 		return user;
 	}
 
 	@Mutation(() => UserResponse)
 	async register(
 		@Arg("options") options: UsernamePasswordInput,
-		@Ctx() { req }: MyContext
+		@Ctx() { prisma, req }: MyContext
 	): Promise<UserResponse> {
 		const errors = validateRegister(options);
 		if (errors) {
@@ -249,24 +277,20 @@ export class UserResolver {
 		}
 
 		const hashedPassword = await argon2.hash(options.password);
+
 		let user;
+
 		try {
 			// User.create({}).save()
-			const result = await getConnection()
-				.createQueryBuilder()
-				.insert()
-				.into(User)
-				.values({
+			user = await prisma.user.create({
+				data: {
 					username: options.username,
 					email: options.email,
 					password: hashedPassword,
 					avatarURL:
 						"https://res.cloudinary.com/dedeo0s30/image/upload/v1605156898/default-profile-icon-16.png",
-					//active: true,
-				})
-				.returning("*")
-				.execute();
-			user = result.raw[0];
+				},
+			});
 		} catch (err) {
 			//|| err.detail.includes("already exists")) {
 			// duplicate username error
@@ -285,7 +309,9 @@ export class UserResolver {
 		// store user id session
 		// this will set a cookie on the user
 		// keep them logged in
-		req.session.userId = user.id;
+		if (user) {
+			req.session.userId = user.id;
+		}
 
 		return { user };
 	}
@@ -294,13 +320,13 @@ export class UserResolver {
 	async login(
 		@Arg("usernameOrEmail") usernameOrEmail: string,
 		@Arg("password") password: string,
-		@Ctx() { req }: MyContext
+		@Ctx() { prisma, req }: MyContext
 	): Promise<UserResponse> {
-		const user = await User.findOne(
-			usernameOrEmail.includes("@")
-				? { where: { email: usernameOrEmail } }
-				: { where: { username: usernameOrEmail } }
-		);
+		const user = await prisma.user.findUnique({
+			where: usernameOrEmail.includes("@")
+				? { email: usernameOrEmail }
+				: { username: usernameOrEmail },
+		});
 		if (!user) {
 			return {
 				errors: [
