@@ -11,6 +11,9 @@
 		"seed:run": "ts-node typeorm migration:run -c seed",
 		"seed:revert": "ts-node typeorm migration:revert -c seed"
 	},
+	"prisma": {
+		"schema": "src/prisma/schema.prisma"
+	},
 	"keywords": [],
 	"author": "",
 	"license": "ISC",
@@ -24,9 +27,11 @@
 		"@types/nodemailer": "^6.4.0",
 		"@types/uuid": "^8.3.0",
 		"nodemon": "^2.0.4",
-		"typescript": "^3.9.7"
+		"prisma": "^2.28.0",
+		"typescript": "^4.3.5"
 	},
 	"dependencies": {
+		"@prisma/client": "^2.28.0",
 		"apollo-server-express": "^2.16.1",
 		"argon2": "^0.26.2",
 		"connect-redis": "^5.0.0",
@@ -41,7 +46,6 @@
 		"ioredis": "^4.17.3",
 		"nodemailer": "^6.4.11",
 		"pg": "^8.3.0",
-		"prisma": "^2.28.0",
 		"reflect-metadata": "^0.1.13",
 		"type-graphql": "^1.0.0-rc.3",
 		"typeorm": "^0.2.25",
