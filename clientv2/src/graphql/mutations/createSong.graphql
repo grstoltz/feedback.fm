@@ -1,0 +1,9 @@
+mutation CreateSong($input: SongInput!) {
+	createSong(input: $input) {
+		id
+		title
+		mediaUrl
+		genre
+		ownerId
+	}
+}

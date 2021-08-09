@@ -19,24 +19,13 @@ import { HelloResolver } from "./resolvers/hello";
 import { SongResolver } from "./resolvers/song";
 import { UserResolver } from "./resolvers/user";
 import { CommentResolver } from "./resolvers/comment";
-
-import { createUserLoader } from "./utils/createUserLoader";
 import { TransactionResolver } from "./resolvers/transaction";
 import { NotificationResolver } from "./resolvers/notification";
 
+import { createUserLoader } from "./utils/createUserLoader";
+
 const main = async () => {
 	const prisma = new PrismaClient();
-	// const conn = await createConnection({
-	// 	type: "postgres",
-	// 	host: "localhost",
-	// 	port: 5432,
-	// 	username: "postgres",
-	// 	database: process.env.DATABASE_URL,
-	// 	logging: true,
-	// 	synchronize: true,
-	// 	migrations: [path.join(__dirname, "./migrations/*.js")],
-	// 	entities: [User, Song, Comment, Transaction, Notification],
-	// });
 
 	const app = express();
 

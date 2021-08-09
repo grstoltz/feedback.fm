@@ -1,0 +1,10 @@
+mutation UpdateSong(
+	$id: Int!
+	$title: String!
+	$mediaUrl: String!
+	$genre: String!
+) {
+	updateSong(id: $id, title: $title, mediaUrl: $mediaUrl, genre: $genre) {
+	
+	}
+}

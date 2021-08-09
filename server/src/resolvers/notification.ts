@@ -39,7 +39,7 @@ export class NotificationResolver {
 	@UseMiddleware(isAuth)
 	async createNotification(
 		@Arg("input") input: NotificationInput,
-		@Ctx() { prisma, req }: MyContext
+		@Ctx() { prisma }: MyContext
 	): Promise<Notification> {
 		return prisma.notification.create({
 			data: {
