@@ -25,6 +25,16 @@ const fakerComment = (parentId: any, senderId: any, receiverId: any): any => ({
 	body: faker.lorem.paragraph(),
 });
 
+const findRandomUser = (users: any, user: any): any => {
+	let randomUser = users[Math.floor(Math.random() * users.length)];
+
+	if (randomUser === user) {
+		findRandomUser(users, user);
+	}
+
+	return randomUser;
+};
+
 async function main() {
 	const fakerRounds = 10;
 	const fakerSongs = 5;
@@ -43,22 +53,16 @@ async function main() {
 	const users = await prisma.$queryRaw`SELECT id FROM "User"`;
 
 	console.log("Seeding Comments...");
-	for (var k = 0; k < users; k++) {
-		const songs =
-			await prisma.$queryRaw`SELECT id FROM "Song" WHERE ownerId = ${users[k]}`;
-
-		for (var l = 0; l < songs; l++) {
+	for (var k = 0; k < users.length; k++) {
+		const songs = await prisma.song.findMany({
+			where: { ownerId: users[k].id },
+		});
+		for (var l = 0; l < songs.length; l++) {
+			console.log(`Seeing song ID ${songs[l].id}`);
 			for (let m = 0; m < fakeCommentRounds; m++) {
-				const index = users.indexOf(users[k]);
-
-				if (index > -1) {
-					users.splice(index, 1);
-				}
-
-				const randomUser = users[Math.floor(Math.random() * users.length)];
-
+				const sender = findRandomUser(users, users[k]);
 				await prisma.comment.create({
-					data: fakerComment(songs[l], randomUser, users[k]),
+					data: fakerComment(songs[l].id, sender.id, users[k].id),
 				});
 			}
 		}
