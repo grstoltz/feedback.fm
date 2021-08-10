@@ -27,9 +27,9 @@ export class UserCreateWithoutTransactionsInput {
   password!: string;
 
   @TypeGraphQL.Field(_type => String, {
-    nullable: false
+    nullable: true
   })
-  avatarURL!: string;
+  avatarURL?: string | undefined;
 
   @TypeGraphQL.Field(_type => Date, {
     nullable: true

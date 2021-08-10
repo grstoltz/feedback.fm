@@ -14,9 +14,9 @@ export class NotificationCreateInput {
   body!: string;
 
   @TypeGraphQL.Field(_type => Boolean, {
-    nullable: false
+    nullable: true
   })
-  read!: boolean;
+  read?: boolean | undefined;
 
   @TypeGraphQL.Field(_type => String, {
     nullable: false

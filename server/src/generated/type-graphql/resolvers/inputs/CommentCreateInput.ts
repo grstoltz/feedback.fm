@@ -11,14 +11,14 @@ import { UserCreateNestedOneWithoutSentCommentsInput } from "../inputs/UserCreat
 })
 export class CommentCreateInput {
   @TypeGraphQL.Field(_type => Boolean, {
-    nullable: false
+    nullable: true
   })
-  active!: boolean;
+  active?: boolean | undefined;
 
   @TypeGraphQL.Field(_type => Boolean, {
-    nullable: false
+    nullable: true
   })
-  approved!: boolean;
+  approved?: boolean | undefined;
 
   @TypeGraphQL.Field(_type => String, {
     nullable: false

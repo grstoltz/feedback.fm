@@ -21,7 +21,7 @@ model User {
   email     String    @unique
   username  String    @unique
   password  String
-  avatarURL String
+  avatarURL String    @default("https://res.cloudinary.com/dedeo0s30/image/upload/v1605156898/default-profile-icon-16.png")
   songs     Song[]
   sentComments  Comment[] @relation(name: "SentComments")
   receivedComments Comment[] @relation(name: "ReceivedComments")
@@ -50,8 +50,8 @@ model Comment {
   parentId  Int
   senderId  Int
   receiverId Int
-  active    Boolean
-  approved  Boolean
+  active    Boolean   @default(true)
+  approved  Boolean   @default(false)
   body      String
   sender    User      @relation(fields: [senderId], references: [id], name:"SentComments")
   receiver  User      @relation(fields: [receiverId], references: [id], name: "ReceivedComments")
@@ -64,7 +64,7 @@ model Notification {
   id          Int       @default(autoincrement()) @id
   receiverId  Int
   body        String
-  read        Boolean
+  read        Boolean   @default(false)
   type        String
   url         String
   receiver    User      @relation(fields: [receiverId], references: [id])
