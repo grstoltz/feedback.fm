@@ -14,6 +14,8 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
+  /** The javascript `Date` as string. Type represents date and time as the ISO Date string. */
+  DateTime: any;
   /** The `Upload` scalar type represents a file upload. */
   Upload: any;
 };
@@ -28,6 +30,11 @@ export type Query = {
   me?: Maybe<User>;
   comments: Array<Comment>;
   comment?: Maybe<Comment>;
+};
+
+
+export type QuerySongsArgs = {
+  limit: Scalars['Int'];
 };
 
 
@@ -52,27 +59,28 @@ export type QueryCommentArgs = {
 
 export type Song = {
   __typename?: 'Song';
-  id: Scalars['Float'];
+  id: Scalars['Int'];
   title: Scalars['String'];
   mediaUrl: Scalars['String'];
   mediaType: Scalars['String'];
   genre: Scalars['String'];
-  ownerId: Scalars['Float'];
+  ownerId: Scalars['Int'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
   owner: User;
-  comments: Comment;
-  createdAt: Scalars['String'];
-  updatedAt: Scalars['String'];
 };
+
 
 export type User = {
   __typename?: 'User';
-  id: Scalars['Float'];
-  username: Scalars['String'];
+  id: Scalars['Int'];
   email: Scalars['String'];
+  username: Scalars['String'];
+  password: Scalars['String'];
   avatarURL: Scalars['String'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
   balance: Scalars['Float'];
-  createdAt: Scalars['String'];
-  updatedAt: Scalars['String'];
   songs?: Maybe<Array<Song>>;
   notifications?: Maybe<Array<Notification>>;
   receivedComments?: Maybe<Array<Comment>>;
@@ -81,39 +89,37 @@ export type User = {
 
 export type Notification = {
   __typename?: 'Notification';
-  id: Scalars['Float'];
-  receiverId: Scalars['Float'];
-  senderId: Scalars['Float'];
-  message: Scalars['String'];
-  parentType: Scalars['String'];
-  parentId: Scalars['Float'];
-  sender: User;
-  receiver: User;
+  id: Scalars['Int'];
+  receiverId: Scalars['Int'];
+  body: Scalars['String'];
   read: Scalars['Boolean'];
-  createdAt: Scalars['String'];
-  updatedAt: Scalars['String'];
+  type: Scalars['String'];
+  url: Scalars['String'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  receiver: User;
 };
 
 export type Comment = {
   __typename?: 'Comment';
-  id: Scalars['Float'];
-  parentId: Scalars['Float'];
-  senderId: Scalars['Float'];
-  receiverId: Scalars['Float'];
-  body: Scalars['String'];
-  status: Scalars['String'];
+  id: Scalars['Int'];
+  parentId: Scalars['Int'];
+  senderId: Scalars['Int'];
+  receiverId: Scalars['Int'];
   active: Scalars['Boolean'];
+  approved: Scalars['Boolean'];
+  body: Scalars['String'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
   sender: User;
   receiver: User;
-  parent: Song;
-  createdAt: Scalars['String'];
-  updatedAt: Scalars['String'];
+  parent?: Maybe<Song>;
 };
 
 export type Mutation = {
   __typename?: 'Mutation';
   createSong: Song;
-  updateSong?: Maybe<Song>;
+  updateSong?: Maybe<Scalars['Float']>;
   upload: Scalars['Boolean'];
   deleteSong: Scalars['Boolean'];
   forgotPassword: Scalars['Boolean'];
@@ -204,6 +210,7 @@ export type SongInput = {
   title: Scalars['String'];
   mediaUrl: Scalars['String'];
   genre: Scalars['String'];
+  mediaType: Scalars['String'];
 };
 
 
@@ -228,25 +235,25 @@ export type UsernamePasswordInput = {
 export type CommentInput = {
   parentId: Scalars['Float'];
   receiverId: Scalars['Float'];
-  senderId: Scalars['Float'];
   body: Scalars['String'];
 };
 
 export type Transaction = {
   __typename?: 'Transaction';
-  id: Scalars['Float'];
-  userId: Scalars['Float'];
-  openingBalance: Scalars['Float'];
-  transactionAmount: Scalars['Float'];
-  createdAt: Scalars['String'];
-  updatedAt: Scalars['String'];
+  id: Scalars['Int'];
+  userId: Scalars['Int'];
+  openingBalance: Scalars['Int'];
+  transactionAmount: Scalars['Int'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
 };
 
 export type NotificationInput = {
   receiverId: Scalars['Float'];
-  message: Scalars['String'];
+  body: Scalars['String'];
   parentId: Scalars['Float'];
-  parentType: Scalars['String'];
+  type: Scalars['String'];
+  url: Scalars['String'];
 };
 
 export type RegularErrorFragment = (
@@ -315,7 +322,7 @@ export type CreateNotificationMutation = (
   { __typename?: 'Mutation' }
   & { createNotification: (
     { __typename?: 'Notification' }
-    & Pick<Notification, 'id' | 'senderId' | 'receiverId' | 'message' | 'parentId' | 'parentType'>
+    & Pick<Notification, 'id' | 'receiverId' | 'body' | 'read' | 'type' | 'url'>
   ) }
 );
 
@@ -421,7 +428,7 @@ export type ReviewCommentMutation = (
   { __typename?: 'Mutation' }
   & { reviewComment: (
     { __typename?: 'Comment' }
-    & Pick<Comment, 'id' | 'status'>
+    & Pick<Comment, 'id' | 'approved'>
   ) }
 );
 
@@ -435,10 +442,7 @@ export type UpdateCommentMutationVariables = Exact<{
 
 export type UpdateCommentMutation = (
   { __typename?: 'Mutation' }
-  & { updateSong?: Maybe<(
-    { __typename?: 'Song' }
-    & Pick<Song, 'id' | 'title' | 'mediaUrl' | 'genre'>
-  )> }
+  & Pick<Mutation, 'updateSong'>
 );
 
 export type UploadMutationVariables = Exact<{
@@ -464,21 +468,21 @@ export type AdminQuery = (
       & Pick<Song, 'id' | 'ownerId' | 'title'>
     )>>, sentComments?: Maybe<Array<(
       { __typename?: 'Comment' }
-      & Pick<Comment, 'id' | 'parentId' | 'body' | 'status'>
+      & Pick<Comment, 'id' | 'parentId' | 'body' | 'approved'>
       & { receiver: (
         { __typename?: 'User' }
         & Pick<User, 'id' | 'username'>
-      ), parent: (
+      ), parent?: Maybe<(
         { __typename?: 'Song' }
         & Pick<Song, 'id' | 'title'>
-      ) }
+      )> }
     )>>, receivedComments?: Maybe<Array<(
       { __typename?: 'Comment' }
-      & Pick<Comment, 'id' | 'parentId' | 'body' | 'status'>
-      & { parent: (
+      & Pick<Comment, 'id' | 'parentId' | 'body' | 'approved'>
+      & { parent?: Maybe<(
         { __typename?: 'Song' }
         & Pick<Song, 'id' | 'title'>
-      ), sender: (
+      )>, sender: (
         { __typename?: 'User' }
         & Pick<User, 'id' | 'username'>
       ) }
@@ -495,17 +499,17 @@ export type CommentQuery = (
   { __typename?: 'Query' }
   & { comment?: Maybe<(
     { __typename?: 'Comment' }
-    & Pick<Comment, 'id' | 'createdAt' | 'updatedAt' | 'body' | 'status'>
+    & Pick<Comment, 'id' | 'createdAt' | 'updatedAt' | 'body'>
     & { sender: (
       { __typename?: 'User' }
       & Pick<User, 'id' | 'username'>
     ), receiver: (
       { __typename?: 'User' }
       & Pick<User, 'id' | 'username'>
-    ), parent: (
+    ), parent?: Maybe<(
       { __typename?: 'Song' }
       & Pick<Song, 'id' | 'title'>
-    ) }
+    )> }
   )> }
 );
 
@@ -518,17 +522,17 @@ export type CommentsQuery = (
   { __typename?: 'Query' }
   & { comments: Array<(
     { __typename?: 'Comment' }
-    & Pick<Comment, 'id' | 'createdAt' | 'updatedAt' | 'body' | 'status'>
+    & Pick<Comment, 'id' | 'createdAt' | 'updatedAt' | 'body' | 'approved'>
     & { sender: (
       { __typename?: 'User' }
       & Pick<User, 'id' | 'username'>
     ), receiver: (
       { __typename?: 'User' }
       & Pick<User, 'id' | 'username'>
-    ), parent: (
+    ), parent?: Maybe<(
       { __typename?: 'Song' }
       & Pick<Song, 'id' | 'title'>
-    ) }
+    )> }
   )> }
 );
 
@@ -553,14 +557,7 @@ export type NavBarQuery = (
     & Pick<User, 'id' | 'username' | 'balance'>
     & { notifications?: Maybe<Array<(
       { __typename?: 'Notification' }
-      & Pick<Notification, 'message'>
-      & { sender: (
-        { __typename?: 'User' }
-        & Pick<User, 'id' | 'username'>
-      ), receiver: (
-        { __typename?: 'User' }
-        & Pick<User, 'id' | 'username'>
-      ) }
+      & Pick<Notification, 'body'>
     )>> }
   )> }
 );
@@ -582,7 +579,9 @@ export type SongQuery = (
   )> }
 );
 
-export type SongsQueryVariables = Exact<{ [key: string]: never; }>;
+export type SongsQueryVariables = Exact<{
+  limit: Scalars['Int'];
+}>;
 
 
 export type SongsQuery = (
@@ -719,11 +718,11 @@ export const CreateNotificationDocument = gql`
     mutation CreateNotification($input: NotificationInput!) {
   createNotification(input: $input) {
     id
-    senderId
     receiverId
-    message
-    parentId
-    parentType
+    body
+    read
+    type
+    url
   }
 }
     `;
@@ -1063,7 +1062,7 @@ export const ReviewCommentDocument = gql`
     mutation ReviewComment($id: Int!, $status: String!) {
   reviewComment(id: $id, status: $status) {
     id
-    status
+    approved
   }
 }
     `;
@@ -1101,12 +1100,7 @@ export type ReviewCommentMutationResult = Apollo.MutationResult<ReviewCommentMut
 export type ReviewCommentMutationOptions = Apollo.BaseMutationOptions<ReviewCommentMutation, ReviewCommentMutationVariables>;
 export const UpdateCommentDocument = gql`
     mutation UpdateComment($id: Int!, $title: String!, $mediaUrl: String!, $genre: String!) {
-  updateSong(id: $id, title: $title, mediaUrl: $mediaUrl, genre: $genre) {
-    id
-    title
-    mediaUrl
-    genre
-  }
+  updateSong(id: $id, title: $title, mediaUrl: $mediaUrl, genre: $genre)
 }
     `;
 export type UpdateCommentMutationFn = Apollo.MutationFunction<UpdateCommentMutation, UpdateCommentMutationVariables>;
@@ -1205,7 +1199,7 @@ export const AdminDocument = gql`
         title
       }
       body
-      status
+      approved
     }
     receivedComments {
       id
@@ -1219,7 +1213,7 @@ export const AdminDocument = gql`
         username
       }
       body
-      status
+      approved
     }
   }
 }
@@ -1262,7 +1256,6 @@ export const CommentDocument = gql`
     createdAt
     updatedAt
     body
-    status
     sender {
       id
       username
@@ -1317,7 +1310,7 @@ export const CommentsDocument = gql`
     createdAt
     updatedAt
     body
-    status
+    approved
     sender {
       id
       username
@@ -1411,15 +1404,7 @@ export const NavBarDocument = gql`
     username
     balance
     notifications {
-      sender {
-        id
-        username
-      }
-      receiver {
-        id
-        username
-      }
-      message
+      body
     }
   }
 }
@@ -1504,8 +1489,8 @@ export type SongQueryHookResult = ReturnType<typeof useSongQuery>;
 export type SongLazyQueryHookResult = ReturnType<typeof useSongLazyQuery>;
 export type SongQueryResult = Apollo.QueryResult<SongQuery, SongQueryVariables>;
 export const SongsDocument = gql`
-    query Songs {
-  songs {
+    query Songs($limit: Int!) {
+  songs(limit: $limit) {
     id
     createdAt
     updatedAt
@@ -1519,7 +1504,7 @@ export const SongsDocument = gql`
   }
 }
     `;
-export type SongsComponentProps = Omit<ApolloReactComponents.QueryComponentOptions<SongsQuery, SongsQueryVariables>, 'query'>;
+export type SongsComponentProps = Omit<ApolloReactComponents.QueryComponentOptions<SongsQuery, SongsQueryVariables>, 'query'> & ({ variables: SongsQueryVariables; skip?: boolean; } | { skip: boolean; });
 
     export const SongsComponent = (props: SongsComponentProps) => (
       <ApolloReactComponents.Query<SongsQuery, SongsQueryVariables> query={SongsDocument} {...props} />
@@ -1538,10 +1523,11 @@ export type SongsComponentProps = Omit<ApolloReactComponents.QueryComponentOptio
  * @example
  * const { data, loading, error } = useSongsQuery({
  *   variables: {
+ *      limit: // value for 'limit'
  *   },
  * });
  */
-export function useSongsQuery(baseOptions?: Apollo.QueryHookOptions<SongsQuery, SongsQueryVariables>) {
+export function useSongsQuery(baseOptions: Apollo.QueryHookOptions<SongsQuery, SongsQueryVariables>) {
         return Apollo.useQuery<SongsQuery, SongsQueryVariables>(SongsDocument, baseOptions);
       }
 export function useSongsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<SongsQuery, SongsQueryVariables>) {

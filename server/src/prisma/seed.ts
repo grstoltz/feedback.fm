@@ -58,7 +58,6 @@ async function main() {
 			where: { ownerId: users[k].id },
 		});
 		for (var l = 0; l < songs.length; l++) {
-			console.log(`Seeing song ID ${songs[l].id}`);
 			for (let m = 0; m < fakeCommentRounds; m++) {
 				const sender = findRandomUser(users, users[k]);
 				await prisma.comment.create({

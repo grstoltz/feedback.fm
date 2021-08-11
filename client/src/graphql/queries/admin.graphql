@@ -23,7 +23,7 @@ query Admin {
 				title
 			}
 			body
-			status
+			approved
 		}
 		receivedComments {
 			id
@@ -37,7 +37,7 @@ query Admin {
 				username
 			}
 			body
-			status
+			approved
 		}
 	}
 }

@@ -20,6 +20,8 @@ import { MyContext } from "../types";
 import { isAuth } from "../middleware/isAuth";
 import { createWriteStream } from "fs";
 
+const LIMIT_SONG = 50;
+
 @InputType()
 class SongInput {
 	@Field()
@@ -38,8 +40,11 @@ class SongInput {
 @Resolver(Song)
 export class SongResolver {
 	@Query(() => [Song])
-	async songs(@Ctx() { prisma }: MyContext): Promise<Song[]> {
-		return prisma.song.findMany();
+	async songs(
+		@Ctx() { prisma }: MyContext,
+		@Arg("limit", () => Int) limit: number
+	): Promise<Song[]> {
+		return prisma.song.findMany({ take: limit });
 	}
 
 	@FieldResolver(() => User)

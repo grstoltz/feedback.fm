@@ -1,10 +1,10 @@
 mutation CreateNotification($input: NotificationInput!) {
 	createNotification(input: $input) {
 		id
-		senderId
 		receiverId
-		message
-		parentId
-		parentType
+		body
+		read
+		type
+		url
 	}
 }

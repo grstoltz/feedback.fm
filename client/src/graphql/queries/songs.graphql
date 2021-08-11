@@ -1,5 +1,5 @@
-query Songs {
-	songs {
+query Songs($limit: Int!) {
+	songs(limit: $limit) {
 		id
 		createdAt
 		updatedAt

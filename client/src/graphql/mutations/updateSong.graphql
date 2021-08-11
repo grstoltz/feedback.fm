@@ -4,10 +4,5 @@ mutation UpdateComment(
 	$mediaUrl: String!
 	$genre: String!
 ) {
-	updateSong(id: $id, title: $title, mediaUrl: $mediaUrl, genre: $genre) {
-		id
-		title
-		mediaUrl
-		genre
-	}
+	updateSong(id: $id, title: $title, mediaUrl: $mediaUrl, genre: $genre)
 }
