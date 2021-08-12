@@ -40,11 +40,8 @@ class SongInput {
 @Resolver(Song)
 export class SongResolver {
 	@Query(() => [Song])
-	async songs(
-		@Ctx() { prisma }: MyContext,
-		@Arg("limit", () => Int) limit: number
-	): Promise<Song[]> {
-		return prisma.song.findMany({ take: limit });
+	async songs(@Ctx() { prisma }: MyContext): Promise<Song[]> {
+		return prisma.song.findMany();
 	}
 
 	@FieldResolver(() => User)
