@@ -9,7 +9,6 @@ import nextWithApollo from "next-with-apollo";
 //const ROOT_URL = process.env.ROOT_URL;
 
 const ROOT_URL = "http://localhost:4000/graphql";
-console.log(ROOT_URL);
 
 if (!ROOT_URL) {
 	throw new Error("ROOT_URL environment variable is not set");

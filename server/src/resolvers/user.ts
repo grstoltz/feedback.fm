@@ -281,7 +281,6 @@ export class UserResolver {
 		let user;
 
 		try {
-			// User.create({}).save()
 			user = await prisma.user.create({
 				data: {
 					username: options.username,
