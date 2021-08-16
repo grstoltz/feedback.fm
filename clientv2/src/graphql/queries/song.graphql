@@ -7,6 +7,7 @@ query Song($id: Int!) {
 		mediaUrl
 		mediaType
 		genre
+		ownerId
 		owner {
 			id
 			username

@@ -53,7 +53,7 @@ export class CommentResolver {
 	}
 
 	@FieldResolver(() => Song, { nullable: true })
-	parent(@Root() comment: Comment, @Ctx() { prisma }: MyContext) {
+	song(@Root() comment: Comment, @Ctx() { prisma }: MyContext) {
 		return prisma.song.findUnique({ where: { id: comment.parentId } });
 	}
 

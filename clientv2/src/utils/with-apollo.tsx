@@ -5,6 +5,7 @@ import {
 	InMemoryCache,
 } from "@apollo/client";
 import nextWithApollo from "next-with-apollo";
+import { SongsQueryResult } from "../generated/graphql";
 
 //const ROOT_URL = process.env.ROOT_URL;
 
@@ -33,7 +34,24 @@ export const withApollo = nextWithApollo(
 			// 				: undefined) || "",
 			// 	},
 			// }),
-			cache: new InMemoryCache().restore(initialState || {}),
+			//cache: new InMemoryCache().restore(initialState || {}),
+			cache: new InMemoryCache({
+				typePolicies: {
+					Query: {
+						fields: {
+							songs: {
+								keyArgs: ["id"],
+							},
+							song: {
+								keyArgs: ["id"],
+							},
+							user: {
+								keyArgs: ["id"],
+							},
+						},
+					},
+				},
+			}),
 		});
 	},
 	{

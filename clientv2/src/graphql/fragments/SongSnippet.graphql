@@ -1,12 +1,13 @@
-fragment SongSnippet on Song {
-	id
-	createdAt
-	updatedAt
-	title
-	mediaUrl
-	genre
-	owner {
-		id
-		username
-	}
-}
+# fragment SongSnippet on Song {
+# 	id
+# 	createdAt
+# 	updatedAt
+# 	title
+# 	mediaUrl
+# 	genre
+# 	ownerId
+# 	owner {
+# 		id
+# 		username
+# 	}
+# }

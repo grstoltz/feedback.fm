@@ -219,7 +219,6 @@ export class UserResolver {
 		const result = await prisma.notification.findMany({
 			where: {
 				receiverId: req.session.userId,
-				read: false,
 			},
 		});
 

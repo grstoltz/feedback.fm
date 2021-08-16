@@ -12,7 +12,7 @@ query Comment($id: Int!) {
 			id
 			username
 		}
-		parent {
+		song {
 			id
 			title
 		}

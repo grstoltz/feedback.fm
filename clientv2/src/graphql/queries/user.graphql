@@ -1,0 +1,44 @@
+query User($id: Int!) {
+	user(id: $id) {
+		id
+		username
+		songs {
+			id
+			title
+			mediaUrl
+			mediaType
+			genre
+			ownerId
+			createdAt
+			updatedAt
+			owner {
+				id
+				username
+			}
+		}
+		receivedComments {
+			id
+			body
+			sender {
+				id
+				username
+			}
+			song {
+				id
+				title
+			}
+		}
+		sentComments {
+			id
+			body
+			receiver {
+				id
+				username
+			}
+			song {
+				id
+				title
+			}
+		}
+	}
+}

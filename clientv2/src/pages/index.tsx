@@ -6,19 +6,38 @@ import { useMeQuery } from "../generated/graphql";
 import { useSongsQuery } from "../generated/graphql";
 
 import Layout from "../components/Layout";
-import { Stack, Box, Button, Flex } from "@chakra-ui/react";
+import SongCard from "../components/SongCard";
+import SongCardSkeleton from "../components/SongCard/skeleton";
 
-const PAGINATION_LIMIT = 10;
+import { Stack, Box, Button, Flex } from "@chakra-ui/react";
 
 const Index: React.FC = () => {
 	const { data: userData } = useMeQuery();
-
 	const { data, loading, error } = useSongsQuery();
+
+	const songs = data?.songs || [];
+	const userId = userData?.me?.id;
+
+	const randomSong = songs[Math.floor(Math.random() * songs.length)];
 
 	return (
 		<>
 			<Layout>
-				<div>Hello World</div>
+				{loading ? (
+					<Stack marginY="30px">
+						<Box padding={5} shadow="md" borderWidth="1px">
+							<SongCardSkeleton />
+						</Box>
+					</Stack>
+				) : songs ? (
+					<Box padding={5} shadow="md" borderWidth="1px">
+						<SongCard
+							/*@ts-ignore*/
+							song={randomSong}
+							showEditDeleteButton={randomSong.ownerId === userId}
+						/>
+					</Box>
+				) : null}
 			</Layout>
 		</>
 	);
