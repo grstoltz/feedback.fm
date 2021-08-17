@@ -102,7 +102,7 @@ const Admin: React.FC = () => {
 								: sentComments
 								? sentComments.map(
 										(comment) =>
-											comment && (
+											comment.song && (
 												<Stack marginY="30px" key={comment.id}>
 													<Box
 														padding={5}
@@ -110,8 +110,8 @@ const Admin: React.FC = () => {
 														borderWidth="1px"
 													>
 														<NextLink
-															href="song/[songId]"
-															as={`/song/${comment.song.id}`}
+															href="feedback/[feedbackId]"
+															as={`/feedback/${comment.id}`}
 														>
 															<Link>
 																<Heading fontSize="xl">
@@ -139,7 +139,7 @@ const Admin: React.FC = () => {
 								: receivedComments
 								? receivedComments.map(
 										(comment) =>
-											comment && (
+											comment.song && (
 												<Stack marginY="30px" key={comment.id}>
 													<Box
 														padding={5}

@@ -38,7 +38,7 @@ const Upload: React.FC = () => {
 
 	const [createSong] = useCreateSongMutation({
 		update(cache) {
-			cache.evict({ id: "ROOT_QUERY", fieldName: "songs" });
+			cache.evict({ id: "ROOT_QUERY", fieldName: "song" });
 		},
 	});
 

@@ -1,16 +1,16 @@
-# query Songs {
-# 	songs {
-# 		id
-# 		createdAt
-# 		updatedAt
-# 		title
-# 		mediaUrl
-# 		mediaType
-# 		genre
-# 		ownerId
-# 		owner {
-# 			id
-# 			username
-# 		}
-# 	}
-# }
+query Songs {
+	songs {
+		id
+		createdAt
+		updatedAt
+		title
+		mediaUrl
+		mediaType
+		genre
+		ownerId
+		owner {
+			id
+			username
+		}
+	}
+}

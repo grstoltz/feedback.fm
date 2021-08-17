@@ -201,6 +201,7 @@ export type Song = {
   createdAt: Scalars['DateTime'];
   updatedAt: Scalars['DateTime'];
   owner: User;
+  comment?: Maybe<Array<Comment>>;
 };
 
 export type SongInput = {
@@ -254,6 +255,8 @@ export type RegularErrorFragment = { __typename?: 'FieldError', field: string, m
 export type RegularUserFragment = { __typename?: 'User', id: number, username: string };
 
 export type RegularUserResponseFragment = { __typename?: 'UserResponse', errors?: Maybe<Array<{ __typename?: 'FieldError', field: string, message: string }>>, user?: Maybe<{ __typename?: 'User', id: number, username: string }> };
+
+export type SongSnippetFragment = { __typename?: 'Song', id: number, createdAt: any, updatedAt: any, title: string, mediaUrl: string, genre: string, ownerId: number, owner: { __typename?: 'User', id: number, username: string } };
 
 export type ChangePasswordMutationVariables = Exact<{
   token: Scalars['String'];
@@ -345,14 +348,19 @@ export type CommentsQuery = { __typename?: 'Query', comments: Array<{ __typename
 export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type MeQuery = { __typename?: 'Query', me?: Maybe<{ __typename?: 'User', id: number, username: string }> };
+export type MeQuery = { __typename?: 'Query', me?: Maybe<{ __typename?: 'User', id: number, username: string, avatarURL: string }> };
 
 export type SongQueryVariables = Exact<{
   id: Scalars['Int'];
 }>;
 
 
-export type SongQuery = { __typename?: 'Query', song?: Maybe<{ __typename?: 'Song', id: number, createdAt: any, updatedAt: any, title: string, mediaUrl: string, mediaType: string, genre: string, ownerId: number, owner: { __typename?: 'User', id: number, username: string } }> };
+export type SongQuery = { __typename?: 'Query', song?: Maybe<{ __typename?: 'Song', id: number, createdAt: any, updatedAt: any, title: string, mediaUrl: string, mediaType: string, genre: string, ownerId: number, owner: { __typename?: 'User', id: number, username: string }, comment?: Maybe<Array<{ __typename?: 'Comment', id: number, body: string, senderId: number, sender: { __typename?: 'User', id: number, username: string } }>> }> };
+
+export type SongsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type SongsQuery = { __typename?: 'Query', songs: Array<{ __typename?: 'Song', id: number, createdAt: any, updatedAt: any, title: string, mediaUrl: string, mediaType: string, genre: string, ownerId: number, owner: { __typename?: 'User', id: number, username: string } }> };
 
 export type UserQueryVariables = Exact<{
   id: Scalars['Int'];
@@ -384,6 +392,21 @@ export const RegularUserResponseFragmentDoc = gql`
 }
     ${RegularErrorFragmentDoc}
 ${RegularUserFragmentDoc}`;
+export const SongSnippetFragmentDoc = gql`
+    fragment SongSnippet on Song {
+  id
+  createdAt
+  updatedAt
+  title
+  mediaUrl
+  genre
+  ownerId
+  owner {
+    id
+    username
+  }
+}
+    `;
 export const ChangePasswordDocument = gql`
     mutation ChangePassword($token: String!, $newPassword: String!) {
   changePassword(token: $token, newPassword: $newPassword) {
@@ -821,6 +844,7 @@ export const MeDocument = gql`
   me {
     id
     username
+    avatarURL
   }
 }
     `;
@@ -866,6 +890,15 @@ export const SongDocument = gql`
       id
       username
     }
+    comment {
+      id
+      body
+      senderId
+      sender {
+        id
+        username
+      }
+    }
   }
 }
     `;
@@ -897,6 +930,51 @@ export function useSongLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<SongQ
 export type SongQueryHookResult = ReturnType<typeof useSongQuery>;
 export type SongLazyQueryHookResult = ReturnType<typeof useSongLazyQuery>;
 export type SongQueryResult = Apollo.QueryResult<SongQuery, SongQueryVariables>;
+export const SongsDocument = gql`
+    query Songs {
+  songs {
+    id
+    createdAt
+    updatedAt
+    title
+    mediaUrl
+    mediaType
+    genre
+    ownerId
+    owner {
+      id
+      username
+    }
+  }
+}
+    `;
+
+/**
+ * __useSongsQuery__
+ *
+ * To run a query within a React component, call `useSongsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useSongsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useSongsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useSongsQuery(baseOptions?: Apollo.QueryHookOptions<SongsQuery, SongsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<SongsQuery, SongsQueryVariables>(SongsDocument, options);
+      }
+export function useSongsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<SongsQuery, SongsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<SongsQuery, SongsQueryVariables>(SongsDocument, options);
+        }
+export type SongsQueryHookResult = ReturnType<typeof useSongsQuery>;
+export type SongsLazyQueryHookResult = ReturnType<typeof useSongsLazyQuery>;
+export type SongsQueryResult = Apollo.QueryResult<SongsQuery, SongsQueryVariables>;
 export const UserDocument = gql`
     query User($id: Int!) {
   user(id: $id) {

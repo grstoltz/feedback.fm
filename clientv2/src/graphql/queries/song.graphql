@@ -12,5 +12,10 @@ query Song($id: Int!) {
 			id
 			username
 		}
+		comment {
+			id
+			body
+			senderId
+		}
 	}
 }

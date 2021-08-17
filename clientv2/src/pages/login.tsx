@@ -43,12 +43,7 @@ const Login: React.FC = () => {
 				onSubmit={async (values, { setErrors }) => {
 					const response = await login({ variables: values });
 					if (response.data?.login?.errors) {
-						const error = toErrorMap(response.data?.login?.errors);
-						if (error.fieldName === FIELDS.USERNAME_OR_EMAIL) {
-							setErrors({ [FIELDS.USERNAME_OR_EMAIL]: error.message });
-						} else if (error.fieldName === FIELDS.PASSWORD) {
-							setErrors({ [FIELDS.PASSWORD]: error.message });
-						}
+						setErrors(toErrorMap(response.data.login.errors));
 					} else {
 						client.resetStore();
 						if (router.query.next) {
