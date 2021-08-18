@@ -22,15 +22,15 @@ export class CommentCreateManySenderInput {
   })
   receiverId!: number;
 
-  @TypeGraphQL.Field(_type => Boolean, {
+  @TypeGraphQL.Field(_type => TypeGraphQL.Int, {
     nullable: true
   })
-  active?: boolean | undefined;
+  approvalId?: number | undefined;
 
   @TypeGraphQL.Field(_type => Boolean, {
     nullable: true
   })
-  approved?: boolean | undefined;
+  active?: boolean | undefined;
 
   @TypeGraphQL.Field(_type => String, {
     nullable: false

@@ -15,6 +15,7 @@ import {
 import { Song } from "../generated/type-graphql/models/Song";
 import { Comment } from "../generated/type-graphql/models/Comment";
 import { User } from "../generated/type-graphql/models/User";
+import { Approval } from "../generated/type-graphql/models/Approval";
 
 import { MyContext } from "../types";
 
@@ -65,6 +66,16 @@ export class CommentResolver {
 		return prisma.comment.findUnique({ where: { id } });
 	}
 
+	@FieldResolver(() => Approval, { nullable: true })
+	approval(@Root() comment: Comment, @Ctx() { prisma }: MyContext) {
+		if (!comment.approvalId) {
+			return null;
+		}
+		return prisma.approval.findUnique({
+			where: { id: comment.approvalId },
+		});
+	}
+
 	@Mutation(() => Comment)
 	@UseMiddleware(isAuth)
 	async createComment(
@@ -75,31 +86,31 @@ export class CommentResolver {
 			data: {
 				...input,
 				active: true,
-				approved: false,
 				senderId: req.session.userId,
 			},
 		});
 	}
 
-	@Mutation(() => Comment)
-	@UseMiddleware(isAuth)
-	async reviewComment(
-		@Arg("id", () => Int) id: number,
-		@Arg("status", () => String) status: string,
-		@Ctx() { prisma, req }: MyContext
-	): Promise<number> {
-		const updatedComment = await prisma.comment.updateMany({
-			where: {
-				id,
-				receiverId: req.session.userId,
-			},
-			data: {
-				approved: status === "approved" ? true : false,
-			},
-		});
+	//Change to approval model
+	// @Mutation(() => Comment)
+	// @UseMiddleware(isAuth)
+	// async reviewComment(
+	// 	@Arg("id", () => Int) id: number,
+	// 	@Arg("status", () => String) status: string,
+	// 	@Ctx() { prisma, req }: MyContext
+	// ): Promise<number> {
+	// 	const updatedComment = await prisma.comment.updateMany({
+	// 		where: {
+	// 			id,
+	// 			receiverId: req.session.userId,
+	// 		},
+	// 		data: {
+	// 			approved: status === "approved" ? true : false,
+	// 		},
+	// 	});
 
-		return updatedComment?.count;
-	}
+	// 	return updatedComment?.count;
+	// }
 
 	@Mutation(() => Boolean)
 	@UseMiddleware(isAuth)

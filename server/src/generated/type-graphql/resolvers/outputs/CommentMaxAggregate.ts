@@ -27,15 +27,15 @@ export class CommentMaxAggregate {
   })
   receiverId!: number | null;
 
-  @TypeGraphQL.Field(_type => Boolean, {
+  @TypeGraphQL.Field(_type => TypeGraphQL.Int, {
     nullable: true
   })
-  active!: boolean | null;
+  approvalId!: number | null;
 
   @TypeGraphQL.Field(_type => Boolean, {
     nullable: true
   })
-  approved!: boolean | null;
+  active!: boolean | null;
 
   @TypeGraphQL.Field(_type => String, {
     nullable: true

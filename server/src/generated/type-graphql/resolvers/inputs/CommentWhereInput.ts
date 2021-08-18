@@ -2,9 +2,11 @@ import * as TypeGraphQL from "type-graphql";
 import * as GraphQLScalars from "graphql-scalars";
 import { Prisma } from "@prisma/client";
 import { DecimalJSScalar } from "../../scalars";
+import { ApprovalRelationFilter } from "../inputs/ApprovalRelationFilter";
 import { BoolFilter } from "../inputs/BoolFilter";
 import { DateTimeFilter } from "../inputs/DateTimeFilter";
 import { IntFilter } from "../inputs/IntFilter";
+import { IntNullableFilter } from "../inputs/IntNullableFilter";
 import { SongRelationFilter } from "../inputs/SongRelationFilter";
 import { StringFilter } from "../inputs/StringFilter";
 import { UserRelationFilter } from "../inputs/UserRelationFilter";
@@ -48,20 +50,25 @@ export class CommentWhereInput {
   })
   receiverId?: IntFilter | undefined;
 
+  @TypeGraphQL.Field(_type => IntNullableFilter, {
+    nullable: true
+  })
+  approvalId?: IntNullableFilter | undefined;
+
   @TypeGraphQL.Field(_type => BoolFilter, {
     nullable: true
   })
   active?: BoolFilter | undefined;
 
-  @TypeGraphQL.Field(_type => BoolFilter, {
-    nullable: true
-  })
-  approved?: BoolFilter | undefined;
-
   @TypeGraphQL.Field(_type => StringFilter, {
     nullable: true
   })
   body?: StringFilter | undefined;
+
+  @TypeGraphQL.Field(_type => ApprovalRelationFilter, {
+    nullable: true
+  })
+  approval?: ApprovalRelationFilter | undefined;
 
   @TypeGraphQL.Field(_type => UserRelationFilter, {
     nullable: true

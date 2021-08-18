@@ -5,8 +5,8 @@ export enum CommentScalarFieldEnum {
   parentId = "parentId",
   senderId = "senderId",
   receiverId = "receiverId",
+  approvalId = "approvalId",
   active = "active",
-  approved = "approved",
   body = "body",
   createdAt = "createdAt",
   updatedAt = "updatedAt"

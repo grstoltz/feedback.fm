@@ -35,5 +35,5 @@ export class FindManyCommentArgs {
   @TypeGraphQL.Field(_type => [CommentScalarFieldEnum], {
     nullable: true
   })
-  distinct?: Array<"id" | "parentId" | "senderId" | "receiverId" | "active" | "approved" | "body" | "createdAt" | "updatedAt"> | undefined;
+  distinct?: Array<"id" | "parentId" | "senderId" | "receiverId" | "approvalId" | "active" | "body" | "createdAt" | "updatedAt"> | undefined;
 }

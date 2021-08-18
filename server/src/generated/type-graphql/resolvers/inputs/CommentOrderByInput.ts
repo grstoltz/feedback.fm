@@ -31,12 +31,12 @@ export class CommentOrderByInput {
   @TypeGraphQL.Field(_type => SortOrder, {
     nullable: true
   })
-  active?: "asc" | "desc" | undefined;
+  approvalId?: "asc" | "desc" | undefined;
 
   @TypeGraphQL.Field(_type => SortOrder, {
     nullable: true
   })
-  approved?: "asc" | "desc" | undefined;
+  active?: "asc" | "desc" | undefined;
 
   @TypeGraphQL.Field(_type => SortOrder, {
     nullable: true

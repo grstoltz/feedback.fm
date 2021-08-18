@@ -39,7 +39,7 @@ export class SongCreateWithoutCommentsInput {
   updatedAt?: Date | undefined;
 
   @TypeGraphQL.Field(_type => UserCreateNestedOneWithoutSongsInput, {
-    nullable: true
+    nullable: false
   })
-  owner?: UserCreateNestedOneWithoutSongsInput | undefined;
+  owner!: UserCreateNestedOneWithoutSongsInput;
 }

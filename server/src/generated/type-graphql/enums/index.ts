@@ -1,3 +1,4 @@
+export { ApprovalScalarFieldEnum } from "./ApprovalScalarFieldEnum";
 export { CommentScalarFieldEnum } from "./CommentScalarFieldEnum";
 export { NotificationScalarFieldEnum } from "./NotificationScalarFieldEnum";
 export { QueryMode } from "./QueryMode";

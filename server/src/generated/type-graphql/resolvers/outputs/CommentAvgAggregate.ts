@@ -26,4 +26,9 @@ export class CommentAvgAggregate {
     nullable: true
   })
   receiverId!: number | null;
+
+  @TypeGraphQL.Field(_type => TypeGraphQL.Float, {
+    nullable: true
+  })
+  approvalId!: number | null;
 }

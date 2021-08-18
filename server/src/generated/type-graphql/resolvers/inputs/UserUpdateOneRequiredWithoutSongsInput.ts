@@ -11,7 +11,7 @@ import { UserWhereUniqueInput } from "../inputs/UserWhereUniqueInput";
 @TypeGraphQL.InputType({
   isAbstract: true
 })
-export class UserUpdateOneWithoutSongsInput {
+export class UserUpdateOneRequiredWithoutSongsInput {
   @TypeGraphQL.Field(_type => UserCreateWithoutSongsInput, {
     nullable: true
   })
@@ -31,16 +31,6 @@ export class UserUpdateOneWithoutSongsInput {
     nullable: true
   })
   connect?: UserWhereUniqueInput | undefined;
-
-  @TypeGraphQL.Field(_type => Boolean, {
-    nullable: true
-  })
-  disconnect?: boolean | undefined;
-
-  @TypeGraphQL.Field(_type => Boolean, {
-    nullable: true
-  })
-  delete?: boolean | undefined;
 
   @TypeGraphQL.Field(_type => UserUpdateWithoutSongsInput, {
     nullable: true

@@ -4,6 +4,7 @@ import { Prisma } from "@prisma/client";
 import { DecimalJSScalar } from "../../scalars";
 import { BoolWithAggregatesFilter } from "../inputs/BoolWithAggregatesFilter";
 import { DateTimeWithAggregatesFilter } from "../inputs/DateTimeWithAggregatesFilter";
+import { IntNullableWithAggregatesFilter } from "../inputs/IntNullableWithAggregatesFilter";
 import { IntWithAggregatesFilter } from "../inputs/IntWithAggregatesFilter";
 import { StringWithAggregatesFilter } from "../inputs/StringWithAggregatesFilter";
 
@@ -46,15 +47,15 @@ export class CommentScalarWhereWithAggregatesInput {
   })
   receiverId?: IntWithAggregatesFilter | undefined;
 
-  @TypeGraphQL.Field(_type => BoolWithAggregatesFilter, {
+  @TypeGraphQL.Field(_type => IntNullableWithAggregatesFilter, {
     nullable: true
   })
-  active?: BoolWithAggregatesFilter | undefined;
+  approvalId?: IntNullableWithAggregatesFilter | undefined;
 
   @TypeGraphQL.Field(_type => BoolWithAggregatesFilter, {
     nullable: true
   })
-  approved?: BoolWithAggregatesFilter | undefined;
+  active?: BoolWithAggregatesFilter | undefined;
 
   @TypeGraphQL.Field(_type => StringWithAggregatesFilter, {
     nullable: true

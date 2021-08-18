@@ -1,3 +1,4 @@
+export { ApprovalRelationsResolver } from "./Approval/ApprovalRelationsResolver";
 export { CommentRelationsResolver } from "./Comment/CommentRelationsResolver";
 export { NotificationRelationsResolver } from "./Notification/NotificationRelationsResolver";
 export { SongRelationsResolver } from "./Song/SongRelationsResolver";

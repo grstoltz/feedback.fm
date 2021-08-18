@@ -2,6 +2,7 @@ import * as TypeGraphQL from "type-graphql";
 import * as GraphQLScalars from "graphql-scalars";
 import { Prisma } from "@prisma/client";
 import { DecimalJSScalar } from "../../scalars";
+import { ApprovalUpdateOneWithoutCommentInput } from "../inputs/ApprovalUpdateOneWithoutCommentInput";
 import { BoolFieldUpdateOperationsInput } from "../inputs/BoolFieldUpdateOperationsInput";
 import { DateTimeFieldUpdateOperationsInput } from "../inputs/DateTimeFieldUpdateOperationsInput";
 import { SongUpdateOneRequiredWithoutCommentsInput } from "../inputs/SongUpdateOneRequiredWithoutCommentsInput";
@@ -17,11 +18,6 @@ export class CommentUpdateWithoutSenderInput {
   })
   active?: BoolFieldUpdateOperationsInput | undefined;
 
-  @TypeGraphQL.Field(_type => BoolFieldUpdateOperationsInput, {
-    nullable: true
-  })
-  approved?: BoolFieldUpdateOperationsInput | undefined;
-
   @TypeGraphQL.Field(_type => StringFieldUpdateOperationsInput, {
     nullable: true
   })
@@ -36,6 +32,11 @@ export class CommentUpdateWithoutSenderInput {
     nullable: true
   })
   updatedAt?: DateTimeFieldUpdateOperationsInput | undefined;
+
+  @TypeGraphQL.Field(_type => ApprovalUpdateOneWithoutCommentInput, {
+    nullable: true
+  })
+  approval?: ApprovalUpdateOneWithoutCommentInput | undefined;
 
   @TypeGraphQL.Field(_type => UserUpdateOneRequiredWithoutReceivedCommentsInput, {
     nullable: true

@@ -1,9 +1,16 @@
 export { AffectedRowsOutput } from "./AffectedRowsOutput";
+export { AggregateApproval } from "./AggregateApproval";
 export { AggregateComment } from "./AggregateComment";
 export { AggregateNotification } from "./AggregateNotification";
 export { AggregateSong } from "./AggregateSong";
 export { AggregateTransaction } from "./AggregateTransaction";
 export { AggregateUser } from "./AggregateUser";
+export { ApprovalAvgAggregate } from "./ApprovalAvgAggregate";
+export { ApprovalCountAggregate } from "./ApprovalCountAggregate";
+export { ApprovalGroupBy } from "./ApprovalGroupBy";
+export { ApprovalMaxAggregate } from "./ApprovalMaxAggregate";
+export { ApprovalMinAggregate } from "./ApprovalMinAggregate";
+export { ApprovalSumAggregate } from "./ApprovalSumAggregate";
 export { CommentAvgAggregate } from "./CommentAvgAggregate";
 export { CommentCountAggregate } from "./CommentCountAggregate";
 export { CommentGroupBy } from "./CommentGroupBy";

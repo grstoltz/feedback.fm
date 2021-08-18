@@ -1,3 +1,4 @@
+export { Approval } from "./Approval";
 export { Comment } from "./Comment";
 export { Notification } from "./Notification";
 export { Song } from "./Song";

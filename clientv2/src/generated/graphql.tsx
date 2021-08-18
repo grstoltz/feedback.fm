@@ -18,20 +18,28 @@ export type Scalars = {
   Upload: any;
 };
 
+export type Approval = {
+  __typename?: 'Approval';
+  id: Scalars['Int'];
+  commentId: Scalars['Int'];
+  status: Scalars['String'];
+};
+
 export type Comment = {
   __typename?: 'Comment';
   id: Scalars['Int'];
   parentId: Scalars['Int'];
   senderId: Scalars['Int'];
   receiverId: Scalars['Int'];
+  approvalId?: Maybe<Scalars['Int']>;
   active: Scalars['Boolean'];
-  approved: Scalars['Boolean'];
   body: Scalars['String'];
   createdAt: Scalars['DateTime'];
   updatedAt: Scalars['DateTime'];
   sender: User;
   receiver: User;
   song?: Maybe<Song>;
+  approval?: Maybe<Approval>;
 };
 
 export type CommentInput = {
@@ -59,7 +67,6 @@ export type Mutation = {
   login: UserResponse;
   logout: Scalars['Boolean'];
   createComment: Comment;
-  reviewComment: Comment;
   deleteComment: Scalars['Boolean'];
   createTransaction: Transaction;
   createNotification: Notification;
@@ -113,12 +120,6 @@ export type MutationLoginArgs = {
 
 export type MutationCreateCommentArgs = {
   input: CommentInput;
-};
-
-
-export type MutationReviewCommentArgs = {
-  status: Scalars['String'];
-  id: Scalars['Int'];
 };
 
 
@@ -355,7 +356,7 @@ export type SongQueryVariables = Exact<{
 }>;
 
 
-export type SongQuery = { __typename?: 'Query', song?: Maybe<{ __typename?: 'Song', id: number, createdAt: any, updatedAt: any, title: string, mediaUrl: string, mediaType: string, genre: string, ownerId: number, owner: { __typename?: 'User', id: number, username: string }, comment?: Maybe<Array<{ __typename?: 'Comment', id: number, body: string, senderId: number, sender: { __typename?: 'User', id: number, username: string } }>> }> };
+export type SongQuery = { __typename?: 'Query', song?: Maybe<{ __typename?: 'Song', id: number, createdAt: any, updatedAt: any, title: string, mediaUrl: string, mediaType: string, genre: string, ownerId: number, owner: { __typename?: 'User', id: number, username: string }, comment?: Maybe<Array<{ __typename?: 'Comment', id: number, body: string, senderId: number, approval?: Maybe<{ __typename?: 'Approval', status: string }> }>> }> };
 
 export type SongsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -894,9 +895,8 @@ export const SongDocument = gql`
       id
       body
       senderId
-      sender {
-        id
-        username
+      approval {
+        status
       }
     }
   }

@@ -2,6 +2,7 @@ import * as TypeGraphQL from "type-graphql";
 import * as GraphQLScalars from "graphql-scalars";
 import { Prisma } from "@prisma/client";
 import { DecimalJSScalar } from "../../scalars";
+import { ApprovalCreateNestedOneWithoutCommentInput } from "../inputs/ApprovalCreateNestedOneWithoutCommentInput";
 import { SongCreateNestedOneWithoutCommentsInput } from "../inputs/SongCreateNestedOneWithoutCommentsInput";
 import { UserCreateNestedOneWithoutReceivedCommentsInput } from "../inputs/UserCreateNestedOneWithoutReceivedCommentsInput";
 
@@ -13,11 +14,6 @@ export class CommentCreateWithoutSenderInput {
     nullable: true
   })
   active?: boolean | undefined;
-
-  @TypeGraphQL.Field(_type => Boolean, {
-    nullable: true
-  })
-  approved?: boolean | undefined;
 
   @TypeGraphQL.Field(_type => String, {
     nullable: false
@@ -33,6 +29,11 @@ export class CommentCreateWithoutSenderInput {
     nullable: true
   })
   updatedAt?: Date | undefined;
+
+  @TypeGraphQL.Field(_type => ApprovalCreateNestedOneWithoutCommentInput, {
+    nullable: true
+  })
+  approval?: ApprovalCreateNestedOneWithoutCommentInput | undefined;
 
   @TypeGraphQL.Field(_type => UserCreateNestedOneWithoutReceivedCommentsInput, {
     nullable: false

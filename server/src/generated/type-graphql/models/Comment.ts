@@ -2,6 +2,7 @@ import * as TypeGraphQL from "type-graphql";
 import * as GraphQLScalars from "graphql-scalars";
 import { Prisma } from "@prisma/client";
 import { DecimalJSScalar } from "../scalars";
+import { Approval } from "../models/Approval";
 import { Song } from "../models/Song";
 import { User } from "../models/User";
 
@@ -29,20 +30,22 @@ export class Comment {
   })
   receiverId!: number;
 
+  @TypeGraphQL.Field(_type => TypeGraphQL.Int, {
+    nullable: true
+  })
+  approvalId?: number | null;
+
   @TypeGraphQL.Field(_type => Boolean, {
     nullable: false
   })
   active!: boolean;
 
-  @TypeGraphQL.Field(_type => Boolean, {
-    nullable: false
-  })
-  approved!: boolean;
-
   @TypeGraphQL.Field(_type => String, {
     nullable: false
   })
   body!: string;
+
+  approval?: Approval | null;
 
   sender?: User;
 

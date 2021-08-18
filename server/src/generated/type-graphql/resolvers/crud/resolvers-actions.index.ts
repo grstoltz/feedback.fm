@@ -1,3 +1,15 @@
+export { FindUniqueApprovalResolver } from "./Approval/FindUniqueApprovalResolver";
+export { FindFirstApprovalResolver } from "./Approval/FindFirstApprovalResolver";
+export { FindManyApprovalResolver } from "./Approval/FindManyApprovalResolver";
+export { CreateApprovalResolver } from "./Approval/CreateApprovalResolver";
+export { CreateManyApprovalResolver } from "./Approval/CreateManyApprovalResolver";
+export { DeleteApprovalResolver } from "./Approval/DeleteApprovalResolver";
+export { UpdateApprovalResolver } from "./Approval/UpdateApprovalResolver";
+export { DeleteManyApprovalResolver } from "./Approval/DeleteManyApprovalResolver";
+export { UpdateManyApprovalResolver } from "./Approval/UpdateManyApprovalResolver";
+export { UpsertApprovalResolver } from "./Approval/UpsertApprovalResolver";
+export { AggregateApprovalResolver } from "./Approval/AggregateApprovalResolver";
+export { GroupByApprovalResolver } from "./Approval/GroupByApprovalResolver";
 export { FindUniqueCommentResolver } from "./Comment/FindUniqueCommentResolver";
 export { FindFirstCommentResolver } from "./Comment/FindFirstCommentResolver";
 export { FindManyCommentResolver } from "./Comment/FindManyCommentResolver";

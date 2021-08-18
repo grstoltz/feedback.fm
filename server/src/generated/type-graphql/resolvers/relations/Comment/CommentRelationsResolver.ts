@@ -1,4 +1,5 @@
 import * as TypeGraphQL from "type-graphql";
+import { Approval } from "../../../models/Approval";
 import { Comment } from "../../../models/Comment";
 import { Song } from "../../../models/Song";
 import { User } from "../../../models/User";
@@ -6,6 +7,17 @@ import { transformFields, getPrismaFromContext, transformCountFieldIntoSelectRel
 
 @TypeGraphQL.Resolver(_of => Comment)
 export class CommentRelationsResolver {
+  @TypeGraphQL.FieldResolver(_type => Approval, {
+    nullable: true
+  })
+  async approval(@TypeGraphQL.Root() comment: Comment, @TypeGraphQL.Ctx() ctx: any): Promise<Approval | null> {
+    return getPrismaFromContext(ctx).comment.findUnique({
+      where: {
+        id: comment.id,
+      },
+    }).approval({});
+  }
+
   @TypeGraphQL.FieldResolver(_type => User, {
     nullable: false
   })

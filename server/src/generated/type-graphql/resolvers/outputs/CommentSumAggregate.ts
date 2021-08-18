@@ -26,4 +26,9 @@ export class CommentSumAggregate {
     nullable: true
   })
   receiverId!: number | null;
+
+  @TypeGraphQL.Field(_type => TypeGraphQL.Int, {
+    nullable: true
+  })
+  approvalId!: number | null;
 }

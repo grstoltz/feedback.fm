@@ -5,6 +5,7 @@ import { DecimalJSScalar } from "../../scalars";
 import { BoolFilter } from "../inputs/BoolFilter";
 import { DateTimeFilter } from "../inputs/DateTimeFilter";
 import { IntFilter } from "../inputs/IntFilter";
+import { IntNullableFilter } from "../inputs/IntNullableFilter";
 import { StringFilter } from "../inputs/StringFilter";
 
 @TypeGraphQL.InputType({
@@ -46,15 +47,15 @@ export class CommentScalarWhereInput {
   })
   receiverId?: IntFilter | undefined;
 
-  @TypeGraphQL.Field(_type => BoolFilter, {
+  @TypeGraphQL.Field(_type => IntNullableFilter, {
     nullable: true
   })
-  active?: BoolFilter | undefined;
+  approvalId?: IntNullableFilter | undefined;
 
   @TypeGraphQL.Field(_type => BoolFilter, {
     nullable: true
   })
-  approved?: BoolFilter | undefined;
+  active?: BoolFilter | undefined;
 
   @TypeGraphQL.Field(_type => StringFilter, {
     nullable: true

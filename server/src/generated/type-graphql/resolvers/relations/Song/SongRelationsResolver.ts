@@ -8,9 +8,9 @@ import { transformFields, getPrismaFromContext, transformCountFieldIntoSelectRel
 @TypeGraphQL.Resolver(_of => Song)
 export class SongRelationsResolver {
   @TypeGraphQL.FieldResolver(_type => User, {
-    nullable: true
+    nullable: false
   })
-  async owner(@TypeGraphQL.Root() song: Song, @TypeGraphQL.Ctx() ctx: any): Promise<User | null> {
+  async owner(@TypeGraphQL.Root() song: Song, @TypeGraphQL.Ctx() ctx: any): Promise<User> {
     return getPrismaFromContext(ctx).song.findUnique({
       where: {
         id: song.id,

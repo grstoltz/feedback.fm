@@ -39,7 +39,7 @@ export class Song {
   })
   ownerId!: number;
 
-  owner?: User | null;
+  owner?: User;
 
   comments?: Comment[];
 

@@ -32,15 +32,15 @@ export class CommentGroupBy {
   })
   receiverId!: number;
 
-  @TypeGraphQL.Field(_type => Boolean, {
-    nullable: false
+  @TypeGraphQL.Field(_type => TypeGraphQL.Int, {
+    nullable: true
   })
-  active!: boolean;
+  approvalId!: number | null;
 
   @TypeGraphQL.Field(_type => Boolean, {
     nullable: false
   })
-  approved!: boolean;
+  active!: boolean;
 
   @TypeGraphQL.Field(_type => String, {
     nullable: false
