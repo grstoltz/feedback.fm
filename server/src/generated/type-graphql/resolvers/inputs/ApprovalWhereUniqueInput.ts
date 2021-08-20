@@ -11,4 +11,9 @@ export class ApprovalWhereUniqueInput {
     nullable: true
   })
   id?: number | undefined;
+
+  @TypeGraphQL.Field(_type => TypeGraphQL.Int, {
+    nullable: true
+  })
+  commentId?: number | undefined;
 }

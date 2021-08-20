@@ -84,7 +84,7 @@ model Transaction {
 
 model Approval {
   id        Int       @id @default(autoincrement())
-  commentId Int
+  commentId Int       @unique
   status    String
   Comment   Comment?
 }

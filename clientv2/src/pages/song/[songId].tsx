@@ -6,6 +6,7 @@ import {
 	useSongQuery,
 	useMeQuery,
 	useCreateCommentMutation,
+	useUpdateApprovalMutation,
 } from "../../generated/graphql";
 import { useRouter } from "next/router";
 
@@ -55,6 +56,11 @@ const Song: React.FC = () => {
 	});
 
 	const [createComment] = useCreateCommentMutation();
+	const [updateApproval] = useUpdateApprovalMutation({
+		update(cache) {
+			cache.evict({ id: "ROOT_QUERY", fieldName: "song" });
+		},
+	});
 
 	if (loading || error || !data?.song) {
 		return (
@@ -69,6 +75,17 @@ const Song: React.FC = () => {
 	const song = data.song;
 	const userId = userData?.me?.id;
 	const comments = data.song?.comment;
+
+	const handleApprovalUpdate = async (
+		id: number | undefined,
+		commentId: number,
+		status: string
+	) => {
+		console.log("Called");
+		const response = await updateApproval({
+			variables: { id, commentId, status },
+		});
+	};
 
 	return (
 		<Layout>
@@ -135,6 +152,51 @@ const Song: React.FC = () => {
 										<Stack marginY="30px" key={comment.id}>
 											<Box padding={5} shadow="md" borderWidth="1px">
 												{comment.body}
+												{comment.approval?.id ? (
+													<>
+														{comment.approval?.status ===
+														"approved" ? (
+															<Box>This comment is approved</Box>
+														) : (
+															<Box>
+																This comment is not approved
+															</Box>
+														)}
+													</>
+												) : (
+													<Stack
+														direction="row"
+														spacing={4}
+														align="center"
+													>
+														<Button
+															colorScheme="green"
+															variant="solid"
+															onClick={() =>
+																handleApprovalUpdate(
+																	comment.approval?.id,
+																	comment.id,
+																	"approved"
+																)
+															}
+														>
+															Approve Comment
+														</Button>
+														<Button
+															colorScheme="red"
+															variant="outline"
+															onClick={() =>
+																handleApprovalUpdate(
+																	comment.approval?.id,
+																	comment.id,
+																	"denied"
+																)
+															}
+														>
+															Deny Comment
+														</Button>
+													</Stack>
+												)}
 											</Box>
 										</Stack>
 									)

@@ -17,6 +17,7 @@ query Song($id: Int!) {
 			body
 			senderId
 			approval {
+				id
 				status
 			}
 		}

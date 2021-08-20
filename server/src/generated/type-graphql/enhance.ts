@@ -156,7 +156,7 @@ const inputsInfo = {
   TransactionScalarWhereWithAggregatesInput: ["AND", "OR", "NOT", "id", "userId", "openingBalance", "transactionAmount", "createdAt", "updatedAt"],
   ApprovalWhereInput: ["AND", "OR", "NOT", "id", "commentId", "status", "Comment"],
   ApprovalOrderByInput: ["id", "commentId", "status"],
-  ApprovalWhereUniqueInput: ["id"],
+  ApprovalWhereUniqueInput: ["id", "commentId"],
   ApprovalScalarWhereWithAggregatesInput: ["AND", "OR", "NOT", "id", "commentId", "status"],
   UserCreateInput: ["email", "username", "password", "avatarURL", "createdAt", "updatedAt", "songs", "sentComments", "receivedComments", "notifications", "transactions"],
   UserUpdateInput: ["email", "username", "password", "avatarURL", "createdAt", "updatedAt", "songs", "sentComments", "receivedComments", "notifications", "transactions"],

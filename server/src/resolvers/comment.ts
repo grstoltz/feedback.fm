@@ -68,11 +68,11 @@ export class CommentResolver {
 
 	@FieldResolver(() => Approval, { nullable: true })
 	approval(@Root() comment: Comment, @Ctx() { prisma }: MyContext) {
-		if (!comment.approvalId) {
-			return null;
-		}
+		// if (!comment.approvalId) {
+		// 	return null;
+		// }
 		return prisma.approval.findUnique({
-			where: { id: comment.approvalId },
+			where: { commentId: comment.id },
 		});
 	}
 
@@ -91,26 +91,39 @@ export class CommentResolver {
 		});
 	}
 
-	//Change to approval model
-	// @Mutation(() => Comment)
-	// @UseMiddleware(isAuth)
-	// async reviewComment(
-	// 	@Arg("id", () => Int) id: number,
-	// 	@Arg("status", () => String) status: string,
-	// 	@Ctx() { prisma, req }: MyContext
-	// ): Promise<number> {
-	// 	const updatedComment = await prisma.comment.updateMany({
-	// 		where: {
-	// 			id,
-	// 			receiverId: req.session.userId,
-	// 		},
-	// 		data: {
-	// 			approved: status === "approved" ? true : false,
-	// 		},
-	// 	});
+	@Mutation(() => Approval)
+	@UseMiddleware(isAuth)
+	async updateApproval(
+		@Ctx() { prisma }: MyContext,
+		@Arg("status", () => String) status: string,
+		@Arg("commentId", () => Int) commentId: number,
+		@Arg("id", () => Int, { nullable: true }) id?: number | undefined
+	): Promise<Approval> {
+		let upsertApproval;
+		if (id) {
+			upsertApproval = await prisma.approval.upsert({
+				where: {
+					id,
+				},
+				update: {
+					status,
+				},
+				create: {
+					status,
+					commentId,
+				},
+			});
+		} else {
+			upsertApproval = await prisma.approval.create({
+				data: {
+					status,
+					commentId,
+				},
+			});
+		}
 
-	// 	return updatedComment?.count;
-	// }
+		return upsertApproval;
+	}
 
 	@Mutation(() => Boolean)
 	@UseMiddleware(isAuth)

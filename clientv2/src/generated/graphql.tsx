@@ -67,6 +67,7 @@ export type Mutation = {
   login: UserResponse;
   logout: Scalars['Boolean'];
   createComment: Comment;
+  updateApproval: Approval;
   deleteComment: Scalars['Boolean'];
   createTransaction: Transaction;
   createNotification: Notification;
@@ -120,6 +121,13 @@ export type MutationLoginArgs = {
 
 export type MutationCreateCommentArgs = {
   input: CommentInput;
+};
+
+
+export type MutationUpdateApprovalArgs = {
+  id?: Maybe<Scalars['Int']>;
+  commentId: Scalars['Int'];
+  status: Scalars['String'];
 };
 
 
@@ -322,6 +330,15 @@ export type RegisterMutationVariables = Exact<{
 
 export type RegisterMutation = { __typename?: 'Mutation', register: { __typename?: 'UserResponse', errors?: Maybe<Array<{ __typename?: 'FieldError', field: string, message: string }>>, user?: Maybe<{ __typename?: 'User', id: number, username: string }> } };
 
+export type UpdateApprovalMutationVariables = Exact<{
+  id?: Maybe<Scalars['Int']>;
+  commentId: Scalars['Int'];
+  status: Scalars['String'];
+}>;
+
+
+export type UpdateApprovalMutation = { __typename?: 'Mutation', updateApproval: { __typename?: 'Approval', id: number } };
+
 export type UpdateSongMutationVariables = Exact<{
   id: Scalars['Int'];
   title: Scalars['String'];
@@ -356,7 +373,7 @@ export type SongQueryVariables = Exact<{
 }>;
 
 
-export type SongQuery = { __typename?: 'Query', song?: Maybe<{ __typename?: 'Song', id: number, createdAt: any, updatedAt: any, title: string, mediaUrl: string, mediaType: string, genre: string, ownerId: number, owner: { __typename?: 'User', id: number, username: string }, comment?: Maybe<Array<{ __typename?: 'Comment', id: number, body: string, senderId: number, approval?: Maybe<{ __typename?: 'Approval', status: string }> }>> }> };
+export type SongQuery = { __typename?: 'Query', song?: Maybe<{ __typename?: 'Song', id: number, createdAt: any, updatedAt: any, title: string, mediaUrl: string, mediaType: string, genre: string, ownerId: number, owner: { __typename?: 'User', id: number, username: string }, comment?: Maybe<Array<{ __typename?: 'Comment', id: number, body: string, senderId: number, approval?: Maybe<{ __typename?: 'Approval', id: number, status: string }> }>> }> };
 
 export type SongsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -706,6 +723,41 @@ export function useRegisterMutation(baseOptions?: Apollo.MutationHookOptions<Reg
 export type RegisterMutationHookResult = ReturnType<typeof useRegisterMutation>;
 export type RegisterMutationResult = Apollo.MutationResult<RegisterMutation>;
 export type RegisterMutationOptions = Apollo.BaseMutationOptions<RegisterMutation, RegisterMutationVariables>;
+export const UpdateApprovalDocument = gql`
+    mutation UpdateApproval($id: Int, $commentId: Int!, $status: String!) {
+  updateApproval(id: $id, commentId: $commentId, status: $status) {
+    id
+  }
+}
+    `;
+export type UpdateApprovalMutationFn = Apollo.MutationFunction<UpdateApprovalMutation, UpdateApprovalMutationVariables>;
+
+/**
+ * __useUpdateApprovalMutation__
+ *
+ * To run a mutation, you first call `useUpdateApprovalMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateApprovalMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateApprovalMutation, { data, loading, error }] = useUpdateApprovalMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *      commentId: // value for 'commentId'
+ *      status: // value for 'status'
+ *   },
+ * });
+ */
+export function useUpdateApprovalMutation(baseOptions?: Apollo.MutationHookOptions<UpdateApprovalMutation, UpdateApprovalMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateApprovalMutation, UpdateApprovalMutationVariables>(UpdateApprovalDocument, options);
+      }
+export type UpdateApprovalMutationHookResult = ReturnType<typeof useUpdateApprovalMutation>;
+export type UpdateApprovalMutationResult = Apollo.MutationResult<UpdateApprovalMutation>;
+export type UpdateApprovalMutationOptions = Apollo.BaseMutationOptions<UpdateApprovalMutation, UpdateApprovalMutationVariables>;
 export const UpdateSongDocument = gql`
     mutation UpdateSong($id: Int!, $title: String!, $mediaUrl: String!, $genre: String!) {
   updateSong(id: $id, title: $title, mediaUrl: $mediaUrl, genre: $genre)
@@ -896,6 +948,7 @@ export const SongDocument = gql`
       body
       senderId
       approval {
+        id
         status
       }
     }
