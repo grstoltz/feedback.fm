@@ -34,7 +34,6 @@ const Admin: React.FC = () => {
 		variables: { id: userId },
 	});
 
-	console.log(data);
 	if (loading || error || !data?.user) {
 		return (
 			<Layout>
@@ -121,6 +120,10 @@ const Admin: React.FC = () => {
 														</NextLink>
 
 														{comment.body}
+														<Box>
+															Comment is{" "}
+															{comment.approval?.status}
+														</Box>
 													</Box>
 												</Stack>
 											)
@@ -156,8 +159,11 @@ const Admin: React.FC = () => {
 																</Heading>
 															</Link>
 														</NextLink>
-
 														{comment.body}
+														<Box>
+															Comment is{" "}
+															{comment.approval?.status}
+														</Box>
 													</Box>
 												</Stack>
 											)

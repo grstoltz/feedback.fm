@@ -75,6 +75,11 @@ const Song: React.FC = () => {
 	const song = data.song;
 	const userId = userData?.me?.id;
 	const comments = data.song?.comment;
+	let userHasLeftComment = false;
+
+	if (comments?.some((e) => e.senderId === userId)) {
+		userHasLeftComment = true;
+	}
 
 	const handleApprovalUpdate = async (
 		id: number | undefined,
@@ -102,56 +107,58 @@ const Song: React.FC = () => {
 			<Text whiteSpace="pre-wrap" marginBottom="50px">
 				{song.mediaUrl}
 			</Text>
-			{song.ownerId !== userId && userId && (
-				<>
-					<Formik
-						initialValues={{ [FIELDS.BODY]: "" }}
-						validationSchema={validationSchema}
-						onSubmit={async (values) => {
-							try {
-								const response = await createComment({
-									variables: {
-										input: {
-											parentId: intId,
-											receiverId: data.song?.ownerId as number,
-											body: values[FIELDS.BODY],
-										},
+			{song.ownerId !== userId && userId && !userHasLeftComment && (
+				<Formik
+					initialValues={{ [FIELDS.BODY]: "" }}
+					validationSchema={validationSchema}
+					onSubmit={async (values) => {
+						try {
+							const response = await createComment({
+								variables: {
+									input: {
+										parentId: intId,
+										receiverId: data.song?.ownerId as number,
+										body: values[FIELDS.BODY],
 									},
-								});
-								if (!response.errors) {
-									const postId = response.data?.createComment?.id;
-									router.push(`/feedback/${postId}`);
-								}
-							} catch (err) {
-								if (err.message.startsWith("NotAuthenticated")) {
-									router.replace("/login");
-								}
-								//add error handling
+								},
+							});
+							if (!response.errors) {
+								const postId = response.data?.createComment?.id;
+								router.push(`/feedback/${postId}`);
 							}
-						}}
-					>
-						{({ isSubmitting }) => (
-							<Form>
-								<TextArea
-									name={FIELDS.BODY}
-									label="Body"
-									placeholder="Leave your feedback"
-									marginBottom="20px"
-									rows={5}
-								/>
-								<Button type="submit" isLoading={isSubmitting}>
-									Submit Comment
-								</Button>
-							</Form>
-						)}
-					</Formik>
-					{comments
-						? comments.map(
-								(comment) =>
-									comment.id && (
-										<Stack marginY="30px" key={comment.id}>
-											<Box padding={5} shadow="md" borderWidth="1px">
-												{comment.body}
+						} catch (err) {
+							if (err.message.startsWith("NotAuthenticated")) {
+								router.replace("/login");
+							}
+							//add error handling
+						}
+					}}
+				>
+					{({ isSubmitting }) => (
+						<Form>
+							<TextArea
+								name={FIELDS.BODY}
+								label="Body"
+								placeholder="Leave your feedback"
+								marginBottom="20px"
+								rows={5}
+							/>
+							<Button type="submit" isLoading={isSubmitting}>
+								Submit Comment
+							</Button>
+						</Form>
+					)}
+				</Formik>
+			)}
+			{comments
+				? comments.map(
+						(comment) =>
+							comment.id && (
+								<Stack marginY="30px" key={comment.id}>
+									<Box padding={5} shadow="md" borderWidth="1px">
+										{comment.body}
+										{comment.receiver.id === userId ? (
+											<>
 												{comment.approval?.id ? (
 													<>
 														{comment.approval?.status ===
@@ -197,13 +204,13 @@ const Song: React.FC = () => {
 														</Button>
 													</Stack>
 												)}
-											</Box>
-										</Stack>
-									)
-						  )
-						: null}
-				</>
-			)}
+											</>
+										) : null}
+									</Box>
+								</Stack>
+							)
+				  )
+				: null}
 		</Layout>
 	);
 };

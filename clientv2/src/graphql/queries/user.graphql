@@ -27,6 +27,9 @@ query User($id: Int!) {
 				id
 				title
 			}
+			approval {
+				status
+			}
 		}
 		sentComments {
 			id
@@ -38,6 +41,9 @@ query User($id: Int!) {
 			song {
 				id
 				title
+			}
+			approval {
+				status
 			}
 		}
 	}
