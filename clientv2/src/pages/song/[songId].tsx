@@ -122,6 +122,7 @@ const Song: React.FC = () => {
 									},
 								},
 							});
+
 							if (!response.errors) {
 								const postId = response.data?.createComment?.id;
 								router.push(`/feedback/${postId}`);
