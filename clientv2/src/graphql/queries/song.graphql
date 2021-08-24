@@ -19,6 +19,11 @@ query Song($id: Int!) {
 			receiver {
 				id
 			}
+			sender {
+				id
+				username
+				avatarURL
+			}
 			approval {
 				id
 				status

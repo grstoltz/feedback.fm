@@ -29,6 +29,7 @@ import {
 } from "@chakra-ui/react";
 
 import * as Yup from "yup";
+import CommentCard from "../../components/CommentCard";
 
 enum FIELDS {
 	BODY = "body",
@@ -86,7 +87,6 @@ const Song: React.FC = () => {
 		commentId: number,
 		status: string
 	) => {
-		console.log("Called");
 		const response = await updateApproval({
 			variables: { id, commentId, status },
 		});
@@ -156,58 +156,11 @@ const Song: React.FC = () => {
 						(comment) =>
 							comment.id && (
 								<Stack marginY="30px" key={comment.id}>
-									<Box padding={5} shadow="md" borderWidth="1px">
-										{comment.body}
-										{comment.receiver.id === userId ? (
-											<>
-												{comment.approval?.id ? (
-													<>
-														{comment.approval?.status ===
-														"approved" ? (
-															<Box>This comment is approved</Box>
-														) : (
-															<Box>
-																This comment is not approved
-															</Box>
-														)}
-													</>
-												) : (
-													<Stack
-														direction="row"
-														spacing={4}
-														align="center"
-													>
-														<Button
-															colorScheme="green"
-															variant="solid"
-															onClick={() =>
-																handleApprovalUpdate(
-																	comment.approval?.id,
-																	comment.id,
-																	"approved"
-																)
-															}
-														>
-															Approve Comment
-														</Button>
-														<Button
-															colorScheme="red"
-															variant="outline"
-															onClick={() =>
-																handleApprovalUpdate(
-																	comment.approval?.id,
-																	comment.id,
-																	"denied"
-																)
-															}
-														>
-															Deny Comment
-														</Button>
-													</Stack>
-												)}
-											</>
-										) : null}
-									</Box>
+									<CommentCard
+										userId={userId}
+										comment={comment}
+										handleApprovalUpdate={handleApprovalUpdate}
+									/>
 								</Stack>
 							)
 				  )
