@@ -373,7 +373,7 @@ export type SongQueryVariables = Exact<{
 }>;
 
 
-export type SongQuery = { __typename?: 'Query', song?: Maybe<{ __typename?: 'Song', id: number, createdAt: any, updatedAt: any, title: string, mediaUrl: string, mediaType: string, genre: string, ownerId: number, owner: { __typename?: 'User', id: number, username: string }, comment?: Maybe<Array<{ __typename?: 'Comment', id: number, body: string, senderId: number, receiver: { __typename?: 'User', id: number }, sender: { __typename?: 'User', id: number, username: string, avatarURL: string }, approval?: Maybe<{ __typename?: 'Approval', id: number, status: string }> }>> }> };
+export type SongQuery = { __typename?: 'Query', song?: Maybe<{ __typename?: 'Song', id: number, createdAt: any, updatedAt: any, title: string, mediaUrl: string, mediaType: string, genre: string, ownerId: number, owner: { __typename?: 'User', id: number, username: string }, comment?: Maybe<Array<{ __typename?: 'Comment', id: number, createdAt: any, body: string, senderId: number, receiver: { __typename?: 'User', id: number }, sender: { __typename?: 'User', id: number, username: string, avatarURL: string }, approval?: Maybe<{ __typename?: 'Approval', id: number, status: string }> }>> }> };
 
 export type SongsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -945,6 +945,7 @@ export const SongDocument = gql`
     }
     comment {
       id
+      createdAt
       body
       senderId
       receiver {

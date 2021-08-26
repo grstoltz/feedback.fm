@@ -1,6 +1,4 @@
 // Components
-import DeletePostButtons from "../DeleteSongButton";
-import EditPostButtons from "../EditSongButton";
 import {
 	Box,
 	Stack,
@@ -13,8 +11,10 @@ import {
 } from "@chakra-ui/react";
 import NextLink from "next/link";
 
+import TimeAgo from "react-timeago";
+
 // Types
-import { Maybe, SongSnippetFragment } from "../../generated/graphql";
+import { Maybe } from "../../generated/graphql";
 
 type Props = {
 	comment: {
@@ -22,6 +22,7 @@ type Props = {
 		id: number;
 		body: string;
 		senderId: number;
+		createdAt: Date;
 		receiver: {
 			__typename?: "User" | undefined;
 			id: number;
@@ -52,14 +53,38 @@ const CommentCard: React.FC<Props> = ({
 	return (
 		<Flex>
 			<Box padding={5} shadow="md" borderWidth="1px" width="100%">
-				<Flex alignItems="center" justifyContent="start" marginTop="16px">
-					<Avatar size={"sm"} src={comment.sender.avatarURL} />
+				<Flex
+					marginBottom={"10px"}
+					alignItems="center"
+					justifyContent="start"
+				>
 					<NextLink
 						href="user/[userId]"
-						as={`/sender/${comment.sender.id}`}
+						as={`../user/${comment.sender.id}`}
 					>
 						<Link>
-							<Heading fontSize="s">{comment.sender.username}</Heading>
+							<Avatar size={"sm"} src={comment.sender.avatarURL} />
+						</Link>
+					</NextLink>
+
+					<NextLink
+						href="user/[userId]"
+						as={`../user/${comment.sender.id}`}
+					>
+						<Link>
+							<Heading marginLeft="10px" fontSize="s">
+								{comment.sender.username}
+							</Heading>
+						</Link>
+					</NextLink>
+					<NextLink
+						href="../feedback/[feedbackId]"
+						as={`/feedback/${comment.id}`}
+					>
+						<Link marginLeft="auto">
+							<Text>
+								<TimeAgo date={comment.createdAt} />
+							</Text>
 						</Link>
 					</NextLink>
 				</Flex>

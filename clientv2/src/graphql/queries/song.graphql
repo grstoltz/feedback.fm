@@ -14,6 +14,7 @@ query Song($id: Int!) {
 		}
 		comment {
 			id
+			createdAt
 			body
 			senderId
 			receiver {
