@@ -94,10 +94,29 @@ const CommentCard: React.FC<Props> = ({
 					<>
 						{comment.approval?.id ? (
 							<>
-								{comment.approval?.status === "approved" ? (
+								{comment.approval?.status === "approved" && (
 									<Box>This comment is approved</Box>
-								) : (
-									<Box>This comment is not approved</Box>
+								)}
+
+								{comment.approval?.status === "denied" && (
+									<>
+										<Box>This comment is not approved</Box>
+										<Button
+											colorScheme="red"
+											variant="solid"
+											onClick={() =>
+												handleApprovalUpdate(
+													comment.approval?.id,
+													comment.id,
+													"disputed"
+												)
+											}
+										></Button>
+									</>
+								)}
+
+								{comment.approval?.status === "disputed" && (
+									<Box>This comment is under admin review.</Box>
 								)}
 							</>
 						) : (
@@ -131,7 +150,25 @@ const CommentCard: React.FC<Props> = ({
 							</Stack>
 						)}
 					</>
-				) : null}
+				) : (
+					<Box>This comment has not been reviewed yet.</Box>
+				)}
+
+				{comment.sender.id === userId && (
+					<>
+						{comment.approval?.status === "approved" && (
+							<Box>This comment is approved</Box>
+						)}
+
+						{comment.approval?.status === "denied" && (
+							<Box>This comment is not approved</Box>
+						)}
+
+						{comment.approval?.status === "disputed" && (
+							<Box>This comment is under admin review.</Box>
+						)}
+					</>
+				)}
 			</Box>
 		</Flex>
 	);
