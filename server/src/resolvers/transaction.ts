@@ -22,12 +22,11 @@ export class TransactionResolver {
 			},
 		});
 
-		let balance;
+		let balance = 0;
 
-		transaction
-			? (balance =
-					transaction.openingBalance + transaction.transactionAmount)
-			: (balance = 0);
+		if (transaction) {
+			balance = transaction.openingBalance + transaction.transactionAmount;
+		}
 
 		return prisma.transaction.create({
 			data: {

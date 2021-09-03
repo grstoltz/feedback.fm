@@ -289,6 +289,14 @@ export type CreateSongMutationVariables = Exact<{
 
 export type CreateSongMutation = { __typename?: 'Mutation', createSong: { __typename?: 'Song', id: number, title: string, mediaUrl: string, genre: string, ownerId: number } };
 
+export type CreateTransactionMutationVariables = Exact<{
+  id: Scalars['Int'];
+  transactionAmount: Scalars['Int'];
+}>;
+
+
+export type CreateTransactionMutation = { __typename?: 'Mutation', createTransaction: { __typename?: 'Transaction', id: number } };
+
 export type DeleteCommentMutationVariables = Exact<{
   id: Scalars['Int'];
 }>;
@@ -533,6 +541,40 @@ export function useCreateSongMutation(baseOptions?: Apollo.MutationHookOptions<C
 export type CreateSongMutationHookResult = ReturnType<typeof useCreateSongMutation>;
 export type CreateSongMutationResult = Apollo.MutationResult<CreateSongMutation>;
 export type CreateSongMutationOptions = Apollo.BaseMutationOptions<CreateSongMutation, CreateSongMutationVariables>;
+export const CreateTransactionDocument = gql`
+    mutation CreateTransaction($id: Int!, $transactionAmount: Int!) {
+  createTransaction(id: $id, transactionAmount: $transactionAmount) {
+    id
+  }
+}
+    `;
+export type CreateTransactionMutationFn = Apollo.MutationFunction<CreateTransactionMutation, CreateTransactionMutationVariables>;
+
+/**
+ * __useCreateTransactionMutation__
+ *
+ * To run a mutation, you first call `useCreateTransactionMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateTransactionMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createTransactionMutation, { data, loading, error }] = useCreateTransactionMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *      transactionAmount: // value for 'transactionAmount'
+ *   },
+ * });
+ */
+export function useCreateTransactionMutation(baseOptions?: Apollo.MutationHookOptions<CreateTransactionMutation, CreateTransactionMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateTransactionMutation, CreateTransactionMutationVariables>(CreateTransactionDocument, options);
+      }
+export type CreateTransactionMutationHookResult = ReturnType<typeof useCreateTransactionMutation>;
+export type CreateTransactionMutationResult = Apollo.MutationResult<CreateTransactionMutation>;
+export type CreateTransactionMutationOptions = Apollo.BaseMutationOptions<CreateTransactionMutation, CreateTransactionMutationVariables>;
 export const DeleteCommentDocument = gql`
     mutation DeleteComment($id: Int!) {
   deleteComment(id: $id)

@@ -9,12 +9,13 @@ import {
 	Link,
 	Avatar,
 } from "@chakra-ui/react";
+
 import NextLink from "next/link";
 
 import TimeAgo from "react-timeago";
 
 // Types
-import { Maybe } from "../../generated/graphql";
+import { useCreateTransactionMutation, Maybe } from "../../generated/graphql";
 
 type Props = {
 	comment: {
@@ -43,6 +44,17 @@ type Props = {
 	};
 	handleApprovalUpdate: any;
 	userId: number | undefined;
+};
+
+const [createTransaction] = useCreateTransactionMutation();
+
+const handleCreateTransaction = async (
+	id: number,
+	transactionAmount: number
+) => {
+	const transaction = await createTransaction({
+		variables: { id, transactionAmount },
+	});
 };
 
 const CommentCard: React.FC<Props> = ({
@@ -108,7 +120,9 @@ const CommentCard: React.FC<Props> = ({
 												handleApprovalUpdate(
 													comment.approval?.id,
 													comment.id,
-													"disputed"
+													"disputed",
+													true,
+													10
 												)
 											}
 										></Button>
@@ -128,7 +142,9 @@ const CommentCard: React.FC<Props> = ({
 										handleApprovalUpdate(
 											comment.approval?.id,
 											comment.id,
-											"approved"
+											"approved",
+											true,
+											10
 										)
 									}
 								>
@@ -141,7 +157,8 @@ const CommentCard: React.FC<Props> = ({
 										handleApprovalUpdate(
 											comment.approval?.id,
 											comment.id,
-											"denied"
+											"denied",
+											false
 										)
 									}
 								>

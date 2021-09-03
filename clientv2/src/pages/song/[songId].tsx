@@ -7,6 +7,8 @@ import {
 	useMeQuery,
 	useCreateCommentMutation,
 	useUpdateApprovalMutation,
+	useCreateTransactionMutation,
+	RegularErrorFragment,
 } from "../../generated/graphql";
 import { useRouter } from "next/router";
 
@@ -18,6 +20,8 @@ import TextArea from "../../components/TextArea";
 
 import { Formik, Form } from "formik";
 import {
+	Alert,
+	AlertIcon,
 	Heading,
 	Text,
 	Flex,
@@ -30,6 +34,7 @@ import {
 
 import * as Yup from "yup";
 import CommentCard from "../../components/CommentCard";
+import { useState } from "react";
 
 enum FIELDS {
 	BODY = "body",
@@ -41,7 +46,11 @@ const validationSchema = Yup.object().shape({
 		.required("This field is required"),
 });
 
+const initialState: Array<RegularErrorFragment> = [];
+
 const Song: React.FC = () => {
+	const [errors, setErrors] = useState(initialState);
+
 	const router = useRouter();
 
 	const intId =
@@ -57,6 +66,7 @@ const Song: React.FC = () => {
 	});
 
 	const [createComment] = useCreateCommentMutation();
+	const [createTransaction] = useCreateTransactionMutation();
 	const [updateApproval] = useUpdateApprovalMutation({
 		update(cache) {
 			cache.evict({ id: "ROOT_QUERY", fieldName: "song" });
@@ -83,17 +93,34 @@ const Song: React.FC = () => {
 	}
 
 	const handleApprovalUpdate = async (
-		id: number | undefined,
+		id: number,
 		commentId: number,
-		status: string
+		status: string,
+		transact: boolean,
+		transactionAmount: number | undefined
 	) => {
-		const response = await updateApproval({
+		const approval = await updateApproval({
 			variables: { id, commentId, status },
 		});
+
+		if (approval.data && transact && transactionAmount) {
+			const transaction = await createTransaction({
+				variables: { id, transactionAmount },
+			});
+		}
 	};
 
 	return (
 		<Layout>
+			{errors.length > 1
+				? errors.map((e, i) => {
+						<Alert key={i} status="error">
+							<AlertIcon />
+							{e.message}
+						</Alert>;
+				  })
+				: null}
+
 			{song.ownerId === userId && (
 				<Flex marginBottom="20px" justifyContent="flex-end">
 					<EditSongButtons song={song} marginRight="15px" />
