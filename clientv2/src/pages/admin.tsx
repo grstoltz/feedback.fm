@@ -109,8 +109,8 @@ const Admin: React.FC = () => {
 														borderWidth="1px"
 													>
 														<NextLink
-															href="feedback/[feedbackId]"
-															as={`/feedback/${comment.id}`}
+															href="song/[songId]"
+															as={`/song/${comment.song.id}`}
 														>
 															<Link>
 																<Heading fontSize="xl">
@@ -121,8 +121,9 @@ const Admin: React.FC = () => {
 
 														{comment.body}
 														<Box>
-															Comment is{" "}
-															{comment.approval?.status}
+															{comment.approval?.status
+																? `Comment is ${comment.approval.status}`
+																: "Comment has not been reviewed."}
 														</Box>
 													</Box>
 												</Stack>

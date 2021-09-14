@@ -46,17 +46,6 @@ type Props = {
 	userId: number | undefined;
 };
 
-const [createTransaction] = useCreateTransactionMutation();
-
-const handleCreateTransaction = async (
-	id: number,
-	transactionAmount: number
-) => {
-	const transaction = await createTransaction({
-		variables: { id, transactionAmount },
-	});
-};
-
 const CommentCard: React.FC<Props> = ({
 	comment,
 	handleApprovalUpdate,
@@ -125,12 +114,18 @@ const CommentCard: React.FC<Props> = ({
 													10
 												)
 											}
-										></Button>
+										>
+											Dispute
+										</Button>
 									</>
 								)}
 
 								{comment.approval?.status === "disputed" && (
 									<Box>This comment is under admin review.</Box>
+								)}
+
+								{comment.approval?.status == null && (
+									<Box>This comment has not been reviewed</Box>
 								)}
 							</>
 						) : (
@@ -167,9 +162,7 @@ const CommentCard: React.FC<Props> = ({
 							</Stack>
 						)}
 					</>
-				) : (
-					<Box>This comment has not been reviewed yet.</Box>
-				)}
+				) : null}
 
 				{comment.sender.id === userId && (
 					<>
@@ -183,6 +176,10 @@ const CommentCard: React.FC<Props> = ({
 
 						{comment.approval?.status === "disputed" && (
 							<Box>This comment is under admin review.</Box>
+						)}
+
+						{comment.approval?.status == null && (
+							<Box>This comment has not been reviewed</Box>
 						)}
 					</>
 				)}
