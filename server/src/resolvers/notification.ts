@@ -9,6 +9,9 @@ import {
 	InputType,
 	FieldResolver,
 	Root,
+	Subscription,
+	PubSub,
+	PubSubEngine,
 } from "type-graphql";
 import { Notification } from "../generated/type-graphql/models/Notification";
 import { User } from "../generated/type-graphql/models/User";
@@ -35,18 +38,30 @@ class NotificationInput {
 
 @Resolver(Notification)
 export class NotificationResolver {
+	@Subscription({
+		topics: "NOTIFICATIONS", // single topic
+	})
+	newNotification(@Root() payload: string): string {
+		return payload;
+	}
+
 	@Mutation(() => Notification)
-	@UseMiddleware(isAuth)
+	//@UseMiddleware(isAuth)
 	async createNotification(
 		@Arg("input") input: NotificationInput,
-		@Ctx() { prisma }: MyContext
+		@Ctx() { prisma }: MyContext,
+		@PubSub() pubSub: PubSubEngine
 	): Promise<Notification> {
-		return prisma.notification.create({
+		const notification = await prisma.notification.create({
 			data: {
 				read: false,
 				...input,
 			},
 		});
+
+		await pubSub.publish("NOTIFICATIONS", notification);
+
+		return notification;
 	}
 
 	// @FieldResolver(() => User)
