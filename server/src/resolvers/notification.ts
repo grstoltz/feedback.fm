@@ -26,8 +26,8 @@ class NotificationInput {
 	@Field()
 	body!: string;
 
-	@Field()
-	parentId!: number;
+	// @Field()
+	// parentId!: number;
 
 	@Field()
 	type!: string;
@@ -41,9 +41,15 @@ export class NotificationResolver {
 	@Subscription({
 		topics: "NOTIFICATIONS", // single topic
 	})
-	newNotification(@Root() payload: string): string {
-		return payload;
+	newNotification(@Root() notification: Notification): Notification {
+		return notification;
 	}
+
+	// Subscription: {
+	// 	newNotification: {
+	// 	  subscribe: () => pubSub.asyncIterator(["NOTIFICATIONS"]),
+	// 	},
+	//   }
 
 	@Mutation(() => Notification)
 	//@UseMiddleware(isAuth)

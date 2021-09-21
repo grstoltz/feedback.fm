@@ -9,10 +9,13 @@ import session from "express-session";
 import Redis from "ioredis";
 import connectRedis from "connect-redis";
 import cors from "cors";
+import * as http from "http";
 
+import { execute, subscribe } from "graphql";
 import { PrismaClient } from "@prisma/client";
-
 import { ApolloServer } from "apollo-server-express";
+import { PubSub } from "graphql-subscriptions";
+import { SubscriptionServer } from "subscriptions-transport-ws";
 import { buildSchema } from "type-graphql";
 
 import { HelloResolver } from "./resolvers/hello";
@@ -28,6 +31,7 @@ const main = async () => {
 	const prisma = new PrismaClient();
 
 	const app = express();
+	const httpServer = http.createServer(app);
 
 	const RedisStore = connectRedis(session);
 	const redis = new Redis(process.env.REDIS_URL);
@@ -58,19 +62,20 @@ const main = async () => {
 		})
 	);
 
-	const apolloServer = new ApolloServer({
-		schema: await buildSchema({
-			resolvers: [
-				HelloResolver,
-				SongResolver,
-				UserResolver,
-				CommentResolver,
-				TransactionResolver,
-				NotificationResolver,
-			],
-			validate: false,
-		}),
+	const schema = await buildSchema({
+		resolvers: [
+			HelloResolver,
+			SongResolver,
+			UserResolver,
+			CommentResolver,
+			TransactionResolver,
+			NotificationResolver,
+		],
+		validate: false,
+	});
 
+	const apolloServer = new ApolloServer({
+		schema,
 		context: ({ req, res }) => ({
 			req,
 			res,
@@ -79,10 +84,16 @@ const main = async () => {
 			userLoader: createUserLoader(),
 		}),
 	});
+	await apolloServer.start();
 
 	apolloServer.applyMiddleware({ app, cors: false });
 
-	app.listen(4000, () => {
+	SubscriptionServer.create(
+		{ schema, execute, subscribe },
+		{ server: httpServer, path: apolloServer.graphqlPath }
+	);
+
+	httpServer.listen(4000, () => {
 		console.log("Server started at localhost:4000");
 	});
 };
