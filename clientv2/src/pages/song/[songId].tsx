@@ -8,6 +8,7 @@ import {
 	useCreateCommentMutation,
 	useUpdateApprovalMutation,
 	useCreateTransactionMutation,
+	useCreateNotificationMutation,
 	RegularErrorFragment,
 } from "../../generated/graphql";
 import { useRouter } from "next/router";
@@ -67,6 +68,8 @@ const Song: React.FC = () => {
 
 	const [createComment] = useCreateCommentMutation();
 	const [createTransaction] = useCreateTransactionMutation();
+	const [createNotification] = useCreateNotificationMutation();
+
 	const [updateApproval] = useUpdateApprovalMutation({
 		update(cache) {
 			cache.evict({ id: "ROOT_QUERY", fieldName: "song" });
@@ -106,6 +109,17 @@ const Song: React.FC = () => {
 		if (approval.data && transact && transactionAmount) {
 			const transaction = await createTransaction({
 				variables: { id, transactionAmount },
+			});
+
+			const notification = await createNotification({
+				variables: {
+					input: {
+						receiverId: 0,
+						body: "test",
+						type: "song",
+						url: "testurl",
+					},
+				},
 			});
 		}
 	};

@@ -162,7 +162,6 @@ export type Notification = {
 export type NotificationInput = {
   receiverId: Scalars['Float'];
   body: Scalars['String'];
-  parentId: Scalars['Float'];
   type: Scalars['String'];
   url: Scalars['String'];
 };
@@ -218,6 +217,11 @@ export type SongInput = {
   mediaUrl: Scalars['String'];
   genre: Scalars['String'];
   mediaType: Scalars['String'];
+};
+
+export type Subscription = {
+  __typename?: 'Subscription';
+  newNotification: Notification;
 };
 
 export type Transaction = {
@@ -281,6 +285,13 @@ export type CreateCommentMutationVariables = Exact<{
 
 
 export type CreateCommentMutation = { __typename?: 'Mutation', createComment: { __typename?: 'Comment', id: number, parentId: number, senderId: number, receiverId: number, body: string } };
+
+export type CreateNotificationMutationVariables = Exact<{
+  input: NotificationInput;
+}>;
+
+
+export type CreateNotificationMutation = { __typename?: 'Mutation', createNotification: { __typename?: 'Notification', id: number, receiverId: number, body: string, type: string, url: string } };
 
 export type CreateSongMutationVariables = Exact<{
   input: SongInput;
@@ -375,6 +386,11 @@ export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type MeQuery = { __typename?: 'Query', me?: Maybe<{ __typename?: 'User', id: number, username: string, avatarURL: string }> };
+
+export type NotificationSubscriptionVariables = Exact<{ [key: string]: never; }>;
+
+
+export type NotificationSubscription = { __typename?: 'Subscription', newNotification: { __typename?: 'Notification', id: number } };
 
 export type SongQueryVariables = Exact<{
   id: Scalars['Int'];
@@ -504,6 +520,43 @@ export function useCreateCommentMutation(baseOptions?: Apollo.MutationHookOption
 export type CreateCommentMutationHookResult = ReturnType<typeof useCreateCommentMutation>;
 export type CreateCommentMutationResult = Apollo.MutationResult<CreateCommentMutation>;
 export type CreateCommentMutationOptions = Apollo.BaseMutationOptions<CreateCommentMutation, CreateCommentMutationVariables>;
+export const CreateNotificationDocument = gql`
+    mutation CreateNotification($input: NotificationInput!) {
+  createNotification(input: $input) {
+    id
+    receiverId
+    body
+    type
+    url
+  }
+}
+    `;
+export type CreateNotificationMutationFn = Apollo.MutationFunction<CreateNotificationMutation, CreateNotificationMutationVariables>;
+
+/**
+ * __useCreateNotificationMutation__
+ *
+ * To run a mutation, you first call `useCreateNotificationMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateNotificationMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createNotificationMutation, { data, loading, error }] = useCreateNotificationMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useCreateNotificationMutation(baseOptions?: Apollo.MutationHookOptions<CreateNotificationMutation, CreateNotificationMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateNotificationMutation, CreateNotificationMutationVariables>(CreateNotificationDocument, options);
+      }
+export type CreateNotificationMutationHookResult = ReturnType<typeof useCreateNotificationMutation>;
+export type CreateNotificationMutationResult = Apollo.MutationResult<CreateNotificationMutation>;
+export type CreateNotificationMutationOptions = Apollo.BaseMutationOptions<CreateNotificationMutation, CreateNotificationMutationVariables>;
 export const CreateSongDocument = gql`
     mutation CreateSong($input: SongInput!) {
   createSong(input: $input) {
@@ -970,6 +1023,35 @@ export function useMeLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<MeQuery
 export type MeQueryHookResult = ReturnType<typeof useMeQuery>;
 export type MeLazyQueryHookResult = ReturnType<typeof useMeLazyQuery>;
 export type MeQueryResult = Apollo.QueryResult<MeQuery, MeQueryVariables>;
+export const NotificationDocument = gql`
+    subscription Notification {
+  newNotification {
+    id
+  }
+}
+    `;
+
+/**
+ * __useNotificationSubscription__
+ *
+ * To run a query within a React component, call `useNotificationSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useNotificationSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useNotificationSubscription({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useNotificationSubscription(baseOptions?: Apollo.SubscriptionHookOptions<NotificationSubscription, NotificationSubscriptionVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useSubscription<NotificationSubscription, NotificationSubscriptionVariables>(NotificationDocument, options);
+      }
+export type NotificationSubscriptionHookResult = ReturnType<typeof useNotificationSubscription>;
+export type NotificationSubscriptionResult = Apollo.SubscriptionResult<NotificationSubscription>;
 export const SongDocument = gql`
     query Song($id: Int!) {
   song(id: $id) {
