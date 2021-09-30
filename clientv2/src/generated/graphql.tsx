@@ -263,6 +263,8 @@ export type UsernamePasswordInput = {
   password: Scalars['String'];
 };
 
+export type NotificationSnippetFragment = { __typename?: 'Notification', id: number, body: string, url: string, read: boolean };
+
 export type RegularErrorFragment = { __typename?: 'FieldError', field: string, message: string };
 
 export type RegularUserFragment = { __typename?: 'User', id: number, username: string };
@@ -409,8 +411,16 @@ export type UserQueryVariables = Exact<{
 }>;
 
 
-export type UserQuery = { __typename?: 'Query', user?: Maybe<{ __typename?: 'User', id: number, username: string, songs?: Maybe<Array<{ __typename?: 'Song', id: number, title: string, mediaUrl: string, mediaType: string, genre: string, ownerId: number, createdAt: any, updatedAt: any, owner: { __typename?: 'User', id: number, username: string } }>>, receivedComments?: Maybe<Array<{ __typename?: 'Comment', id: number, body: string, sender: { __typename?: 'User', id: number, username: string }, song?: Maybe<{ __typename?: 'Song', id: number, title: string }>, approval?: Maybe<{ __typename?: 'Approval', status: string }> }>>, sentComments?: Maybe<Array<{ __typename?: 'Comment', id: number, body: string, receiver: { __typename?: 'User', id: number, username: string }, song?: Maybe<{ __typename?: 'Song', id: number, title: string }>, approval?: Maybe<{ __typename?: 'Approval', status: string }> }>> }> };
+export type UserQuery = { __typename?: 'Query', user?: Maybe<{ __typename?: 'User', id: number, username: string, avatarURL: string, songs?: Maybe<Array<{ __typename?: 'Song', id: number, title: string, mediaUrl: string, mediaType: string, genre: string, ownerId: number, createdAt: any, updatedAt: any, owner: { __typename?: 'User', id: number, username: string } }>>, receivedComments?: Maybe<Array<{ __typename?: 'Comment', id: number, body: string, sender: { __typename?: 'User', id: number, username: string }, song?: Maybe<{ __typename?: 'Song', id: number, title: string }>, approval?: Maybe<{ __typename?: 'Approval', status: string }> }>>, sentComments?: Maybe<Array<{ __typename?: 'Comment', id: number, body: string, receiver: { __typename?: 'User', id: number, username: string }, song?: Maybe<{ __typename?: 'Song', id: number, title: string }>, approval?: Maybe<{ __typename?: 'Approval', status: string }> }>>, notifications?: Maybe<Array<{ __typename?: 'Notification', id: number, body: string, url: string, read: boolean }>> }> };
 
+export const NotificationSnippetFragmentDoc = gql`
+    fragment NotificationSnippet on Notification {
+  id
+  body
+  url
+  read
+}
+    `;
 export const RegularErrorFragmentDoc = gql`
     fragment RegularError on FieldError {
   field
@@ -1166,6 +1176,7 @@ export const UserDocument = gql`
   user(id: $id) {
     id
     username
+    avatarURL
     songs {
       id
       title
@@ -1209,6 +1220,12 @@ export const UserDocument = gql`
       approval {
         status
       }
+    }
+    notifications {
+      id
+      body
+      url
+      read
     }
   }
 }

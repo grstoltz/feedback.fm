@@ -2,6 +2,7 @@ query User($id: Int!) {
 	user(id: $id) {
 		id
 		username
+		avatarURL
 		songs {
 			id
 			title
@@ -45,6 +46,12 @@ query User($id: Int!) {
 			approval {
 				status
 			}
+		}
+		notifications {
+			id
+			body
+			url
+			read
 		}
 	}
 }

@@ -3,12 +3,9 @@ import {
 	ApolloProvider,
 	HttpLink,
 	InMemoryCache,
-	split,
 } from "@apollo/client";
-import { getMainDefinition } from "@apollo/client/utilities";
 import nextWithApollo from "next-with-apollo";
 import { SongsQueryResult } from "../generated/graphql";
-import { WebSocketLink } from "@apollo/client/link/ws";
 
 //const ROOT_URL = process.env.ROOT_URL;
 
@@ -18,33 +15,10 @@ if (!ROOT_URL) {
 	throw new Error("ROOT_URL environment variable is not set");
 }
 
-const wsLink = new WebSocketLink({
-	uri: "ws://localhost:4000/subscriptions",
-	options: {
-		reconnect: true,
-	},
-});
-
-const httpLink = new HttpLink({
-	uri: ROOT_URL as string,
-});
-
-const splitLink = split(
-	({ query }) => {
-		const definition = getMainDefinition(query);
-		return (
-			definition.kind === "OperationDefinition" &&
-			definition.operation === "subscription"
-		);
-	},
-	wsLink,
-	httpLink
-);
-
 export const withApollo = nextWithApollo(
 	({ initialState, headers }) => {
 		return new ApolloClient({
-			link: splitLink,
+			uri: ROOT_URL as string,
 			credentials: "include",
 			headers: {
 				cookie:

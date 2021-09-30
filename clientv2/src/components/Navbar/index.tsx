@@ -1,5 +1,9 @@
 // Hooks
-import { useMeQuery, useLogoutMutation } from "../../generated/graphql";
+import {
+	useMeQuery,
+	useUserQuery,
+	useLogoutMutation,
+} from "../../generated/graphql";
 
 // Components
 import {
@@ -20,9 +24,17 @@ import Image from "next/image";
 import styles from "./index.module.scss";
 
 import logo from "../../public/logo.png";
+import NotificationCard from "../NotificationCard";
 
 const Navbar: React.FC = () => {
-	const { data } = useMeQuery();
+	const { data: userData } = useMeQuery();
+
+	const userId = userData?.me?.id as number;
+
+	const { data, loading, error } = useUserQuery({
+		variables: { id: userId },
+	});
+
 	const [logout, { client, loading: isLogoutLoading }] = useLogoutMutation();
 
 	return (
@@ -39,14 +51,14 @@ const Navbar: React.FC = () => {
 					</Link>
 				</NextLink>
 				<Flex alignItems={"center"} justifyContent={"space-between"}>
-					{data?.me ? (
+					{data?.user ? (
 						<>
 							<NextLink href="/upload">
 								<Box marginRight="20px">
 									<Link marginRight="20px">Upload</Link>
 								</Box>
 							</NextLink>
-							<Button
+							{/* <Button
 								variant="link"
 								marginRight="20px"
 								onClick={async () => {
@@ -56,11 +68,28 @@ const Navbar: React.FC = () => {
 								isLoading={isLogoutLoading}
 							>
 								Logout
-							</Button>
+							</Button> */}
 							<Flex alignItems={"center"}>
-								<Box marginRight="10px">{data.me?.username}</Box>
+								<Menu>
+									{/* Notifications */}
+									<MenuButton marginRight="20px">
+										Notifications
+									</MenuButton>
+									<MenuList minHeight="300px">
+										{data.user.notifications &&
+										data.user.notifications.length > 0 ? (
+											data.user.notifications.map((e) => {
+												<NotificationCard notification={e} />;
+											})
+										) : (
+											<Box paddingLeft="15px">No Notifcations</Box>
+										)}
+									</MenuList>
+								</Menu>
+								<Box marginRight="10px">{data.user?.username}</Box>
 
 								<Menu>
+									{/* admin */}
 									<MenuButton
 										as={Button}
 										rounded={"full"}
@@ -68,8 +97,9 @@ const Navbar: React.FC = () => {
 										cursor={"pointer"}
 										minW={0}
 									>
-										<Avatar size={"sm"} src={data.me.avatarURL} />
+										<Avatar size={"sm"} src={data.user.avatarURL} />
 									</MenuButton>
+
 									<MenuList>
 										<NextLink href="/admin">
 											<MenuItem>
@@ -78,7 +108,18 @@ const Navbar: React.FC = () => {
 										</NextLink>
 										<MenuItem>Link 2</MenuItem>
 										<MenuDivider />
-										<MenuItem>Link 3</MenuItem>
+										<MenuItem>
+											<Button
+												variant="link"
+												onClick={async () => {
+													await logout();
+													client.resetStore();
+												}}
+												isLoading={isLogoutLoading}
+											>
+												Logout
+											</Button>
+										</MenuItem>
 									</MenuList>
 								</Menu>
 							</Flex>
