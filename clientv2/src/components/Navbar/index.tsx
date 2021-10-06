@@ -37,6 +37,8 @@ const Navbar: React.FC = () => {
 
 	const [logout, { client, loading: isLogoutLoading }] = useLogoutMutation();
 
+	console.log(data?.user?.notifications);
+
 	return (
 		<Box className={styles.navbarContainer} zIndex="navbar">
 			<Flex
@@ -79,11 +81,31 @@ const Navbar: React.FC = () => {
 										{data.user.notifications &&
 										data.user.notifications.length > 0 ? (
 											data.user.notifications.map((e) => {
-												<NotificationCard notification={e} />;
+												return (
+													<NotificationCard notification={e} />
+												);
 											})
 										) : (
-											<Box paddingLeft="15px">No Notifcations</Box>
+											<Box
+												marginTop={"10px"}
+												textAlign={"center"}
+												paddingLeft="15px"
+											>
+												No Notifcations
+											</Box>
 										)}
+										<NextLink href="/upload">
+											<Box
+												position={"absolute"}
+												bottom={"0px"}
+												padding={5}
+												borderWidth="1px"
+												width="100%"
+												textAlign={"center"}
+											>
+												See All Notifications
+											</Box>
+										</NextLink>
 									</MenuList>
 								</Menu>
 								<Box marginRight="10px">{data.user?.username}</Box>

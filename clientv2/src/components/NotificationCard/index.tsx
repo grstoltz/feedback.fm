@@ -2,6 +2,8 @@
 import { Box } from "@chakra-ui/react";
 import { NotificationSnippetFragment } from "../../generated/graphql";
 
+import styles from "./index.module.scss";
+
 type Props = {
 	notification: NotificationSnippetFragment;
 };
@@ -9,7 +11,15 @@ type Props = {
 const NotificationCard: React.FC<Props> = ({ notification }) => {
 	return (
 		<>
-			<Box>{notification.body}</Box>
+			<Box
+				padding={5}
+				borderWidth="1px"
+				width="100%"
+				className={styles.notificationTile}
+				_hover={{ bg: "teal.50" }}
+			>
+				{notification.body}
+			</Box>
 		</>
 	);
 };
