@@ -213,16 +213,24 @@ export class UserResolver {
 
 	@FieldResolver(() => [Notification], { nullable: true })
 	async notifications(
-		//@Root() user: User,
-		@Ctx() { prisma, req }: MyContext
-	): Promise<Notification[]> {
-		const result = await prisma.notification.findMany({
-			where: {
-				receiverId: req.session.userId,
-			},
-		});
-
-		return result;
+		@Root() user: User,
+		@Arg("skip", () => Number) skip: number,
+		@Ctx() { req, prisma }: MyContext
+	): Promise<Notification[] | null> {
+		if (req.session.userId === user.id) {
+			return prisma.notification.findMany({
+				where: {
+					receiverId: user.id,
+				},
+				skip,
+				take: 15,
+				orderBy: {
+					createdAt: "desc",
+				},
+			});
+		} else {
+			return null;
+		}
 	}
 
 	@FieldResolver(() => [Comment], { nullable: true })

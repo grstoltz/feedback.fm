@@ -70,10 +70,24 @@ export class NotificationResolver {
 		return notification;
 	}
 
-	// @FieldResolver(() => User)
-	// sender(@Root() notificaion: Notification, @Ctx() { userLoader }: MyContext) {
-	// 	return userLoader.load(notificaion.senderId);
-	// }
+	// Create a query which returns 15 notifications for a user using a cursor for pagination
+	@FieldResolver(() => [Notification])
+	async notifications(
+		@Root() user: User,
+		@Arg("skip", () => Number) skip: number,
+		@Ctx() { prisma }: MyContext
+	): Promise<Notification[]> {
+		return prisma.notification.findMany({
+			where: {
+				receiverId: user.id,
+			},
+			skip,
+			take: 15,
+			orderBy: {
+				createdAt: "desc",
+			},
+		});
+	}
 
 	@FieldResolver(() => User)
 	receiver(@Root() notificaion: Notification, @Ctx() { prisma }: MyContext) {
