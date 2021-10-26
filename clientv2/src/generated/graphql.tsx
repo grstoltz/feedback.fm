@@ -176,6 +176,7 @@ export type Query = {
   me?: Maybe<User>;
   comments: Array<Comment>;
   comment?: Maybe<Comment>;
+  paginatedNotifications?: Maybe<Array<Notification>>;
 };
 
 
@@ -196,6 +197,12 @@ export type QueryCommentsArgs = {
 
 export type QueryCommentArgs = {
   id: Scalars['Int'];
+};
+
+
+export type QueryPaginatedNotificationsArgs = {
+  userId: Scalars['Int'];
+  skip: Scalars['Int'];
 };
 
 export type Song = {
@@ -246,9 +253,16 @@ export type User = {
   updatedAt: Scalars['DateTime'];
   balance: Scalars['Float'];
   songs?: Maybe<Array<Song>>;
+  paginatedNotifications?: Maybe<Array<Notification>>;
   notifications?: Maybe<Array<Notification>>;
   receivedComments?: Maybe<Array<Comment>>;
   sentComments?: Maybe<Array<Comment>>;
+};
+
+
+export type UserPaginatedNotificationsArgs = {
+  userId: Scalars['Float'];
+  skip: Scalars['Float'];
 };
 
 export type UserResponse = {
@@ -412,6 +426,14 @@ export type UserQueryVariables = Exact<{
 
 
 export type UserQuery = { __typename?: 'Query', user?: Maybe<{ __typename?: 'User', id: number, username: string, avatarURL: string, songs?: Maybe<Array<{ __typename?: 'Song', id: number, title: string, mediaUrl: string, mediaType: string, genre: string, ownerId: number, createdAt: any, updatedAt: any, owner: { __typename?: 'User', id: number, username: string } }>>, receivedComments?: Maybe<Array<{ __typename?: 'Comment', id: number, body: string, sender: { __typename?: 'User', id: number, username: string }, song?: Maybe<{ __typename?: 'Song', id: number, title: string }>, approval?: Maybe<{ __typename?: 'Approval', status: string }> }>>, sentComments?: Maybe<Array<{ __typename?: 'Comment', id: number, body: string, receiver: { __typename?: 'User', id: number, username: string }, song?: Maybe<{ __typename?: 'Song', id: number, title: string }>, approval?: Maybe<{ __typename?: 'Approval', status: string }> }>>, notifications?: Maybe<Array<{ __typename?: 'Notification', id: number, body: string, url: string, read: boolean }>> }> };
+
+export type PageinatedNotificationsQueryVariables = Exact<{
+  id: Scalars['Int'];
+  skip: Scalars['Int'];
+}>;
+
+
+export type PageinatedNotificationsQuery = { __typename?: 'Query', paginatedNotifications?: Maybe<Array<{ __typename?: 'Notification', id: number, createdAt: any, updatedAt: any }>> };
 
 export const NotificationSnippetFragmentDoc = gql`
     fragment NotificationSnippet on Notification {
@@ -1258,3 +1280,41 @@ export function useUserLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<UserQ
 export type UserQueryHookResult = ReturnType<typeof useUserQuery>;
 export type UserLazyQueryHookResult = ReturnType<typeof useUserLazyQuery>;
 export type UserQueryResult = Apollo.QueryResult<UserQuery, UserQueryVariables>;
+export const PageinatedNotificationsDocument = gql`
+    query pageinatedNotifications($id: Int!, $skip: Int!) {
+  paginatedNotifications(userId: $id, skip: $skip) {
+    id
+    createdAt
+    updatedAt
+  }
+}
+    `;
+
+/**
+ * __usePageinatedNotificationsQuery__
+ *
+ * To run a query within a React component, call `usePageinatedNotificationsQuery` and pass it any options that fit your needs.
+ * When your component renders, `usePageinatedNotificationsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = usePageinatedNotificationsQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *      skip: // value for 'skip'
+ *   },
+ * });
+ */
+export function usePageinatedNotificationsQuery(baseOptions: Apollo.QueryHookOptions<PageinatedNotificationsQuery, PageinatedNotificationsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<PageinatedNotificationsQuery, PageinatedNotificationsQueryVariables>(PageinatedNotificationsDocument, options);
+      }
+export function usePageinatedNotificationsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<PageinatedNotificationsQuery, PageinatedNotificationsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<PageinatedNotificationsQuery, PageinatedNotificationsQueryVariables>(PageinatedNotificationsDocument, options);
+        }
+export type PageinatedNotificationsQueryHookResult = ReturnType<typeof usePageinatedNotificationsQuery>;
+export type PageinatedNotificationsLazyQueryHookResult = ReturnType<typeof usePageinatedNotificationsLazyQuery>;
+export type PageinatedNotificationsQueryResult = Apollo.QueryResult<PageinatedNotificationsQuery, PageinatedNotificationsQueryVariables>;

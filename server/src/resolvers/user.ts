@@ -212,9 +212,29 @@ export class UserResolver {
 	}
 
 	@FieldResolver(() => [Notification], { nullable: true })
+	async paginatedNotifications(
+		@Arg("skip") skip: number,
+		@Arg("userId") userId: number,
+		@Ctx() { req, prisma }: MyContext
+	): Promise<Notification[] | null> {
+		if (req.session.userId !== userId) {
+			return null;
+		}
+		return prisma.notification.findMany({
+			where: {
+				receiverId: userId,
+			},
+			skip,
+			take: 15,
+			orderBy: {
+				createdAt: "desc",
+			},
+		});
+	}
+
+	@FieldResolver(() => [Notification], { nullable: true })
 	async notifications(
 		@Root() user: User,
-		@Arg("skip", () => Number) skip: number,
 		@Ctx() { req, prisma }: MyContext
 	): Promise<Notification[] | null> {
 		if (req.session.userId === user.id) {
@@ -222,8 +242,6 @@ export class UserResolver {
 				where: {
 					receiverId: user.id,
 				},
-				skip,
-				take: 15,
 				orderBy: {
 					createdAt: "desc",
 				},

@@ -12,6 +12,8 @@ import {
 	Subscription,
 	PubSub,
 	PubSubEngine,
+	Query,
+	Int,
 } from "type-graphql";
 import { Notification } from "../generated/type-graphql/models/Notification";
 import { User } from "../generated/type-graphql/models/User";
@@ -70,16 +72,18 @@ export class NotificationResolver {
 		return notification;
 	}
 
-	// Create a query which returns 15 notifications for a user using a cursor for pagination
-	@FieldResolver(() => [Notification])
-	async notifications(
-		@Root() user: User,
-		@Arg("skip", () => Number) skip: number,
-		@Ctx() { prisma }: MyContext
-	): Promise<Notification[]> {
+	@Query(() => [Notification], { nullable: true })
+	async paginatedNotifications(
+		@Arg("skip", () => Int) skip: number,
+		@Arg("userId", () => Int) userId: number,
+		@Ctx() { req, prisma }: MyContext
+	): Promise<Notification[] | null> {
+		if (req.session.userId !== userId) {
+			return null;
+		}
 		return prisma.notification.findMany({
 			where: {
-				receiverId: user.id,
+				receiverId: userId,
 			},
 			skip,
 			take: 15,
