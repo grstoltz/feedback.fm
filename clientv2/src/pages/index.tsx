@@ -2,8 +2,7 @@ import { getDataFromTree } from "@apollo/client/react/ssr";
 
 import { withApollo } from "../utils/with-apollo";
 
-import { useMeQuery } from "../generated/graphql";
-import { useSongsQuery } from "../generated/graphql";
+import { useMeQuery, useSongsQuery } from "../generated/graphql";
 
 import Layout from "../components/Layout";
 import SongCard from "../components/SongCard";

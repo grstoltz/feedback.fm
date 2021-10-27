@@ -1,7 +1,0 @@
-query pageinatedNotifications($id: Int!, $skip: Int!) {
-	paginatedNotifications(userId: $id, skip: $skip) {
-		id
-		createdAt
-		updatedAt
-	}
-}

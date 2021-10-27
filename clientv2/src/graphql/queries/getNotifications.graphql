@@ -1,0 +1,8 @@
+query getNotifications($skip: Int!) {
+	getNotifications(skip: $skip) {
+		id
+		body
+		url
+		read
+	}
+}

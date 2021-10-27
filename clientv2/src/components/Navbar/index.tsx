@@ -3,6 +3,7 @@ import {
 	useMeQuery,
 	useUserQuery,
 	useLogoutMutation,
+	useUnreadNotificationsQuery,
 } from "../../generated/graphql";
 
 // Components
@@ -34,6 +35,8 @@ const Navbar: React.FC = () => {
 	const { data, loading, error } = useUserQuery({
 		variables: { id: userId },
 	});
+
+	const { data: unreadNotifications } = useUnreadNotificationsQuery();
 
 	const [logout, { client, loading: isLogoutLoading }] = useLogoutMutation();
 
@@ -72,42 +75,15 @@ const Navbar: React.FC = () => {
 								Logout
 							</Button> */}
 							<Flex alignItems={"center"}>
-								<Menu>
-									{/* Notifications */}
-									<MenuButton marginRight="20px">
-										Notifications
-									</MenuButton>
-									<MenuList minHeight="300px">
-										{data.user.notifications &&
-										data.user.notifications.length > 0 ? (
-											data.user.notifications.map((e) => {
-												return (
-													<NotificationCard notification={e} />
-												);
-											})
-										) : (
-											<Box
-												marginTop={"10px"}
-												textAlign={"center"}
-												paddingLeft="15px"
-											>
-												No Notifcations
-											</Box>
-										)}
-										<NextLink href="/upload">
-											<Box
-												position={"absolute"}
-												bottom={"0px"}
-												padding={5}
-												borderWidth="1px"
-												width="100%"
-												textAlign={"center"}
-											>
-												See All Notifications
-											</Box>
-										</NextLink>
-									</MenuList>
-								</Menu>
+								{/* Notifications */}
+								<NextLink href="/notifications">
+									<Box marginRight="20px">
+										<Link marginRight="20px">Notifications</Link>
+									</Box>
+									{unreadNotifications?.unreadNotifications ===
+										true && <Box>Unread</Box>}
+								</NextLink>
+
 								<Box marginRight="10px">{data.user?.username}</Box>
 
 								<Menu>

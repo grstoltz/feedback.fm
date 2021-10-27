@@ -176,7 +176,8 @@ export type Query = {
   me?: Maybe<User>;
   comments: Array<Comment>;
   comment?: Maybe<Comment>;
-  paginatedNotifications?: Maybe<Array<Notification>>;
+  getNotifications?: Maybe<Array<Notification>>;
+  unreadNotifications: Scalars['Boolean'];
 };
 
 
@@ -200,8 +201,7 @@ export type QueryCommentArgs = {
 };
 
 
-export type QueryPaginatedNotificationsArgs = {
-  userId: Scalars['Int'];
+export type QueryGetNotificationsArgs = {
   skip: Scalars['Int'];
 };
 
@@ -398,6 +398,13 @@ export type CommentsQueryVariables = Exact<{
 
 export type CommentsQuery = { __typename?: 'Query', comments: Array<{ __typename?: 'Comment', id: number, createdAt: any, updatedAt: any, body: string, sender: { __typename?: 'User', id: number, username: string }, receiver: { __typename?: 'User', id: number, username: string }, song?: Maybe<{ __typename?: 'Song', id: number, title: string }> }> };
 
+export type GetNotificationsQueryVariables = Exact<{
+  skip: Scalars['Int'];
+}>;
+
+
+export type GetNotificationsQuery = { __typename?: 'Query', getNotifications?: Maybe<Array<{ __typename?: 'Notification', id: number, body: string, url: string, read: boolean }>> };
+
 export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -420,20 +427,17 @@ export type SongsQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type SongsQuery = { __typename?: 'Query', songs: Array<{ __typename?: 'Song', id: number, createdAt: any, updatedAt: any, title: string, mediaUrl: string, mediaType: string, genre: string, ownerId: number, owner: { __typename?: 'User', id: number, username: string } }> };
 
+export type UnreadNotificationsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type UnreadNotificationsQuery = { __typename?: 'Query', unreadNotifications: boolean };
+
 export type UserQueryVariables = Exact<{
   id: Scalars['Int'];
 }>;
 
 
 export type UserQuery = { __typename?: 'Query', user?: Maybe<{ __typename?: 'User', id: number, username: string, avatarURL: string, songs?: Maybe<Array<{ __typename?: 'Song', id: number, title: string, mediaUrl: string, mediaType: string, genre: string, ownerId: number, createdAt: any, updatedAt: any, owner: { __typename?: 'User', id: number, username: string } }>>, receivedComments?: Maybe<Array<{ __typename?: 'Comment', id: number, body: string, sender: { __typename?: 'User', id: number, username: string }, song?: Maybe<{ __typename?: 'Song', id: number, title: string }>, approval?: Maybe<{ __typename?: 'Approval', status: string }> }>>, sentComments?: Maybe<Array<{ __typename?: 'Comment', id: number, body: string, receiver: { __typename?: 'User', id: number, username: string }, song?: Maybe<{ __typename?: 'Song', id: number, title: string }>, approval?: Maybe<{ __typename?: 'Approval', status: string }> }>>, notifications?: Maybe<Array<{ __typename?: 'Notification', id: number, body: string, url: string, read: boolean }>> }> };
-
-export type PageinatedNotificationsQueryVariables = Exact<{
-  id: Scalars['Int'];
-  skip: Scalars['Int'];
-}>;
-
-
-export type PageinatedNotificationsQuery = { __typename?: 'Query', paginatedNotifications?: Maybe<Array<{ __typename?: 'Notification', id: number, createdAt: any, updatedAt: any }>> };
 
 export const NotificationSnippetFragmentDoc = gql`
     fragment NotificationSnippet on Notification {
@@ -1019,6 +1023,44 @@ export function useCommentsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<C
 export type CommentsQueryHookResult = ReturnType<typeof useCommentsQuery>;
 export type CommentsLazyQueryHookResult = ReturnType<typeof useCommentsLazyQuery>;
 export type CommentsQueryResult = Apollo.QueryResult<CommentsQuery, CommentsQueryVariables>;
+export const GetNotificationsDocument = gql`
+    query getNotifications($skip: Int!) {
+  getNotifications(skip: $skip) {
+    id
+    body
+    url
+    read
+  }
+}
+    `;
+
+/**
+ * __useGetNotificationsQuery__
+ *
+ * To run a query within a React component, call `useGetNotificationsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetNotificationsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetNotificationsQuery({
+ *   variables: {
+ *      skip: // value for 'skip'
+ *   },
+ * });
+ */
+export function useGetNotificationsQuery(baseOptions: Apollo.QueryHookOptions<GetNotificationsQuery, GetNotificationsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetNotificationsQuery, GetNotificationsQueryVariables>(GetNotificationsDocument, options);
+      }
+export function useGetNotificationsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetNotificationsQuery, GetNotificationsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetNotificationsQuery, GetNotificationsQueryVariables>(GetNotificationsDocument, options);
+        }
+export type GetNotificationsQueryHookResult = ReturnType<typeof useGetNotificationsQuery>;
+export type GetNotificationsLazyQueryHookResult = ReturnType<typeof useGetNotificationsLazyQuery>;
+export type GetNotificationsQueryResult = Apollo.QueryResult<GetNotificationsQuery, GetNotificationsQueryVariables>;
 export const MeDocument = gql`
     query Me {
   me {
@@ -1193,6 +1235,38 @@ export function useSongsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<Song
 export type SongsQueryHookResult = ReturnType<typeof useSongsQuery>;
 export type SongsLazyQueryHookResult = ReturnType<typeof useSongsLazyQuery>;
 export type SongsQueryResult = Apollo.QueryResult<SongsQuery, SongsQueryVariables>;
+export const UnreadNotificationsDocument = gql`
+    query unreadNotifications {
+  unreadNotifications
+}
+    `;
+
+/**
+ * __useUnreadNotificationsQuery__
+ *
+ * To run a query within a React component, call `useUnreadNotificationsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useUnreadNotificationsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useUnreadNotificationsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useUnreadNotificationsQuery(baseOptions?: Apollo.QueryHookOptions<UnreadNotificationsQuery, UnreadNotificationsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<UnreadNotificationsQuery, UnreadNotificationsQueryVariables>(UnreadNotificationsDocument, options);
+      }
+export function useUnreadNotificationsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<UnreadNotificationsQuery, UnreadNotificationsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<UnreadNotificationsQuery, UnreadNotificationsQueryVariables>(UnreadNotificationsDocument, options);
+        }
+export type UnreadNotificationsQueryHookResult = ReturnType<typeof useUnreadNotificationsQuery>;
+export type UnreadNotificationsLazyQueryHookResult = ReturnType<typeof useUnreadNotificationsLazyQuery>;
+export type UnreadNotificationsQueryResult = Apollo.QueryResult<UnreadNotificationsQuery, UnreadNotificationsQueryVariables>;
 export const UserDocument = gql`
     query User($id: Int!) {
   user(id: $id) {
@@ -1280,41 +1354,3 @@ export function useUserLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<UserQ
 export type UserQueryHookResult = ReturnType<typeof useUserQuery>;
 export type UserLazyQueryHookResult = ReturnType<typeof useUserLazyQuery>;
 export type UserQueryResult = Apollo.QueryResult<UserQuery, UserQueryVariables>;
-export const PageinatedNotificationsDocument = gql`
-    query pageinatedNotifications($id: Int!, $skip: Int!) {
-  paginatedNotifications(userId: $id, skip: $skip) {
-    id
-    createdAt
-    updatedAt
-  }
-}
-    `;
-
-/**
- * __usePageinatedNotificationsQuery__
- *
- * To run a query within a React component, call `usePageinatedNotificationsQuery` and pass it any options that fit your needs.
- * When your component renders, `usePageinatedNotificationsQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = usePageinatedNotificationsQuery({
- *   variables: {
- *      id: // value for 'id'
- *      skip: // value for 'skip'
- *   },
- * });
- */
-export function usePageinatedNotificationsQuery(baseOptions: Apollo.QueryHookOptions<PageinatedNotificationsQuery, PageinatedNotificationsQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<PageinatedNotificationsQuery, PageinatedNotificationsQueryVariables>(PageinatedNotificationsDocument, options);
-      }
-export function usePageinatedNotificationsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<PageinatedNotificationsQuery, PageinatedNotificationsQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<PageinatedNotificationsQuery, PageinatedNotificationsQueryVariables>(PageinatedNotificationsDocument, options);
-        }
-export type PageinatedNotificationsQueryHookResult = ReturnType<typeof usePageinatedNotificationsQuery>;
-export type PageinatedNotificationsLazyQueryHookResult = ReturnType<typeof usePageinatedNotificationsLazyQuery>;
-export type PageinatedNotificationsQueryResult = Apollo.QueryResult<PageinatedNotificationsQuery, PageinatedNotificationsQueryVariables>;
