@@ -4,17 +4,18 @@ import { Prisma } from "@prisma/client";
 import { DecimalJSScalar } from "../../scalars";
 import { BoolFieldUpdateOperationsInput } from "../inputs/BoolFieldUpdateOperationsInput";
 import { DateTimeFieldUpdateOperationsInput } from "../inputs/DateTimeFieldUpdateOperationsInput";
+import { IntFieldUpdateOperationsInput } from "../inputs/IntFieldUpdateOperationsInput";
 import { StringFieldUpdateOperationsInput } from "../inputs/StringFieldUpdateOperationsInput";
-import { UserUpdateOneRequiredWithoutNotificationsInput } from "../inputs/UserUpdateOneRequiredWithoutNotificationsInput";
+import { UserUpdateOneRequiredWithoutReceivedNotificationsInput } from "../inputs/UserUpdateOneRequiredWithoutReceivedNotificationsInput";
 
 @TypeGraphQL.InputType({
   isAbstract: true
 })
 export class NotificationUpdateInput {
-  @TypeGraphQL.Field(_type => StringFieldUpdateOperationsInput, {
+  @TypeGraphQL.Field(_type => IntFieldUpdateOperationsInput, {
     nullable: true
   })
-  body?: StringFieldUpdateOperationsInput | undefined;
+  senderId?: IntFieldUpdateOperationsInput | undefined;
 
   @TypeGraphQL.Field(_type => BoolFieldUpdateOperationsInput, {
     nullable: true
@@ -41,8 +42,8 @@ export class NotificationUpdateInput {
   })
   updatedAt?: DateTimeFieldUpdateOperationsInput | undefined;
 
-  @TypeGraphQL.Field(_type => UserUpdateOneRequiredWithoutNotificationsInput, {
+  @TypeGraphQL.Field(_type => UserUpdateOneRequiredWithoutReceivedNotificationsInput, {
     nullable: true
   })
-  receiver?: UserUpdateOneRequiredWithoutNotificationsInput | undefined;
+  receiver?: UserUpdateOneRequiredWithoutReceivedNotificationsInput | undefined;
 }

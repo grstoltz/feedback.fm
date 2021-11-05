@@ -35,5 +35,5 @@ export class FindManyNotificationArgs {
   @TypeGraphQL.Field(_type => [NotificationScalarFieldEnum], {
     nullable: true
   })
-  distinct?: Array<"id" | "receiverId" | "body" | "read" | "type" | "url" | "createdAt" | "updatedAt"> | undefined;
+  distinct?: Array<"id" | "receiverId" | "senderId" | "read" | "type" | "url" | "createdAt" | "updatedAt"> | undefined;
 }

@@ -1,5 +1,6 @@
 export { Approval } from "./Approval";
-export { Comment } from "./Comment";
+export { Conversation } from "./Conversation";
+export { Message } from "./Message";
 export { Notification } from "./Notification";
 export { Song } from "./Song";
 export { Transaction } from "./Transaction";

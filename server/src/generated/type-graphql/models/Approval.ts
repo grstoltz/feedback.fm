@@ -2,7 +2,7 @@ import * as TypeGraphQL from "type-graphql";
 import * as GraphQLScalars from "graphql-scalars";
 import { Prisma } from "@prisma/client";
 import { DecimalJSScalar } from "../scalars";
-import { Comment } from "../models/Comment";
+import { Message } from "../models/Message";
 
 @TypeGraphQL.ObjectType({
   isAbstract: true
@@ -23,5 +23,5 @@ export class Approval {
   })
   status!: string;
 
-  Comment?: Comment | null;
+  Message?: Message | null;
 }

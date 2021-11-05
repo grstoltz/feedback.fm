@@ -21,7 +21,7 @@ export class NotificationOrderByInput {
   @TypeGraphQL.Field(_type => SortOrder, {
     nullable: true
   })
-  body?: "asc" | "desc" | undefined;
+  senderId?: "asc" | "desc" | undefined;
 
   @TypeGraphQL.Field(_type => SortOrder, {
     nullable: true

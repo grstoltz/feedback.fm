@@ -1,5 +1,7 @@
 export { ApprovalScalarFieldEnum } from "./ApprovalScalarFieldEnum";
-export { CommentScalarFieldEnum } from "./CommentScalarFieldEnum";
+export { ConversationScalarFieldEnum } from "./ConversationScalarFieldEnum";
+export { MessageScalarFieldEnum } from "./MessageScalarFieldEnum";
+export { MessageType } from "./MessageType";
 export { NotificationScalarFieldEnum } from "./NotificationScalarFieldEnum";
 export { QueryMode } from "./QueryMode";
 export { SongScalarFieldEnum } from "./SongScalarFieldEnum";

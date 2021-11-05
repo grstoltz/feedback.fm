@@ -2,8 +2,8 @@ import * as TypeGraphQL from "type-graphql";
 import * as GraphQLScalars from "graphql-scalars";
 import { Prisma } from "@prisma/client";
 import { DecimalJSScalar } from "../../scalars";
-import { CommentRelationFilter } from "../inputs/CommentRelationFilter";
 import { IntFilter } from "../inputs/IntFilter";
+import { MessageRelationFilter } from "../inputs/MessageRelationFilter";
 import { StringFilter } from "../inputs/StringFilter";
 
 @TypeGraphQL.InputType({
@@ -40,8 +40,8 @@ export class ApprovalWhereInput {
   })
   status?: StringFilter | undefined;
 
-  @TypeGraphQL.Field(_type => CommentRelationFilter, {
+  @TypeGraphQL.Field(_type => MessageRelationFilter, {
     nullable: true
   })
-  Comment?: CommentRelationFilter | undefined;
+  Message?: MessageRelationFilter | undefined;
 }

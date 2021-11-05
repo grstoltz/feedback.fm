@@ -2,7 +2,7 @@ import * as TypeGraphQL from "type-graphql";
 import * as GraphQLScalars from "graphql-scalars";
 import { Prisma } from "@prisma/client";
 import { DecimalJSScalar } from "../../scalars";
-import { CommentCreateNestedManyWithoutParentInput } from "../inputs/CommentCreateNestedManyWithoutParentInput";
+import { MessageCreateNestedManyWithoutSongInput } from "../inputs/MessageCreateNestedManyWithoutSongInput";
 
 @TypeGraphQL.InputType({
   isAbstract: true
@@ -38,8 +38,8 @@ export class SongCreateWithoutOwnerInput {
   })
   updatedAt?: Date | undefined;
 
-  @TypeGraphQL.Field(_type => CommentCreateNestedManyWithoutParentInput, {
+  @TypeGraphQL.Field(_type => MessageCreateNestedManyWithoutSongInput, {
     nullable: true
   })
-  comments?: CommentCreateNestedManyWithoutParentInput | undefined;
+  Messages?: MessageCreateNestedManyWithoutSongInput | undefined;
 }

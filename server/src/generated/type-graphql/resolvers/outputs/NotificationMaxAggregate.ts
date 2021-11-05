@@ -17,10 +17,10 @@ export class NotificationMaxAggregate {
   })
   receiverId!: number | null;
 
-  @TypeGraphQL.Field(_type => String, {
+  @TypeGraphQL.Field(_type => TypeGraphQL.Int, {
     nullable: true
   })
-  body!: string | null;
+  senderId!: number | null;
 
   @TypeGraphQL.Field(_type => Boolean, {
     nullable: true

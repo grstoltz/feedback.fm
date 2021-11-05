@@ -2,8 +2,8 @@ import * as TypeGraphQL from "type-graphql";
 import * as GraphQLScalars from "graphql-scalars";
 import { Prisma } from "@prisma/client";
 import { DecimalJSScalar } from "../../scalars";
-import { CommentUpdateOneWithoutApprovalInput } from "../inputs/CommentUpdateOneWithoutApprovalInput";
 import { IntFieldUpdateOperationsInput } from "../inputs/IntFieldUpdateOperationsInput";
+import { MessageUpdateOneWithoutApprovalInput } from "../inputs/MessageUpdateOneWithoutApprovalInput";
 import { StringFieldUpdateOperationsInput } from "../inputs/StringFieldUpdateOperationsInput";
 
 @TypeGraphQL.InputType({
@@ -20,8 +20,8 @@ export class ApprovalUpdateInput {
   })
   status?: StringFieldUpdateOperationsInput | undefined;
 
-  @TypeGraphQL.Field(_type => CommentUpdateOneWithoutApprovalInput, {
+  @TypeGraphQL.Field(_type => MessageUpdateOneWithoutApprovalInput, {
     nullable: true
   })
-  Comment?: CommentUpdateOneWithoutApprovalInput | undefined;
+  Message?: MessageUpdateOneWithoutApprovalInput | undefined;
 }

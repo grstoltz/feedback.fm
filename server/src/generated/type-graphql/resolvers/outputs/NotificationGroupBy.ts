@@ -22,10 +22,10 @@ export class NotificationGroupBy {
   })
   receiverId!: number;
 
-  @TypeGraphQL.Field(_type => String, {
+  @TypeGraphQL.Field(_type => TypeGraphQL.Int, {
     nullable: false
   })
-  body!: string;
+  senderId!: number;
 
   @TypeGraphQL.Field(_type => Boolean, {
     nullable: false

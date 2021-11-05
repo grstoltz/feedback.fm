@@ -1,8 +1,8 @@
 import * as TypeGraphQL from "type-graphql";
-import { Comment } from "../../../models/Comment";
+import { Message } from "../../../models/Message";
 import { Song } from "../../../models/Song";
 import { User } from "../../../models/User";
-import { SongCommentsArgs } from "./args/SongCommentsArgs";
+import { SongMessagesArgs } from "./args/SongMessagesArgs";
 import { transformFields, getPrismaFromContext, transformCountFieldIntoSelectRelationsCount } from "../../../helpers";
 
 @TypeGraphQL.Resolver(_of => Song)
@@ -18,14 +18,14 @@ export class SongRelationsResolver {
     }).owner({});
   }
 
-  @TypeGraphQL.FieldResolver(_type => [Comment], {
+  @TypeGraphQL.FieldResolver(_type => [Message], {
     nullable: false
   })
-  async comments(@TypeGraphQL.Root() song: Song, @TypeGraphQL.Ctx() ctx: any, @TypeGraphQL.Args() args: SongCommentsArgs): Promise<Comment[]> {
+  async Messages(@TypeGraphQL.Root() song: Song, @TypeGraphQL.Ctx() ctx: any, @TypeGraphQL.Args() args: SongMessagesArgs): Promise<Message[]> {
     return getPrismaFromContext(ctx).song.findUnique({
       where: {
         id: song.id,
       },
-    }).comments(args);
+    }).Messages(args);
   }
 }

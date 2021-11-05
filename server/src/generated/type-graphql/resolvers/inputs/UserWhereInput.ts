@@ -2,9 +2,10 @@ import * as TypeGraphQL from "type-graphql";
 import * as GraphQLScalars from "graphql-scalars";
 import { Prisma } from "@prisma/client";
 import { DecimalJSScalar } from "../../scalars";
-import { CommentListRelationFilter } from "../inputs/CommentListRelationFilter";
+import { ConversationListRelationFilter } from "../inputs/ConversationListRelationFilter";
 import { DateTimeFilter } from "../inputs/DateTimeFilter";
 import { IntFilter } from "../inputs/IntFilter";
+import { MessageListRelationFilter } from "../inputs/MessageListRelationFilter";
 import { NotificationListRelationFilter } from "../inputs/NotificationListRelationFilter";
 import { SongListRelationFilter } from "../inputs/SongListRelationFilter";
 import { StringFilter } from "../inputs/StringFilter";
@@ -59,25 +60,25 @@ export class UserWhereInput {
   })
   songs?: SongListRelationFilter | undefined;
 
-  @TypeGraphQL.Field(_type => CommentListRelationFilter, {
+  @TypeGraphQL.Field(_type => MessageListRelationFilter, {
     nullable: true
   })
-  sentComments?: CommentListRelationFilter | undefined;
-
-  @TypeGraphQL.Field(_type => CommentListRelationFilter, {
-    nullable: true
-  })
-  receivedComments?: CommentListRelationFilter | undefined;
+  sentMessages?: MessageListRelationFilter | undefined;
 
   @TypeGraphQL.Field(_type => NotificationListRelationFilter, {
     nullable: true
   })
-  notifications?: NotificationListRelationFilter | undefined;
+  receivedNotifications?: NotificationListRelationFilter | undefined;
 
   @TypeGraphQL.Field(_type => TransactionListRelationFilter, {
     nullable: true
   })
   transactions?: TransactionListRelationFilter | undefined;
+
+  @TypeGraphQL.Field(_type => ConversationListRelationFilter, {
+    nullable: true
+  })
+  conversations?: ConversationListRelationFilter | undefined;
 
   @TypeGraphQL.Field(_type => DateTimeFilter, {
     nullable: true

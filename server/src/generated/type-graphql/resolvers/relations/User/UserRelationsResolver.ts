@@ -1,12 +1,13 @@
 import * as TypeGraphQL from "type-graphql";
-import { Comment } from "../../../models/Comment";
+import { Conversation } from "../../../models/Conversation";
+import { Message } from "../../../models/Message";
 import { Notification } from "../../../models/Notification";
 import { Song } from "../../../models/Song";
 import { Transaction } from "../../../models/Transaction";
 import { User } from "../../../models/User";
-import { UserNotificationsArgs } from "./args/UserNotificationsArgs";
-import { UserReceivedCommentsArgs } from "./args/UserReceivedCommentsArgs";
-import { UserSentCommentsArgs } from "./args/UserSentCommentsArgs";
+import { UserConversationsArgs } from "./args/UserConversationsArgs";
+import { UserReceivedNotificationsArgs } from "./args/UserReceivedNotificationsArgs";
+import { UserSentMessagesArgs } from "./args/UserSentMessagesArgs";
 import { UserSongsArgs } from "./args/UserSongsArgs";
 import { UserTransactionsArgs } from "./args/UserTransactionsArgs";
 import { transformFields, getPrismaFromContext, transformCountFieldIntoSelectRelationsCount } from "../../../helpers";
@@ -24,37 +25,26 @@ export class UserRelationsResolver {
     }).songs(args);
   }
 
-  @TypeGraphQL.FieldResolver(_type => [Comment], {
+  @TypeGraphQL.FieldResolver(_type => [Message], {
     nullable: false
   })
-  async sentComments(@TypeGraphQL.Root() user: User, @TypeGraphQL.Ctx() ctx: any, @TypeGraphQL.Args() args: UserSentCommentsArgs): Promise<Comment[]> {
+  async sentMessages(@TypeGraphQL.Root() user: User, @TypeGraphQL.Ctx() ctx: any, @TypeGraphQL.Args() args: UserSentMessagesArgs): Promise<Message[]> {
     return getPrismaFromContext(ctx).user.findUnique({
       where: {
         id: user.id,
       },
-    }).sentComments(args);
-  }
-
-  @TypeGraphQL.FieldResolver(_type => [Comment], {
-    nullable: false
-  })
-  async receivedComments(@TypeGraphQL.Root() user: User, @TypeGraphQL.Ctx() ctx: any, @TypeGraphQL.Args() args: UserReceivedCommentsArgs): Promise<Comment[]> {
-    return getPrismaFromContext(ctx).user.findUnique({
-      where: {
-        id: user.id,
-      },
-    }).receivedComments(args);
+    }).sentMessages(args);
   }
 
   @TypeGraphQL.FieldResolver(_type => [Notification], {
     nullable: false
   })
-  async notifications(@TypeGraphQL.Root() user: User, @TypeGraphQL.Ctx() ctx: any, @TypeGraphQL.Args() args: UserNotificationsArgs): Promise<Notification[]> {
+  async receivedNotifications(@TypeGraphQL.Root() user: User, @TypeGraphQL.Ctx() ctx: any, @TypeGraphQL.Args() args: UserReceivedNotificationsArgs): Promise<Notification[]> {
     return getPrismaFromContext(ctx).user.findUnique({
       where: {
         id: user.id,
       },
-    }).notifications(args);
+    }).receivedNotifications(args);
   }
 
   @TypeGraphQL.FieldResolver(_type => [Transaction], {
@@ -66,5 +56,16 @@ export class UserRelationsResolver {
         id: user.id,
       },
     }).transactions(args);
+  }
+
+  @TypeGraphQL.FieldResolver(_type => [Conversation], {
+    nullable: false
+  })
+  async conversations(@TypeGraphQL.Root() user: User, @TypeGraphQL.Ctx() ctx: any, @TypeGraphQL.Args() args: UserConversationsArgs): Promise<Conversation[]> {
+    return getPrismaFromContext(ctx).user.findUnique({
+      where: {
+        id: user.id,
+      },
+    }).conversations(args);
   }
 }

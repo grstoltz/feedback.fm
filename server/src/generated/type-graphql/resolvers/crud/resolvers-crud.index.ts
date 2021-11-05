@@ -1,5 +1,6 @@
 export { ApprovalCrudResolver } from "./Approval/ApprovalCrudResolver";
-export { CommentCrudResolver } from "./Comment/CommentCrudResolver";
+export { ConversationCrudResolver } from "./Conversation/ConversationCrudResolver";
+export { MessageCrudResolver } from "./Message/MessageCrudResolver";
 export { NotificationCrudResolver } from "./Notification/NotificationCrudResolver";
 export { SongCrudResolver } from "./Song/SongCrudResolver";
 export { TransactionCrudResolver } from "./Transaction/TransactionCrudResolver";

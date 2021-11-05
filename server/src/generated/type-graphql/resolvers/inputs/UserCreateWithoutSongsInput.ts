@@ -2,8 +2,8 @@ import * as TypeGraphQL from "type-graphql";
 import * as GraphQLScalars from "graphql-scalars";
 import { Prisma } from "@prisma/client";
 import { DecimalJSScalar } from "../../scalars";
-import { CommentCreateNestedManyWithoutReceiverInput } from "../inputs/CommentCreateNestedManyWithoutReceiverInput";
-import { CommentCreateNestedManyWithoutSenderInput } from "../inputs/CommentCreateNestedManyWithoutSenderInput";
+import { ConversationCreateNestedManyWithoutParticipantsInput } from "../inputs/ConversationCreateNestedManyWithoutParticipantsInput";
+import { MessageCreateNestedManyWithoutSenderInput } from "../inputs/MessageCreateNestedManyWithoutSenderInput";
 import { NotificationCreateNestedManyWithoutReceiverInput } from "../inputs/NotificationCreateNestedManyWithoutReceiverInput";
 import { TransactionCreateNestedManyWithoutUserInput } from "../inputs/TransactionCreateNestedManyWithoutUserInput";
 
@@ -41,23 +41,23 @@ export class UserCreateWithoutSongsInput {
   })
   updatedAt?: Date | undefined;
 
-  @TypeGraphQL.Field(_type => CommentCreateNestedManyWithoutSenderInput, {
+  @TypeGraphQL.Field(_type => MessageCreateNestedManyWithoutSenderInput, {
     nullable: true
   })
-  sentComments?: CommentCreateNestedManyWithoutSenderInput | undefined;
-
-  @TypeGraphQL.Field(_type => CommentCreateNestedManyWithoutReceiverInput, {
-    nullable: true
-  })
-  receivedComments?: CommentCreateNestedManyWithoutReceiverInput | undefined;
+  sentMessages?: MessageCreateNestedManyWithoutSenderInput | undefined;
 
   @TypeGraphQL.Field(_type => NotificationCreateNestedManyWithoutReceiverInput, {
     nullable: true
   })
-  notifications?: NotificationCreateNestedManyWithoutReceiverInput | undefined;
+  receivedNotifications?: NotificationCreateNestedManyWithoutReceiverInput | undefined;
 
   @TypeGraphQL.Field(_type => TransactionCreateNestedManyWithoutUserInput, {
     nullable: true
   })
   transactions?: TransactionCreateNestedManyWithoutUserInput | undefined;
+
+  @TypeGraphQL.Field(_type => ConversationCreateNestedManyWithoutParticipantsInput, {
+    nullable: true
+  })
+  conversations?: ConversationCreateNestedManyWithoutParticipantsInput | undefined;
 }

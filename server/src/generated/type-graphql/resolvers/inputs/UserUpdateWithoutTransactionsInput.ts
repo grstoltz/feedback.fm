@@ -2,9 +2,9 @@ import * as TypeGraphQL from "type-graphql";
 import * as GraphQLScalars from "graphql-scalars";
 import { Prisma } from "@prisma/client";
 import { DecimalJSScalar } from "../../scalars";
-import { CommentUpdateManyWithoutReceiverInput } from "../inputs/CommentUpdateManyWithoutReceiverInput";
-import { CommentUpdateManyWithoutSenderInput } from "../inputs/CommentUpdateManyWithoutSenderInput";
+import { ConversationUpdateManyWithoutParticipantsInput } from "../inputs/ConversationUpdateManyWithoutParticipantsInput";
 import { DateTimeFieldUpdateOperationsInput } from "../inputs/DateTimeFieldUpdateOperationsInput";
+import { MessageUpdateManyWithoutSenderInput } from "../inputs/MessageUpdateManyWithoutSenderInput";
 import { NotificationUpdateManyWithoutReceiverInput } from "../inputs/NotificationUpdateManyWithoutReceiverInput";
 import { SongUpdateManyWithoutOwnerInput } from "../inputs/SongUpdateManyWithoutOwnerInput";
 import { StringFieldUpdateOperationsInput } from "../inputs/StringFieldUpdateOperationsInput";
@@ -48,18 +48,18 @@ export class UserUpdateWithoutTransactionsInput {
   })
   songs?: SongUpdateManyWithoutOwnerInput | undefined;
 
-  @TypeGraphQL.Field(_type => CommentUpdateManyWithoutSenderInput, {
+  @TypeGraphQL.Field(_type => MessageUpdateManyWithoutSenderInput, {
     nullable: true
   })
-  sentComments?: CommentUpdateManyWithoutSenderInput | undefined;
-
-  @TypeGraphQL.Field(_type => CommentUpdateManyWithoutReceiverInput, {
-    nullable: true
-  })
-  receivedComments?: CommentUpdateManyWithoutReceiverInput | undefined;
+  sentMessages?: MessageUpdateManyWithoutSenderInput | undefined;
 
   @TypeGraphQL.Field(_type => NotificationUpdateManyWithoutReceiverInput, {
     nullable: true
   })
-  notifications?: NotificationUpdateManyWithoutReceiverInput | undefined;
+  receivedNotifications?: NotificationUpdateManyWithoutReceiverInput | undefined;
+
+  @TypeGraphQL.Field(_type => ConversationUpdateManyWithoutParticipantsInput, {
+    nullable: true
+  })
+  conversations?: ConversationUpdateManyWithoutParticipantsInput | undefined;
 }

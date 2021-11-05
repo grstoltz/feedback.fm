@@ -16,4 +16,9 @@ export class NotificationSumAggregate {
     nullable: true
   })
   receiverId!: number | null;
+
+  @TypeGraphQL.Field(_type => TypeGraphQL.Int, {
+    nullable: true
+  })
+  senderId!: number | null;
 }

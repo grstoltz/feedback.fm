@@ -2,16 +2,16 @@ import * as TypeGraphQL from "type-graphql";
 import * as GraphQLScalars from "graphql-scalars";
 import { Prisma } from "@prisma/client";
 import { DecimalJSScalar } from "../../scalars";
-import { UserCreateNestedOneWithoutNotificationsInput } from "../inputs/UserCreateNestedOneWithoutNotificationsInput";
+import { UserCreateNestedOneWithoutReceivedNotificationsInput } from "../inputs/UserCreateNestedOneWithoutReceivedNotificationsInput";
 
 @TypeGraphQL.InputType({
   isAbstract: true
 })
 export class NotificationCreateInput {
-  @TypeGraphQL.Field(_type => String, {
+  @TypeGraphQL.Field(_type => TypeGraphQL.Int, {
     nullable: false
   })
-  body!: string;
+  senderId!: number;
 
   @TypeGraphQL.Field(_type => Boolean, {
     nullable: true
@@ -38,8 +38,8 @@ export class NotificationCreateInput {
   })
   updatedAt?: Date | undefined;
 
-  @TypeGraphQL.Field(_type => UserCreateNestedOneWithoutNotificationsInput, {
+  @TypeGraphQL.Field(_type => UserCreateNestedOneWithoutReceivedNotificationsInput, {
     nullable: false
   })
-  receiver!: UserCreateNestedOneWithoutNotificationsInput;
+  receiver!: UserCreateNestedOneWithoutReceivedNotificationsInput;
 }

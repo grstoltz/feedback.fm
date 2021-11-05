@@ -16,18 +16,19 @@ generator typegraphql {
 }
 
 model User {
-  id               Int            @id @default(autoincrement())
-  email            String         @unique
-  username         String         @unique
-  password         String
-  avatarURL        String         @default("https://res.cloudinary.com/dedeo0s30/image/upload/v1605156898/default-profile-icon-16.png")
-  songs            Song[]
-  sentComments     Comment[]      @relation(name: "SentComments")
-  receivedComments Comment[]      @relation(name: "ReceivedComments")
-  notifications    Notification[]
-  transactions     Transaction[]
-  createdAt        DateTime       @default(now())
-  updatedAt        DateTime       @updatedAt
+  id                    Int            @id @default(autoincrement())
+  email                 String         @unique
+  username              String         @unique
+  password              String
+  avatarURL             String         @default("https://res.cloudinary.com/dedeo0s30/image/upload/v1605156898/default-profile-icon-16.png")
+  songs                 Song[]
+  sentMessages          Message[]     
+  receivedNotifications Notification[] @relation(name: "ReceivedNotifications")
+  transactions          Transaction[]
+  conversations         Conversation[]
+  deliveries            Delivery[]
+  createdAt             DateTime       @default(now())
+  updatedAt             DateTime       @updatedAt
 
 }
 
@@ -39,35 +40,35 @@ model Song {
   genre     String
   ownerId   Int
   owner     User      @relation(fields: [ownerId], references: [id])
-  comments  Comment[]
+  Messages  Message[]
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 }
 
-model Comment {
-  id         Int       @id @default(autoincrement())
-  parentId   Int
-  senderId   Int
-  receiverId Int
-  approvalId Int?
-  active     Boolean   @default(true)
-  body       String
-  approval   Approval? @relation(fields: [approvalId], references: [id])
-  sender     User      @relation(fields: [senderId], references: [id], name: "SentComments")
-  receiver   User      @relation(fields: [receiverId], references: [id], name: "ReceivedComments")
-  parent     Song      @relation(fields: [parentId], references: [id])
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
-}
+// model Comment {
+//   id         Int       @id @default(autoincrement())
+//   parentId   Int
+//   senderId   Int
+//   receiverId Int
+//   approvalId Int?
+//   active     Boolean   @default(true)
+//   body       String
+//   approval   Approval? @relation(fields: [approvalId], references: [id])
+//   sender     User      @relation(fields: [senderId], references: [id], name: "SentComments")
+//   receiver   User      @relation(fields: [receiverId], references: [id], name: "ReceivedComments")
+//   parent     Song      @relation(fields: [parentId], references: [id])
+//   createdAt  DateTime  @default(now())
+//   updatedAt  DateTime  @updatedAt
+// }
 
 model Notification {
   id         Int      @id @default(autoincrement())
   receiverId Int
-  body       String
+  senderId   Int
   read       Boolean  @default(false)
   type       String
   url        String
-  receiver   User     @relation(fields: [receiverId], references: [id])
+  receiver   User     @relation(fields: [receiverId], references: [id], name: "ReceivedNotifications")
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 }
@@ -86,5 +87,55 @@ model Approval {
   id        Int       @id @default(autoincrement())
   commentId Int       @unique
   status    String
-  Comment   Comment?
+  Message   Message?
+}
+
+model Conversation {
+  id              Int @id @default(autoincrement())
+  participants    User[]
+  messages        Message[]
+  updatedAt       DateTime @updatedAt
+  createdAt       DateTime @default(now())
+}
+
+model Message {
+  id              Int @id @default(autoincrement())
+  sender          User @relation(fields: [senderId], references: [id])
+  senderId        Int
+  conversation    Conversation @relation(fields: [conversationId], references: [id])
+  conversationId  Int
+  delivery        Delivery?
+  approval        Approval? @relation(fields: [approvalId], references: [id])
+  approvalId      Int?
+  song            Song? @relation(fields: [songId], references: [id])
+  songId          Int?
+  text            String?
+  sentAt          DateTime @default(now())
+  type            MessageType
+  updatedAt       DateTime @updatedAt
+  createdAt       DateTime @default(now())
+
+  @@map("messages")
+}
+
+enum MessageType {
+  MESSAGE
+  FEEDBACK
+}
+
+model Delivery {
+  id          Int      @id @default(autoincrement())
+  message     Message @relation(fields:[messageId], references:[id])
+  messageId   Int
+  user        User @relation(fields: [userId], references: [id])
+  userId      Int
+  type        DeliveryType
+  date        DateTime @default(now())
+  @@unique([messageId, userId, type])
+  @@map("deliveries")
+}
+
+enum DeliveryType {
+  DELIVERED
+  SEEN
 }

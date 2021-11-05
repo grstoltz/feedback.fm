@@ -1,1 +1,1 @@
-export { SongCommentsArgs } from "./SongCommentsArgs";
+export { SongMessagesArgs } from "./SongMessagesArgs";

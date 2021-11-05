@@ -3,7 +3,7 @@ import * as TypeGraphQL from "type-graphql";
 export enum NotificationScalarFieldEnum {
   id = "id",
   receiverId = "receiverId",
-  body = "body",
+  senderId = "senderId",
   read = "read",
   type = "type",
   url = "url",

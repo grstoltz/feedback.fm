@@ -36,10 +36,10 @@ export class NotificationScalarWhereWithAggregatesInput {
   })
   receiverId?: IntWithAggregatesFilter | undefined;
 
-  @TypeGraphQL.Field(_type => StringWithAggregatesFilter, {
+  @TypeGraphQL.Field(_type => IntWithAggregatesFilter, {
     nullable: true
   })
-  body?: StringWithAggregatesFilter | undefined;
+  senderId?: IntWithAggregatesFilter | undefined;
 
   @TypeGraphQL.Field(_type => BoolWithAggregatesFilter, {
     nullable: true

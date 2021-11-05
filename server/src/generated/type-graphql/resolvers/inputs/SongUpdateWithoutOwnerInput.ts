@@ -2,8 +2,8 @@ import * as TypeGraphQL from "type-graphql";
 import * as GraphQLScalars from "graphql-scalars";
 import { Prisma } from "@prisma/client";
 import { DecimalJSScalar } from "../../scalars";
-import { CommentUpdateManyWithoutParentInput } from "../inputs/CommentUpdateManyWithoutParentInput";
 import { DateTimeFieldUpdateOperationsInput } from "../inputs/DateTimeFieldUpdateOperationsInput";
+import { MessageUpdateManyWithoutSongInput } from "../inputs/MessageUpdateManyWithoutSongInput";
 import { StringFieldUpdateOperationsInput } from "../inputs/StringFieldUpdateOperationsInput";
 
 @TypeGraphQL.InputType({
@@ -40,8 +40,8 @@ export class SongUpdateWithoutOwnerInput {
   })
   updatedAt?: DateTimeFieldUpdateOperationsInput | undefined;
 
-  @TypeGraphQL.Field(_type => CommentUpdateManyWithoutParentInput, {
+  @TypeGraphQL.Field(_type => MessageUpdateManyWithoutSongInput, {
     nullable: true
   })
-  comments?: CommentUpdateManyWithoutParentInput | undefined;
+  Messages?: MessageUpdateManyWithoutSongInput | undefined;
 }

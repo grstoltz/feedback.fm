@@ -28,9 +28,6 @@ class NotificationInput {
 	@Field()
 	body!: string;
 
-	// @Field()
-	// parentId!: number;
-
 	@Field()
 	type!: string;
 
@@ -73,17 +70,14 @@ export class NotificationResolver {
 	}
 
 	@Query(() => [Notification], { nullable: true })
-	async paginatedNotifications(
+	@UseMiddleware(isAuth)
+	async getNotifications(
 		@Arg("skip", () => Int) skip: number,
-		@Arg("userId", () => Int) userId: number,
 		@Ctx() { req, prisma }: MyContext
 	): Promise<Notification[] | null> {
-		if (req.session.userId !== userId) {
-			return null;
-		}
 		return prisma.notification.findMany({
 			where: {
-				receiverId: userId,
+				receiverId: req.session.userId,
 			},
 			skip,
 			take: 15,
@@ -91,6 +85,25 @@ export class NotificationResolver {
 				createdAt: "desc",
 			},
 		});
+	}
+
+	@Query(() => Boolean)
+	@UseMiddleware(isAuth)
+	async unreadNotifications(
+		@Ctx() { req, prisma }: MyContext
+	): Promise<Boolean> {
+		const notifications = await prisma.notification.findMany({
+			where: {
+				receiverId: req.session.userId,
+				read: false,
+			},
+		});
+
+		if (notifications.length > 0) {
+			return true;
+		}
+
+		return false;
 	}
 
 	@FieldResolver(() => User)

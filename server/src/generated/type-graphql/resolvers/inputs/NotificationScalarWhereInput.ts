@@ -36,10 +36,10 @@ export class NotificationScalarWhereInput {
   })
   receiverId?: IntFilter | undefined;
 
-  @TypeGraphQL.Field(_type => StringFilter, {
+  @TypeGraphQL.Field(_type => IntFilter, {
     nullable: true
   })
-  body?: StringFilter | undefined;
+  senderId?: IntFilter | undefined;
 
   @TypeGraphQL.Field(_type => BoolFilter, {
     nullable: true
