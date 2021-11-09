@@ -32,7 +32,10 @@ class NotificationInput {
 	type!: string;
 
 	@Field()
-	url: string;
+	url!: string;
+
+	@Field()
+	urlType!: string;
 }
 
 @Resolver(Notification)
@@ -54,12 +57,14 @@ export class NotificationResolver {
 	//@UseMiddleware(isAuth)
 	async createNotification(
 		@Arg("input") input: NotificationInput,
-		@Ctx() { prisma }: MyContext,
+		@Ctx() { req, prisma }: MyContext,
 		@PubSub() pubSub: PubSubEngine
 	): Promise<Notification> {
 		const notification = await prisma.notification.create({
 			data: {
 				read: false,
+				senderId: req.session.userId,
+
 				...input,
 			},
 		});

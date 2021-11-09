@@ -23,8 +23,8 @@ import { COOKIE_NAME, FORGET_PASSWORD_PREFIX } from "../constants";
 import { User } from "../generated/type-graphql/models/User";
 
 import { Song } from "../generated/type-graphql/models/Song";
-import { Comment } from "../generated/type-graphql/models/Comment";
 import { Notification } from "../generated/type-graphql/models/Notification";
+import { Message } from "src/generated/type-graphql";
 
 @ObjectType()
 class FieldError {
@@ -212,27 +212,6 @@ export class UserResolver {
 	}
 
 	@FieldResolver(() => [Notification], { nullable: true })
-	async paginatedNotifications(
-		@Arg("skip") skip: number,
-		@Arg("userId") userId: number,
-		@Ctx() { req, prisma }: MyContext
-	): Promise<Notification[] | null> {
-		if (req.session.userId !== userId) {
-			return null;
-		}
-		return prisma.notification.findMany({
-			where: {
-				receiverId: userId,
-			},
-			skip,
-			take: 15,
-			orderBy: {
-				createdAt: "desc",
-			},
-		});
-	}
-
-	@FieldResolver(() => [Notification], { nullable: true })
 	async notifications(
 		@Root() user: User,
 		@Ctx() { req, prisma }: MyContext
@@ -251,27 +230,13 @@ export class UserResolver {
 		}
 	}
 
-	@FieldResolver(() => [Comment], { nullable: true })
-	async receivedComments(
-		@Root() user: User,
-		@Ctx() { prisma, req }: MyContext
-	): Promise<Comment[]> {
-		if (req.session.userId === user.id) {
-			return prisma.comment.findMany({
-				where: { receiverId: req.session.userId },
-			});
-		}
-
-		throw new Error("Not logged in");
-	}
-
-	@FieldResolver(() => [Comment], { nullable: true })
-	async sentComments(
+	@FieldResolver(() => [Message], { nullable: true })
+	async sentMessages(
 		@Root() user: User,
 		@Ctx() { req, prisma }: MyContext
-	): Promise<Comment[]> {
+	): Promise<Message[]> {
 		if (req.session.userId === user.id) {
-			return prisma.comment.findMany({
+			return prisma.message.findMany({
 				where: { senderId: req.session.userId },
 			});
 		}

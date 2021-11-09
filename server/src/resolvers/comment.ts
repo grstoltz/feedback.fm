@@ -13,7 +13,7 @@ import {
 } from "type-graphql";
 
 import { Song } from "../generated/type-graphql/models/Song";
-import { Comment } from "../generated/type-graphql/models/Comment";
+import { Message } from "../generated/type-graphql/models/Message";
 import { User } from "../generated/type-graphql/models/User";
 import { Approval } from "../generated/type-graphql/models/Approval";
 

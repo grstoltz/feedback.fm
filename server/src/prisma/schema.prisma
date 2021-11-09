@@ -24,6 +24,7 @@ model User {
   songs                 Song[]
   sentMessages          Message[]     
   receivedNotifications Notification[] @relation(name: "ReceivedNotifications")
+  sentNotifications     Notification[] @relation(name: "SentNotifications")
   transactions          Transaction[]
   conversations         Conversation[]
   deliveries            Delivery[]
@@ -64,13 +65,29 @@ model Song {
 model Notification {
   id         Int      @id @default(autoincrement())
   receiverId Int
-  senderId   Int
-  read       Boolean  @default(false)
-  type       String
-  url        String
   receiver   User     @relation(fields: [receiverId], references: [id], name: "ReceivedNotifications")
+  senderId   Int
+  sender     User     @relation(fields: [senderId], references: [id], name: "SentNotifications")
+  parentId   Int?
+  read       Boolean  @default(false)
+  type       NotificationType
+  url        String
+  urlType    NotificationUrlType
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+}
+
+enum NotificationType {
+  MESSAGE
+  APPROVED
+  DENIED
+  FEEDBACK
+}
+
+enum NotificationUrlType {
+  SONG
+  FEEDBACK
+  MESSAGE
 }
 
 model Transaction {
@@ -86,8 +103,14 @@ model Transaction {
 model Approval {
   id        Int       @id @default(autoincrement())
   commentId Int       @unique
-  status    String
+  status    ApprovalType
   Message   Message?
+}
+
+enum ApprovalType {
+  APPROVED
+  DENIED
+  REVIEW
 }
 
 model Conversation {
