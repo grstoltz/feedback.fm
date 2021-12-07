@@ -3,6 +3,7 @@ import * as GraphQLScalars from "graphql-scalars";
 import { Prisma } from "@prisma/client";
 import { DecimalJSScalar } from "../../scalars";
 import { ConversationCreateNestedOneWithoutMessagesInput } from "../inputs/ConversationCreateNestedOneWithoutMessagesInput";
+import { DeliveryCreateNestedOneWithoutMessageInput } from "../inputs/DeliveryCreateNestedOneWithoutMessageInput";
 import { SongCreateNestedOneWithoutMessagesInput } from "../inputs/SongCreateNestedOneWithoutMessagesInput";
 import { UserCreateNestedOneWithoutSentMessagesInput } from "../inputs/UserCreateNestedOneWithoutSentMessagesInput";
 import { MessageType } from "../../enums/MessageType";
@@ -45,6 +46,11 @@ export class MessageCreateWithoutApprovalInput {
     nullable: false
   })
   conversation!: ConversationCreateNestedOneWithoutMessagesInput;
+
+  @TypeGraphQL.Field(_type => DeliveryCreateNestedOneWithoutMessageInput, {
+    nullable: true
+  })
+  delivery?: DeliveryCreateNestedOneWithoutMessageInput | undefined;
 
   @TypeGraphQL.Field(_type => SongCreateNestedOneWithoutMessagesInput, {
     nullable: true

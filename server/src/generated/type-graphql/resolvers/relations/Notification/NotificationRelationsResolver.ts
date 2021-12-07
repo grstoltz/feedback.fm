@@ -15,4 +15,15 @@ export class NotificationRelationsResolver {
       },
     }).receiver({});
   }
+
+  @TypeGraphQL.FieldResolver(_type => User, {
+    nullable: false
+  })
+  async sender(@TypeGraphQL.Root() notification: Notification, @TypeGraphQL.Ctx() ctx: any): Promise<User> {
+    return getPrismaFromContext(ctx).notification.findUnique({
+      where: {
+        id: notification.id,
+      },
+    }).sender({});
+  }
 }

@@ -4,7 +4,10 @@ import { Prisma } from "@prisma/client";
 import { DecimalJSScalar } from "../../scalars";
 import { BoolFilter } from "../inputs/BoolFilter";
 import { DateTimeFilter } from "../inputs/DateTimeFilter";
+import { EnumNotificationTypeFilter } from "../inputs/EnumNotificationTypeFilter";
+import { EnumNotificationUrlTypeFilter } from "../inputs/EnumNotificationUrlTypeFilter";
 import { IntFilter } from "../inputs/IntFilter";
+import { IntNullableFilter } from "../inputs/IntNullableFilter";
 import { StringFilter } from "../inputs/StringFilter";
 import { UserRelationFilter } from "../inputs/UserRelationFilter";
 
@@ -37,30 +40,45 @@ export class NotificationWhereInput {
   })
   receiverId?: IntFilter | undefined;
 
+  @TypeGraphQL.Field(_type => UserRelationFilter, {
+    nullable: true
+  })
+  receiver?: UserRelationFilter | undefined;
+
   @TypeGraphQL.Field(_type => IntFilter, {
     nullable: true
   })
   senderId?: IntFilter | undefined;
+
+  @TypeGraphQL.Field(_type => UserRelationFilter, {
+    nullable: true
+  })
+  sender?: UserRelationFilter | undefined;
+
+  @TypeGraphQL.Field(_type => IntNullableFilter, {
+    nullable: true
+  })
+  parentId?: IntNullableFilter | undefined;
 
   @TypeGraphQL.Field(_type => BoolFilter, {
     nullable: true
   })
   read?: BoolFilter | undefined;
 
-  @TypeGraphQL.Field(_type => StringFilter, {
+  @TypeGraphQL.Field(_type => EnumNotificationTypeFilter, {
     nullable: true
   })
-  type?: StringFilter | undefined;
+  type?: EnumNotificationTypeFilter | undefined;
 
   @TypeGraphQL.Field(_type => StringFilter, {
     nullable: true
   })
   url?: StringFilter | undefined;
 
-  @TypeGraphQL.Field(_type => UserRelationFilter, {
+  @TypeGraphQL.Field(_type => EnumNotificationUrlTypeFilter, {
     nullable: true
   })
-  receiver?: UserRelationFilter | undefined;
+  urlType?: EnumNotificationUrlTypeFilter | undefined;
 
   @TypeGraphQL.Field(_type => DateTimeFilter, {
     nullable: true

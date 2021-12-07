@@ -24,7 +24,12 @@ import { User } from "../generated/type-graphql/models/User";
 
 import { Song } from "../generated/type-graphql/models/Song";
 import { Notification } from "../generated/type-graphql/models/Notification";
-import { Message } from "src/generated/type-graphql";
+import {
+	Conversation,
+	Message,
+	UserConversation,
+} from "src/generated/type-graphql";
+import { contains } from "class-validator";
 
 @ObjectType()
 class FieldError {
@@ -223,6 +228,27 @@ export class UserResolver {
 				},
 				orderBy: {
 					createdAt: "desc",
+				},
+			});
+		} else {
+			return null;
+		}
+	}
+
+	//returns all conversations a user is involved in
+	@FieldResolver(() => [UserConversation], { nullable: true })
+	async conversations(
+		@Root() user: User,
+		@Ctx() { req, prisma }: MyContext
+	): Promise<UserConversation[] | null> {
+		if (req.session.userId === user.id) {
+			return prisma.userConversation.findMany({
+				where: {
+					userId: user.id,
+				},
+				include: {
+					conversation: true,
+					user: true,
 				},
 			});
 		} else {

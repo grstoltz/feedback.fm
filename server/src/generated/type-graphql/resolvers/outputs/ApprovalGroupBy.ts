@@ -7,6 +7,7 @@ import { ApprovalCountAggregate } from "../outputs/ApprovalCountAggregate";
 import { ApprovalMaxAggregate } from "../outputs/ApprovalMaxAggregate";
 import { ApprovalMinAggregate } from "../outputs/ApprovalMinAggregate";
 import { ApprovalSumAggregate } from "../outputs/ApprovalSumAggregate";
+import { ApprovalType } from "../../enums/ApprovalType";
 
 @TypeGraphQL.ObjectType({
   isAbstract: true
@@ -22,10 +23,10 @@ export class ApprovalGroupBy {
   })
   commentId!: number;
 
-  @TypeGraphQL.Field(_type => String, {
+  @TypeGraphQL.Field(_type => ApprovalType, {
     nullable: false
   })
-  status!: string;
+  status!: "APPROVED" | "DENIED" | "REVIEW";
 
   @TypeGraphQL.Field(_type => ApprovalCountAggregate, {
     nullable: true

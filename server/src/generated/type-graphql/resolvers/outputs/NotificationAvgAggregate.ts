@@ -21,4 +21,9 @@ export class NotificationAvgAggregate {
     nullable: true
   })
   senderId!: number | null;
+
+  @TypeGraphQL.Field(_type => TypeGraphQL.Float, {
+    nullable: true
+  })
+  parentId!: number | null;
 }

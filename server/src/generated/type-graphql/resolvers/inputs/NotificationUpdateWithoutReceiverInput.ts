@@ -4,32 +4,40 @@ import { Prisma } from "@prisma/client";
 import { DecimalJSScalar } from "../../scalars";
 import { BoolFieldUpdateOperationsInput } from "../inputs/BoolFieldUpdateOperationsInput";
 import { DateTimeFieldUpdateOperationsInput } from "../inputs/DateTimeFieldUpdateOperationsInput";
-import { IntFieldUpdateOperationsInput } from "../inputs/IntFieldUpdateOperationsInput";
+import { EnumNotificationTypeFieldUpdateOperationsInput } from "../inputs/EnumNotificationTypeFieldUpdateOperationsInput";
+import { EnumNotificationUrlTypeFieldUpdateOperationsInput } from "../inputs/EnumNotificationUrlTypeFieldUpdateOperationsInput";
+import { NullableIntFieldUpdateOperationsInput } from "../inputs/NullableIntFieldUpdateOperationsInput";
 import { StringFieldUpdateOperationsInput } from "../inputs/StringFieldUpdateOperationsInput";
+import { UserUpdateOneRequiredWithoutSentNotificationsInput } from "../inputs/UserUpdateOneRequiredWithoutSentNotificationsInput";
 
 @TypeGraphQL.InputType({
   isAbstract: true
 })
 export class NotificationUpdateWithoutReceiverInput {
-  @TypeGraphQL.Field(_type => IntFieldUpdateOperationsInput, {
+  @TypeGraphQL.Field(_type => NullableIntFieldUpdateOperationsInput, {
     nullable: true
   })
-  senderId?: IntFieldUpdateOperationsInput | undefined;
+  parentId?: NullableIntFieldUpdateOperationsInput | undefined;
 
   @TypeGraphQL.Field(_type => BoolFieldUpdateOperationsInput, {
     nullable: true
   })
   read?: BoolFieldUpdateOperationsInput | undefined;
 
-  @TypeGraphQL.Field(_type => StringFieldUpdateOperationsInput, {
+  @TypeGraphQL.Field(_type => EnumNotificationTypeFieldUpdateOperationsInput, {
     nullable: true
   })
-  type?: StringFieldUpdateOperationsInput | undefined;
+  type?: EnumNotificationTypeFieldUpdateOperationsInput | undefined;
 
   @TypeGraphQL.Field(_type => StringFieldUpdateOperationsInput, {
     nullable: true
   })
   url?: StringFieldUpdateOperationsInput | undefined;
+
+  @TypeGraphQL.Field(_type => EnumNotificationUrlTypeFieldUpdateOperationsInput, {
+    nullable: true
+  })
+  urlType?: EnumNotificationUrlTypeFieldUpdateOperationsInput | undefined;
 
   @TypeGraphQL.Field(_type => DateTimeFieldUpdateOperationsInput, {
     nullable: true
@@ -40,4 +48,9 @@ export class NotificationUpdateWithoutReceiverInput {
     nullable: true
   })
   updatedAt?: DateTimeFieldUpdateOperationsInput | undefined;
+
+  @TypeGraphQL.Field(_type => UserUpdateOneRequiredWithoutSentNotificationsInput, {
+    nullable: true
+  })
+  sender?: UserUpdateOneRequiredWithoutSentNotificationsInput | undefined;
 }

@@ -3,6 +3,7 @@ import * as GraphQLScalars from "graphql-scalars";
 import { Prisma } from "@prisma/client";
 import { DecimalJSScalar } from "../scalars";
 import { Message } from "../models/Message";
+import { ApprovalType } from "../enums/ApprovalType";
 
 @TypeGraphQL.ObjectType({
   isAbstract: true
@@ -18,10 +19,10 @@ export class Approval {
   })
   commentId!: number;
 
-  @TypeGraphQL.Field(_type => String, {
+  @TypeGraphQL.Field(_type => ApprovalType, {
     nullable: false
   })
-  status!: string;
+  status!: "APPROVED" | "DENIED" | "REVIEW";
 
   Message?: Message | null;
 }

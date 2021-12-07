@@ -2,9 +2,9 @@ import * as TypeGraphQL from "type-graphql";
 import * as GraphQLScalars from "graphql-scalars";
 import { Prisma } from "@prisma/client";
 import { DecimalJSScalar } from "../../scalars";
+import { EnumApprovalTypeFilter } from "../inputs/EnumApprovalTypeFilter";
 import { IntFilter } from "../inputs/IntFilter";
 import { MessageRelationFilter } from "../inputs/MessageRelationFilter";
-import { StringFilter } from "../inputs/StringFilter";
 
 @TypeGraphQL.InputType({
   isAbstract: true
@@ -35,10 +35,10 @@ export class ApprovalWhereInput {
   })
   commentId?: IntFilter | undefined;
 
-  @TypeGraphQL.Field(_type => StringFilter, {
+  @TypeGraphQL.Field(_type => EnumApprovalTypeFilter, {
     nullable: true
   })
-  status?: StringFilter | undefined;
+  status?: EnumApprovalTypeFilter | undefined;
 
   @TypeGraphQL.Field(_type => MessageRelationFilter, {
     nullable: true

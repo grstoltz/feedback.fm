@@ -7,6 +7,8 @@ import { NotificationCountAggregate } from "../outputs/NotificationCountAggregat
 import { NotificationMaxAggregate } from "../outputs/NotificationMaxAggregate";
 import { NotificationMinAggregate } from "../outputs/NotificationMinAggregate";
 import { NotificationSumAggregate } from "../outputs/NotificationSumAggregate";
+import { NotificationType } from "../../enums/NotificationType";
+import { NotificationUrlType } from "../../enums/NotificationUrlType";
 
 @TypeGraphQL.ObjectType({
   isAbstract: true
@@ -27,20 +29,30 @@ export class NotificationGroupBy {
   })
   senderId!: number;
 
+  @TypeGraphQL.Field(_type => TypeGraphQL.Int, {
+    nullable: true
+  })
+  parentId!: number | null;
+
   @TypeGraphQL.Field(_type => Boolean, {
     nullable: false
   })
   read!: boolean;
 
-  @TypeGraphQL.Field(_type => String, {
+  @TypeGraphQL.Field(_type => NotificationType, {
     nullable: false
   })
-  type!: string;
+  type!: "MESSAGE" | "APPROVED" | "DENIED" | "FEEDBACK";
 
   @TypeGraphQL.Field(_type => String, {
     nullable: false
   })
   url!: string;
+
+  @TypeGraphQL.Field(_type => NotificationUrlType, {
+    nullable: false
+  })
+  urlType!: "SONG" | "FEEDBACK" | "MESSAGE";
 
   @TypeGraphQL.Field(_type => Date, {
     nullable: false

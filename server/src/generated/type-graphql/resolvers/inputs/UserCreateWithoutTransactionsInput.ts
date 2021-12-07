@@ -2,10 +2,12 @@ import * as TypeGraphQL from "type-graphql";
 import * as GraphQLScalars from "graphql-scalars";
 import { Prisma } from "@prisma/client";
 import { DecimalJSScalar } from "../../scalars";
-import { ConversationCreateNestedManyWithoutParticipantsInput } from "../inputs/ConversationCreateNestedManyWithoutParticipantsInput";
+import { DeliveryCreateNestedManyWithoutUserInput } from "../inputs/DeliveryCreateNestedManyWithoutUserInput";
 import { MessageCreateNestedManyWithoutSenderInput } from "../inputs/MessageCreateNestedManyWithoutSenderInput";
 import { NotificationCreateNestedManyWithoutReceiverInput } from "../inputs/NotificationCreateNestedManyWithoutReceiverInput";
+import { NotificationCreateNestedManyWithoutSenderInput } from "../inputs/NotificationCreateNestedManyWithoutSenderInput";
 import { SongCreateNestedManyWithoutOwnerInput } from "../inputs/SongCreateNestedManyWithoutOwnerInput";
+import { UserConversationCreateNestedManyWithoutUserInput } from "../inputs/UserConversationCreateNestedManyWithoutUserInput";
 
 @TypeGraphQL.InputType({
   isAbstract: true
@@ -56,8 +58,18 @@ export class UserCreateWithoutTransactionsInput {
   })
   receivedNotifications?: NotificationCreateNestedManyWithoutReceiverInput | undefined;
 
-  @TypeGraphQL.Field(_type => ConversationCreateNestedManyWithoutParticipantsInput, {
+  @TypeGraphQL.Field(_type => NotificationCreateNestedManyWithoutSenderInput, {
     nullable: true
   })
-  conversations?: ConversationCreateNestedManyWithoutParticipantsInput | undefined;
+  sentNotifications?: NotificationCreateNestedManyWithoutSenderInput | undefined;
+
+  @TypeGraphQL.Field(_type => UserConversationCreateNestedManyWithoutUserInput, {
+    nullable: true
+  })
+  conversations?: UserConversationCreateNestedManyWithoutUserInput | undefined;
+
+  @TypeGraphQL.Field(_type => DeliveryCreateNestedManyWithoutUserInput, {
+    nullable: true
+  })
+  deliveries?: DeliveryCreateNestedManyWithoutUserInput | undefined;
 }

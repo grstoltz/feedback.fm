@@ -2,12 +2,14 @@ import * as TypeGraphQL from "type-graphql";
 import * as GraphQLScalars from "graphql-scalars";
 import { Prisma } from "@prisma/client";
 import { DecimalJSScalar } from "../../scalars";
-import { ConversationUpdateManyWithoutParticipantsInput } from "../inputs/ConversationUpdateManyWithoutParticipantsInput";
 import { DateTimeFieldUpdateOperationsInput } from "../inputs/DateTimeFieldUpdateOperationsInput";
+import { DeliveryUpdateManyWithoutUserInput } from "../inputs/DeliveryUpdateManyWithoutUserInput";
 import { MessageUpdateManyWithoutSenderInput } from "../inputs/MessageUpdateManyWithoutSenderInput";
 import { NotificationUpdateManyWithoutReceiverInput } from "../inputs/NotificationUpdateManyWithoutReceiverInput";
+import { NotificationUpdateManyWithoutSenderInput } from "../inputs/NotificationUpdateManyWithoutSenderInput";
 import { SongUpdateManyWithoutOwnerInput } from "../inputs/SongUpdateManyWithoutOwnerInput";
 import { StringFieldUpdateOperationsInput } from "../inputs/StringFieldUpdateOperationsInput";
+import { UserConversationUpdateManyWithoutUserInput } from "../inputs/UserConversationUpdateManyWithoutUserInput";
 
 @TypeGraphQL.InputType({
   isAbstract: true
@@ -58,8 +60,18 @@ export class UserUpdateWithoutTransactionsInput {
   })
   receivedNotifications?: NotificationUpdateManyWithoutReceiverInput | undefined;
 
-  @TypeGraphQL.Field(_type => ConversationUpdateManyWithoutParticipantsInput, {
+  @TypeGraphQL.Field(_type => NotificationUpdateManyWithoutSenderInput, {
     nullable: true
   })
-  conversations?: ConversationUpdateManyWithoutParticipantsInput | undefined;
+  sentNotifications?: NotificationUpdateManyWithoutSenderInput | undefined;
+
+  @TypeGraphQL.Field(_type => UserConversationUpdateManyWithoutUserInput, {
+    nullable: true
+  })
+  conversations?: UserConversationUpdateManyWithoutUserInput | undefined;
+
+  @TypeGraphQL.Field(_type => DeliveryUpdateManyWithoutUserInput, {
+    nullable: true
+  })
+  deliveries?: DeliveryUpdateManyWithoutUserInput | undefined;
 }

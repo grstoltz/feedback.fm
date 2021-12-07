@@ -4,6 +4,7 @@ import { Prisma } from "@prisma/client";
 import { DecimalJSScalar } from "../../scalars";
 import { ApprovalCreateNestedOneWithoutMessageInput } from "../inputs/ApprovalCreateNestedOneWithoutMessageInput";
 import { ConversationCreateNestedOneWithoutMessagesInput } from "../inputs/ConversationCreateNestedOneWithoutMessagesInput";
+import { DeliveryCreateNestedOneWithoutMessageInput } from "../inputs/DeliveryCreateNestedOneWithoutMessageInput";
 import { UserCreateNestedOneWithoutSentMessagesInput } from "../inputs/UserCreateNestedOneWithoutSentMessagesInput";
 import { MessageType } from "../../enums/MessageType";
 
@@ -45,6 +46,11 @@ export class MessageCreateWithoutSongInput {
     nullable: false
   })
   conversation!: ConversationCreateNestedOneWithoutMessagesInput;
+
+  @TypeGraphQL.Field(_type => DeliveryCreateNestedOneWithoutMessageInput, {
+    nullable: true
+  })
+  delivery?: DeliveryCreateNestedOneWithoutMessageInput | undefined;
 
   @TypeGraphQL.Field(_type => ApprovalCreateNestedOneWithoutMessageInput, {
     nullable: true

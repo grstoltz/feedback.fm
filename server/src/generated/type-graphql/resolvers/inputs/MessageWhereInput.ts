@@ -5,6 +5,7 @@ import { DecimalJSScalar } from "../../scalars";
 import { ApprovalRelationFilter } from "../inputs/ApprovalRelationFilter";
 import { ConversationRelationFilter } from "../inputs/ConversationRelationFilter";
 import { DateTimeFilter } from "../inputs/DateTimeFilter";
+import { DeliveryRelationFilter } from "../inputs/DeliveryRelationFilter";
 import { EnumMessageTypeFilter } from "../inputs/EnumMessageTypeFilter";
 import { IntFilter } from "../inputs/IntFilter";
 import { IntNullableFilter } from "../inputs/IntNullableFilter";
@@ -55,6 +56,11 @@ export class MessageWhereInput {
     nullable: true
   })
   conversationId?: IntFilter | undefined;
+
+  @TypeGraphQL.Field(_type => DeliveryRelationFilter, {
+    nullable: true
+  })
+  delivery?: DeliveryRelationFilter | undefined;
 
   @TypeGraphQL.Field(_type => ApprovalRelationFilter, {
     nullable: true

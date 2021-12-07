@@ -2,11 +2,12 @@ import * as TypeGraphQL from "type-graphql";
 import * as GraphQLScalars from "graphql-scalars";
 import { Prisma } from "@prisma/client";
 import { DecimalJSScalar } from "../scalars";
-import { Conversation } from "../models/Conversation";
+import { Delivery } from "../models/Delivery";
 import { Message } from "../models/Message";
 import { Notification } from "../models/Notification";
 import { Song } from "../models/Song";
 import { Transaction } from "../models/Transaction";
+import { UserConversation } from "../models/UserConversation";
 
 @TypeGraphQL.ObjectType({
   isAbstract: true
@@ -43,9 +44,13 @@ export class User {
 
   receivedNotifications?: Notification[];
 
+  sentNotifications?: Notification[];
+
   transactions?: Transaction[];
 
-  conversations?: Conversation[];
+  conversations?: UserConversation[];
+
+  deliveries?: Delivery[];
 
   @TypeGraphQL.Field(_type => Date, {
     nullable: false

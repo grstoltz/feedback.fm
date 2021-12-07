@@ -5,7 +5,7 @@ import { DecimalJSScalar } from "../../scalars";
 import { DateTimeFilter } from "../inputs/DateTimeFilter";
 import { IntFilter } from "../inputs/IntFilter";
 import { MessageListRelationFilter } from "../inputs/MessageListRelationFilter";
-import { UserListRelationFilter } from "../inputs/UserListRelationFilter";
+import { UserConversationListRelationFilter } from "../inputs/UserConversationListRelationFilter";
 
 @TypeGraphQL.InputType({
   isAbstract: true
@@ -31,10 +31,10 @@ export class ConversationWhereInput {
   })
   id?: IntFilter | undefined;
 
-  @TypeGraphQL.Field(_type => UserListRelationFilter, {
+  @TypeGraphQL.Field(_type => UserConversationListRelationFilter, {
     nullable: true
   })
-  participants?: UserListRelationFilter | undefined;
+  participants?: UserConversationListRelationFilter | undefined;
 
   @TypeGraphQL.Field(_type => MessageListRelationFilter, {
     nullable: true

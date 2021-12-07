@@ -30,4 +30,18 @@ export class MessageResolver {
 	): Promise<Message[] | undefined> {
 		return prisma.message.findMany({ where: { senderId: id } });
 	}
+
+	//a query which returns all messages in a conversation
+	@Query(() => [Message])
+	async conversation(
+		@Arg("id", () => Int) id: number,
+		@Ctx() { prisma }: MyContext
+	): Promise<Message[] | undefined> {
+		return prisma.message.findMany({
+			where: {
+				id: id,
+			},
+			orderBy: { createdAt: "desc" },
+		});
+	}
 }

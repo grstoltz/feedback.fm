@@ -14,7 +14,6 @@ import {
 import { GraphQLUpload, FileUpload } from "graphql-upload";
 import { User } from "../generated/type-graphql/models/User";
 import { Song } from "../generated/type-graphql/models/Song";
-import { Comment } from "../generated/type-graphql/models/Comment";
 
 import { MyContext } from "../types";
 
@@ -96,16 +95,6 @@ export class SongResolver {
 		});
 
 		return updatedSong?.count;
-	}
-
-	@FieldResolver(() => [Comment], { nullable: true })
-	async comment(
-		@Root() song: Song,
-		@Ctx() { req, prisma }: MyContext
-	): Promise<Comment[]> {
-		return prisma.comment.findMany({
-			where: { senderId: req.session.userId, parentId: song.id },
-		});
 	}
 
 	@Mutation(() => Boolean)

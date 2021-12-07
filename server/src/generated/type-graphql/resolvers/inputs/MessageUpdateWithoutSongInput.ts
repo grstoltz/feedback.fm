@@ -5,6 +5,7 @@ import { DecimalJSScalar } from "../../scalars";
 import { ApprovalUpdateOneWithoutMessageInput } from "../inputs/ApprovalUpdateOneWithoutMessageInput";
 import { ConversationUpdateOneRequiredWithoutMessagesInput } from "../inputs/ConversationUpdateOneRequiredWithoutMessagesInput";
 import { DateTimeFieldUpdateOperationsInput } from "../inputs/DateTimeFieldUpdateOperationsInput";
+import { DeliveryUpdateOneWithoutMessageInput } from "../inputs/DeliveryUpdateOneWithoutMessageInput";
 import { EnumMessageTypeFieldUpdateOperationsInput } from "../inputs/EnumMessageTypeFieldUpdateOperationsInput";
 import { NullableStringFieldUpdateOperationsInput } from "../inputs/NullableStringFieldUpdateOperationsInput";
 import { UserUpdateOneRequiredWithoutSentMessagesInput } from "../inputs/UserUpdateOneRequiredWithoutSentMessagesInput";
@@ -47,6 +48,11 @@ export class MessageUpdateWithoutSongInput {
     nullable: true
   })
   conversation?: ConversationUpdateOneRequiredWithoutMessagesInput | undefined;
+
+  @TypeGraphQL.Field(_type => DeliveryUpdateOneWithoutMessageInput, {
+    nullable: true
+  })
+  delivery?: DeliveryUpdateOneWithoutMessageInput | undefined;
 
   @TypeGraphQL.Field(_type => ApprovalUpdateOneWithoutMessageInput, {
     nullable: true

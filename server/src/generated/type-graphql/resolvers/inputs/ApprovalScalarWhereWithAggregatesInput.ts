@@ -2,8 +2,8 @@ import * as TypeGraphQL from "type-graphql";
 import * as GraphQLScalars from "graphql-scalars";
 import { Prisma } from "@prisma/client";
 import { DecimalJSScalar } from "../../scalars";
+import { EnumApprovalTypeWithAggregatesFilter } from "../inputs/EnumApprovalTypeWithAggregatesFilter";
 import { IntWithAggregatesFilter } from "../inputs/IntWithAggregatesFilter";
-import { StringWithAggregatesFilter } from "../inputs/StringWithAggregatesFilter";
 
 @TypeGraphQL.InputType({
   isAbstract: true
@@ -34,8 +34,8 @@ export class ApprovalScalarWhereWithAggregatesInput {
   })
   commentId?: IntWithAggregatesFilter | undefined;
 
-  @TypeGraphQL.Field(_type => StringWithAggregatesFilter, {
+  @TypeGraphQL.Field(_type => EnumApprovalTypeWithAggregatesFilter, {
     nullable: true
   })
-  status?: StringWithAggregatesFilter | undefined;
+  status?: EnumApprovalTypeWithAggregatesFilter | undefined;
 }

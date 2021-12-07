@@ -2,6 +2,8 @@ import * as TypeGraphQL from "type-graphql";
 import * as GraphQLScalars from "graphql-scalars";
 import { Prisma } from "@prisma/client";
 import { DecimalJSScalar } from "../../scalars";
+import { NotificationType } from "../../enums/NotificationType";
+import { NotificationUrlType } from "../../enums/NotificationUrlType";
 
 @TypeGraphQL.InputType({
   isAbstract: true
@@ -17,20 +19,30 @@ export class NotificationCreateManyReceiverInput {
   })
   senderId!: number;
 
+  @TypeGraphQL.Field(_type => TypeGraphQL.Int, {
+    nullable: true
+  })
+  parentId?: number | undefined;
+
   @TypeGraphQL.Field(_type => Boolean, {
     nullable: true
   })
   read?: boolean | undefined;
 
-  @TypeGraphQL.Field(_type => String, {
+  @TypeGraphQL.Field(_type => NotificationType, {
     nullable: false
   })
-  type!: string;
+  type!: "MESSAGE" | "APPROVED" | "DENIED" | "FEEDBACK";
 
   @TypeGraphQL.Field(_type => String, {
     nullable: false
   })
   url!: string;
+
+  @TypeGraphQL.Field(_type => NotificationUrlType, {
+    nullable: false
+  })
+  urlType!: "SONG" | "FEEDBACK" | "MESSAGE";
 
   @TypeGraphQL.Field(_type => Date, {
     nullable: true

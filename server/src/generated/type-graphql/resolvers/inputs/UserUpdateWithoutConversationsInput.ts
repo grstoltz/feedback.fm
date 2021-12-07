@@ -3,8 +3,10 @@ import * as GraphQLScalars from "graphql-scalars";
 import { Prisma } from "@prisma/client";
 import { DecimalJSScalar } from "../../scalars";
 import { DateTimeFieldUpdateOperationsInput } from "../inputs/DateTimeFieldUpdateOperationsInput";
+import { DeliveryUpdateManyWithoutUserInput } from "../inputs/DeliveryUpdateManyWithoutUserInput";
 import { MessageUpdateManyWithoutSenderInput } from "../inputs/MessageUpdateManyWithoutSenderInput";
 import { NotificationUpdateManyWithoutReceiverInput } from "../inputs/NotificationUpdateManyWithoutReceiverInput";
+import { NotificationUpdateManyWithoutSenderInput } from "../inputs/NotificationUpdateManyWithoutSenderInput";
 import { SongUpdateManyWithoutOwnerInput } from "../inputs/SongUpdateManyWithoutOwnerInput";
 import { StringFieldUpdateOperationsInput } from "../inputs/StringFieldUpdateOperationsInput";
 import { TransactionUpdateManyWithoutUserInput } from "../inputs/TransactionUpdateManyWithoutUserInput";
@@ -58,8 +60,18 @@ export class UserUpdateWithoutConversationsInput {
   })
   receivedNotifications?: NotificationUpdateManyWithoutReceiverInput | undefined;
 
+  @TypeGraphQL.Field(_type => NotificationUpdateManyWithoutSenderInput, {
+    nullable: true
+  })
+  sentNotifications?: NotificationUpdateManyWithoutSenderInput | undefined;
+
   @TypeGraphQL.Field(_type => TransactionUpdateManyWithoutUserInput, {
     nullable: true
   })
   transactions?: TransactionUpdateManyWithoutUserInput | undefined;
+
+  @TypeGraphQL.Field(_type => DeliveryUpdateManyWithoutUserInput, {
+    nullable: true
+  })
+  deliveries?: DeliveryUpdateManyWithoutUserInput | undefined;
 }

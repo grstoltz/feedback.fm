@@ -4,9 +4,11 @@ export enum NotificationScalarFieldEnum {
   id = "id",
   receiverId = "receiverId",
   senderId = "senderId",
+  parentId = "parentId",
   read = "read",
   type = "type",
   url = "url",
+  urlType = "urlType",
   createdAt = "createdAt",
   updatedAt = "updatedAt"
 }

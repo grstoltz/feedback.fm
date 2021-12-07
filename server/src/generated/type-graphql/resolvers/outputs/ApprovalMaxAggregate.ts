@@ -2,6 +2,7 @@ import * as TypeGraphQL from "type-graphql";
 import * as GraphQLScalars from "graphql-scalars";
 import { Prisma } from "@prisma/client";
 import { DecimalJSScalar } from "../../scalars";
+import { ApprovalType } from "../../enums/ApprovalType";
 
 @TypeGraphQL.ObjectType({
   isAbstract: true
@@ -17,8 +18,8 @@ export class ApprovalMaxAggregate {
   })
   commentId!: number | null;
 
-  @TypeGraphQL.Field(_type => String, {
+  @TypeGraphQL.Field(_type => ApprovalType, {
     nullable: true
   })
-  status!: string | null;
+  status!: "APPROVED" | "DENIED" | "REVIEW" | null;
 }

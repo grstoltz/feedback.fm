@@ -1,26 +1,26 @@
 import * as TypeGraphQL from "type-graphql";
 import * as GraphQLScalars from "graphql-scalars";
-import { UserOrderByInput } from "../../../inputs/UserOrderByInput";
-import { UserWhereInput } from "../../../inputs/UserWhereInput";
-import { UserWhereUniqueInput } from "../../../inputs/UserWhereUniqueInput";
-import { UserScalarFieldEnum } from "../../../../enums/UserScalarFieldEnum";
+import { UserConversationOrderByInput } from "../../../inputs/UserConversationOrderByInput";
+import { UserConversationWhereInput } from "../../../inputs/UserConversationWhereInput";
+import { UserConversationWhereUniqueInput } from "../../../inputs/UserConversationWhereUniqueInput";
+import { UserConversationScalarFieldEnum } from "../../../../enums/UserConversationScalarFieldEnum";
 
 @TypeGraphQL.ArgsType()
 export class ConversationParticipantsArgs {
-  @TypeGraphQL.Field(_type => UserWhereInput, {
+  @TypeGraphQL.Field(_type => UserConversationWhereInput, {
     nullable: true
   })
-  where?: UserWhereInput | undefined;
+  where?: UserConversationWhereInput | undefined;
 
-  @TypeGraphQL.Field(_type => [UserOrderByInput], {
+  @TypeGraphQL.Field(_type => [UserConversationOrderByInput], {
     nullable: true
   })
-  orderBy?: UserOrderByInput[] | undefined;
+  orderBy?: UserConversationOrderByInput[] | undefined;
 
-  @TypeGraphQL.Field(_type => UserWhereUniqueInput, {
+  @TypeGraphQL.Field(_type => UserConversationWhereUniqueInput, {
     nullable: true
   })
-  cursor?: UserWhereUniqueInput | undefined;
+  cursor?: UserConversationWhereUniqueInput | undefined;
 
   @TypeGraphQL.Field(_type => TypeGraphQL.Int, {
     nullable: true
@@ -32,8 +32,8 @@ export class ConversationParticipantsArgs {
   })
   skip?: number | undefined;
 
-  @TypeGraphQL.Field(_type => [UserScalarFieldEnum], {
+  @TypeGraphQL.Field(_type => [UserConversationScalarFieldEnum], {
     nullable: true
   })
-  distinct?: Array<"id" | "email" | "username" | "password" | "avatarURL" | "createdAt" | "updatedAt"> | undefined;
+  distinct?: Array<"userId" | "conversationId"> | undefined;
 }

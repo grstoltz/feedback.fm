@@ -1,0 +1,12 @@
+export { AggregateUserConversationArgs } from "./AggregateUserConversationArgs";
+export { CreateManyUserConversationArgs } from "./CreateManyUserConversationArgs";
+export { CreateUserConversationArgs } from "./CreateUserConversationArgs";
+export { DeleteManyUserConversationArgs } from "./DeleteManyUserConversationArgs";
+export { DeleteUserConversationArgs } from "./DeleteUserConversationArgs";
+export { FindFirstUserConversationArgs } from "./FindFirstUserConversationArgs";
+export { FindManyUserConversationArgs } from "./FindManyUserConversationArgs";
+export { FindUniqueUserConversationArgs } from "./FindUniqueUserConversationArgs";
+export { GroupByUserConversationArgs } from "./GroupByUserConversationArgs";
+export { UpdateManyUserConversationArgs } from "./UpdateManyUserConversationArgs";
+export { UpdateUserConversationArgs } from "./UpdateUserConversationArgs";
+export { UpsertUserConversationArgs } from "./UpsertUserConversationArgs";

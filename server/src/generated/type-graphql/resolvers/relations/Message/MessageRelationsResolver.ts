@@ -1,6 +1,7 @@
 import * as TypeGraphQL from "type-graphql";
 import { Approval } from "../../../models/Approval";
 import { Conversation } from "../../../models/Conversation";
+import { Delivery } from "../../../models/Delivery";
 import { Message } from "../../../models/Message";
 import { Song } from "../../../models/Song";
 import { User } from "../../../models/User";
@@ -28,6 +29,17 @@ export class MessageRelationsResolver {
         id: message.id,
       },
     }).conversation({});
+  }
+
+  @TypeGraphQL.FieldResolver(_type => Delivery, {
+    nullable: true
+  })
+  async delivery(@TypeGraphQL.Root() message: Message, @TypeGraphQL.Ctx() ctx: any): Promise<Delivery | null> {
+    return getPrismaFromContext(ctx).message.findUnique({
+      where: {
+        id: message.id,
+      },
+    }).delivery({});
   }
 
   @TypeGraphQL.FieldResolver(_type => Approval, {

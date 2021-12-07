@@ -3,6 +3,7 @@ import * as GraphQLScalars from "graphql-scalars";
 import { Prisma } from "@prisma/client";
 import { DecimalJSScalar } from "../../scalars";
 import { MessageCreateNestedOneWithoutApprovalInput } from "../inputs/MessageCreateNestedOneWithoutApprovalInput";
+import { ApprovalType } from "../../enums/ApprovalType";
 
 @TypeGraphQL.InputType({
   isAbstract: true
@@ -13,10 +14,10 @@ export class ApprovalCreateInput {
   })
   commentId!: number;
 
-  @TypeGraphQL.Field(_type => String, {
+  @TypeGraphQL.Field(_type => ApprovalType, {
     nullable: false
   })
-  status!: string;
+  status!: "APPROVED" | "DENIED" | "REVIEW";
 
   @TypeGraphQL.Field(_type => MessageCreateNestedOneWithoutApprovalInput, {
     nullable: true

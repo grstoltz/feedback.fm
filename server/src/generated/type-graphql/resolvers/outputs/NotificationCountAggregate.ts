@@ -25,6 +25,11 @@ export class NotificationCountAggregate {
   @TypeGraphQL.Field(_type => TypeGraphQL.Int, {
     nullable: false
   })
+  parentId!: number;
+
+  @TypeGraphQL.Field(_type => TypeGraphQL.Int, {
+    nullable: false
+  })
   read!: number;
 
   @TypeGraphQL.Field(_type => TypeGraphQL.Int, {
@@ -36,6 +41,11 @@ export class NotificationCountAggregate {
     nullable: false
   })
   url!: number;
+
+  @TypeGraphQL.Field(_type => TypeGraphQL.Int, {
+    nullable: false
+  })
+  urlType!: number;
 
   @TypeGraphQL.Field(_type => TypeGraphQL.Int, {
     nullable: false

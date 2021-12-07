@@ -4,6 +4,7 @@ import { Prisma } from "@prisma/client";
 import { DecimalJSScalar } from "../scalars";
 import { Approval } from "../models/Approval";
 import { Conversation } from "../models/Conversation";
+import { Delivery } from "../models/Delivery";
 import { Song } from "../models/Song";
 import { User } from "../models/User";
 import { MessageType } from "../enums/MessageType";
@@ -30,6 +31,8 @@ export class Message {
     nullable: false
   })
   conversationId!: number;
+
+  delivery?: Delivery | null;
 
   approval?: Approval | null;
 

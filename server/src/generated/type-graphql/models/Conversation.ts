@@ -3,7 +3,7 @@ import * as GraphQLScalars from "graphql-scalars";
 import { Prisma } from "@prisma/client";
 import { DecimalJSScalar } from "../scalars";
 import { Message } from "../models/Message";
-import { User } from "../models/User";
+import { UserConversation } from "../models/UserConversation";
 
 @TypeGraphQL.ObjectType({
   isAbstract: true
@@ -14,7 +14,7 @@ export class Conversation {
   })
   id!: number;
 
-  participants?: User[];
+  participants?: UserConversation[];
 
   messages?: Message[];
 

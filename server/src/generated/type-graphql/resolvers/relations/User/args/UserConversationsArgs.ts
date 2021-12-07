@@ -1,26 +1,26 @@
 import * as TypeGraphQL from "type-graphql";
 import * as GraphQLScalars from "graphql-scalars";
-import { ConversationOrderByInput } from "../../../inputs/ConversationOrderByInput";
-import { ConversationWhereInput } from "../../../inputs/ConversationWhereInput";
-import { ConversationWhereUniqueInput } from "../../../inputs/ConversationWhereUniqueInput";
-import { ConversationScalarFieldEnum } from "../../../../enums/ConversationScalarFieldEnum";
+import { UserConversationOrderByInput } from "../../../inputs/UserConversationOrderByInput";
+import { UserConversationWhereInput } from "../../../inputs/UserConversationWhereInput";
+import { UserConversationWhereUniqueInput } from "../../../inputs/UserConversationWhereUniqueInput";
+import { UserConversationScalarFieldEnum } from "../../../../enums/UserConversationScalarFieldEnum";
 
 @TypeGraphQL.ArgsType()
 export class UserConversationsArgs {
-  @TypeGraphQL.Field(_type => ConversationWhereInput, {
+  @TypeGraphQL.Field(_type => UserConversationWhereInput, {
     nullable: true
   })
-  where?: ConversationWhereInput | undefined;
+  where?: UserConversationWhereInput | undefined;
 
-  @TypeGraphQL.Field(_type => [ConversationOrderByInput], {
+  @TypeGraphQL.Field(_type => [UserConversationOrderByInput], {
     nullable: true
   })
-  orderBy?: ConversationOrderByInput[] | undefined;
+  orderBy?: UserConversationOrderByInput[] | undefined;
 
-  @TypeGraphQL.Field(_type => ConversationWhereUniqueInput, {
+  @TypeGraphQL.Field(_type => UserConversationWhereUniqueInput, {
     nullable: true
   })
-  cursor?: ConversationWhereUniqueInput | undefined;
+  cursor?: UserConversationWhereUniqueInput | undefined;
 
   @TypeGraphQL.Field(_type => TypeGraphQL.Int, {
     nullable: true
@@ -32,8 +32,8 @@ export class UserConversationsArgs {
   })
   skip?: number | undefined;
 
-  @TypeGraphQL.Field(_type => [ConversationScalarFieldEnum], {
+  @TypeGraphQL.Field(_type => [UserConversationScalarFieldEnum], {
     nullable: true
   })
-  distinct?: Array<"id" | "updatedAt" | "createdAt"> | undefined;
+  distinct?: Array<"userId" | "conversationId"> | undefined;
 }

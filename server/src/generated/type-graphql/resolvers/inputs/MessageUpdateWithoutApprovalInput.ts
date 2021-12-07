@@ -4,6 +4,7 @@ import { Prisma } from "@prisma/client";
 import { DecimalJSScalar } from "../../scalars";
 import { ConversationUpdateOneRequiredWithoutMessagesInput } from "../inputs/ConversationUpdateOneRequiredWithoutMessagesInput";
 import { DateTimeFieldUpdateOperationsInput } from "../inputs/DateTimeFieldUpdateOperationsInput";
+import { DeliveryUpdateOneWithoutMessageInput } from "../inputs/DeliveryUpdateOneWithoutMessageInput";
 import { EnumMessageTypeFieldUpdateOperationsInput } from "../inputs/EnumMessageTypeFieldUpdateOperationsInput";
 import { NullableStringFieldUpdateOperationsInput } from "../inputs/NullableStringFieldUpdateOperationsInput";
 import { SongUpdateOneWithoutMessagesInput } from "../inputs/SongUpdateOneWithoutMessagesInput";
@@ -47,6 +48,11 @@ export class MessageUpdateWithoutApprovalInput {
     nullable: true
   })
   conversation?: ConversationUpdateOneRequiredWithoutMessagesInput | undefined;
+
+  @TypeGraphQL.Field(_type => DeliveryUpdateOneWithoutMessageInput, {
+    nullable: true
+  })
+  delivery?: DeliveryUpdateOneWithoutMessageInput | undefined;
 
   @TypeGraphQL.Field(_type => SongUpdateOneWithoutMessagesInput, {
     nullable: true

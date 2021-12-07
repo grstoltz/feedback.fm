@@ -2,7 +2,7 @@ import * as TypeGraphQL from "type-graphql";
 import * as GraphQLScalars from "graphql-scalars";
 import { Prisma } from "@prisma/client";
 import { DecimalJSScalar } from "../../scalars";
-import { UserCreateNestedManyWithoutConversationsInput } from "../inputs/UserCreateNestedManyWithoutConversationsInput";
+import { UserConversationCreateNestedManyWithoutConversationInput } from "../inputs/UserConversationCreateNestedManyWithoutConversationInput";
 
 @TypeGraphQL.InputType({
   isAbstract: true
@@ -18,8 +18,8 @@ export class ConversationCreateWithoutMessagesInput {
   })
   createdAt?: Date | undefined;
 
-  @TypeGraphQL.Field(_type => UserCreateNestedManyWithoutConversationsInput, {
+  @TypeGraphQL.Field(_type => UserConversationCreateNestedManyWithoutConversationInput, {
     nullable: true
   })
-  participants?: UserCreateNestedManyWithoutConversationsInput | undefined;
+  participants?: UserConversationCreateNestedManyWithoutConversationInput | undefined;
 }

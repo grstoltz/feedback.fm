@@ -4,7 +4,7 @@ import { Prisma } from "@prisma/client";
 import { DecimalJSScalar } from "../../scalars";
 import { DateTimeFieldUpdateOperationsInput } from "../inputs/DateTimeFieldUpdateOperationsInput";
 import { MessageUpdateManyWithoutConversationInput } from "../inputs/MessageUpdateManyWithoutConversationInput";
-import { UserUpdateManyWithoutConversationsInput } from "../inputs/UserUpdateManyWithoutConversationsInput";
+import { UserConversationUpdateManyWithoutConversationInput } from "../inputs/UserConversationUpdateManyWithoutConversationInput";
 
 @TypeGraphQL.InputType({
   isAbstract: true
@@ -20,10 +20,10 @@ export class ConversationUpdateInput {
   })
   createdAt?: DateTimeFieldUpdateOperationsInput | undefined;
 
-  @TypeGraphQL.Field(_type => UserUpdateManyWithoutConversationsInput, {
+  @TypeGraphQL.Field(_type => UserConversationUpdateManyWithoutConversationInput, {
     nullable: true
   })
-  participants?: UserUpdateManyWithoutConversationsInput | undefined;
+  participants?: UserConversationUpdateManyWithoutConversationInput | undefined;
 
   @TypeGraphQL.Field(_type => MessageUpdateManyWithoutConversationInput, {
     nullable: true

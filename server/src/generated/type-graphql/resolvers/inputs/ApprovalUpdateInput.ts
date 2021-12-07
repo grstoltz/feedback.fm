@@ -2,9 +2,9 @@ import * as TypeGraphQL from "type-graphql";
 import * as GraphQLScalars from "graphql-scalars";
 import { Prisma } from "@prisma/client";
 import { DecimalJSScalar } from "../../scalars";
+import { EnumApprovalTypeFieldUpdateOperationsInput } from "../inputs/EnumApprovalTypeFieldUpdateOperationsInput";
 import { IntFieldUpdateOperationsInput } from "../inputs/IntFieldUpdateOperationsInput";
 import { MessageUpdateOneWithoutApprovalInput } from "../inputs/MessageUpdateOneWithoutApprovalInput";
-import { StringFieldUpdateOperationsInput } from "../inputs/StringFieldUpdateOperationsInput";
 
 @TypeGraphQL.InputType({
   isAbstract: true
@@ -15,10 +15,10 @@ export class ApprovalUpdateInput {
   })
   commentId?: IntFieldUpdateOperationsInput | undefined;
 
-  @TypeGraphQL.Field(_type => StringFieldUpdateOperationsInput, {
+  @TypeGraphQL.Field(_type => EnumApprovalTypeFieldUpdateOperationsInput, {
     nullable: true
   })
-  status?: StringFieldUpdateOperationsInput | undefined;
+  status?: EnumApprovalTypeFieldUpdateOperationsInput | undefined;
 
   @TypeGraphQL.Field(_type => MessageUpdateOneWithoutApprovalInput, {
     nullable: true

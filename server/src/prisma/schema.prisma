@@ -26,7 +26,7 @@ model User {
   receivedNotifications Notification[] @relation(name: "ReceivedNotifications")
   sentNotifications     Notification[] @relation(name: "SentNotifications")
   transactions          Transaction[]
-  conversations         Conversation[]
+  conversations         UserConversation[]
   deliveries            Delivery[]
   createdAt             DateTime       @default(now())
   updatedAt             DateTime       @updatedAt
@@ -115,10 +115,20 @@ enum ApprovalType {
 
 model Conversation {
   id              Int @id @default(autoincrement())
-  participants    User[]
+  participants    UserConversation[]
   messages        Message[]
   updatedAt       DateTime @updatedAt
   createdAt       DateTime @default(now())
+}
+
+
+model UserConversation {
+  userId          Int
+  conversationId  Int
+  user            User @relation(fields: [userId], references: [id])
+  conversation    Conversation @relation(fields: [conversationId], references: [id])
+
+  @@id([userId, conversationId])
 }
 
 model Message {
