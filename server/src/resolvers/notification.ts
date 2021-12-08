@@ -20,6 +20,11 @@ import { User } from "../generated/type-graphql/models/User";
 
 import { isAuth } from "../middleware/isAuth";
 
+import {
+	NotificationType,
+	NotificationUrlType,
+} from "src/generated/type-graphql";
+
 @InputType()
 class NotificationInput {
 	@Field()
@@ -29,13 +34,16 @@ class NotificationInput {
 	body!: string;
 
 	@Field()
-	type!: string;
+	type!: NotificationType;
 
 	@Field()
 	url!: string;
 
 	@Field()
-	urlType!: string;
+	urlType!: NotificationUrlType;
+
+	@Field()
+	parentId: number;
 }
 
 @Resolver(Notification)
@@ -54,7 +62,7 @@ export class NotificationResolver {
 	//   }
 
 	@Mutation(() => Notification)
-	//@UseMiddleware(isAuth)
+	@UseMiddleware(isAuth)
 	async createNotification(
 		@Arg("input") input: NotificationInput,
 		@Ctx() { req, prisma }: MyContext,
@@ -64,7 +72,6 @@ export class NotificationResolver {
 			data: {
 				read: false,
 				senderId: req.session.userId,
-
 				...input,
 			},
 		});
