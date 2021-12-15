@@ -18,10 +18,11 @@ import { PubSub } from "graphql-subscriptions";
 import { SubscriptionServer } from "subscriptions-transport-ws";
 import { buildSchema } from "type-graphql";
 
-import { HelloResolver } from "./resolvers/hello";
 import { SongResolver } from "./resolvers/song";
+import { ApprovalResolver } from "./resolvers/approval";
+import { ConversationResolver } from "./resolvers/conversation";
+import { MessageResolver } from "./resolvers/message";
 import { UserResolver } from "./resolvers/user";
-import { CommentResolver } from "./resolvers/comment";
 import { TransactionResolver } from "./resolvers/transaction";
 import { NotificationResolver } from "./resolvers/notification";
 
@@ -64,10 +65,11 @@ const main = async () => {
 
 	const schema = await buildSchema({
 		resolvers: [
-			HelloResolver,
+			ApprovalResolver,
+			ConversationResolver,
 			SongResolver,
 			UserResolver,
-			CommentResolver,
+			MessageResolver,
 			TransactionResolver,
 			NotificationResolver,
 		],

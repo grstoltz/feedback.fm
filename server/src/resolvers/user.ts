@@ -28,7 +28,7 @@ import {
 	Conversation,
 	Message,
 	UserConversation,
-} from "src/generated/type-graphql";
+} from "../generated/type-graphql";
 import { contains } from "class-validator";
 
 @ObjectType()
@@ -214,25 +214,6 @@ export class UserResolver {
 		@Ctx() { prisma, req }: MyContext
 	): Promise<Song[] | null> {
 		return prisma.song.findMany({ where: { ownerId: req.session.userId } });
-	}
-
-	@FieldResolver(() => [Notification], { nullable: true })
-	async notifications(
-		@Root() user: User,
-		@Ctx() { req, prisma }: MyContext
-	): Promise<Notification[] | null> {
-		if (req.session.userId === user.id) {
-			return prisma.notification.findMany({
-				where: {
-					receiverId: user.id,
-				},
-				orderBy: {
-					createdAt: "desc",
-				},
-			});
-		} else {
-			return null;
-		}
 	}
 
 	//returns all conversations a user is involved in

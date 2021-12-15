@@ -23,7 +23,7 @@ import { isAuth } from "../middleware/isAuth";
 import {
 	NotificationType,
 	NotificationUrlType,
-} from "src/generated/type-graphql";
+} from "../generated/type-graphql";
 
 @InputType()
 class NotificationInput {

@@ -52,20 +52,20 @@ async function main() {
 
 	const users = await prisma.$queryRaw`SELECT id FROM "User"`;
 
-	console.log("Seeding Comments...");
-	for (var k = 0; k < users.length; k++) {
-		const songs = await prisma.song.findMany({
-			where: { ownerId: users[k].id },
-		});
-		for (var l = 0; l < songs.length; l++) {
-			for (let m = 0; m < fakeCommentRounds; m++) {
-				const sender = findRandomUser(users, users[k]);
-				await prisma.comment.create({
-					data: fakerComment(songs[l].id, sender.id, users[k].id),
-				});
-			}
-		}
-	}
+	// console.log("Seeding Comments...");
+	// for (var k = 0; k < users.length; k++) {
+	// 	const songs = await prisma.song.findMany({
+	// 		where: { ownerId: users[k].id },
+	// 	});
+	// 	for (var l = 0; l < songs.length; l++) {
+	// 		for (let m = 0; m < fakeCommentRounds; m++) {
+	// 			const sender = findRandomUser(users, users[k]);
+	// 			await prisma.comment.create({
+	// 				data: fakerComment(songs[l].id, sender.id, users[k].id),
+	// 			});
+	// 		}
+	// 	}
+	// }
 }
 
 main()

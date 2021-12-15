@@ -16,14 +16,14 @@ import { Song } from "../generated/type-graphql/models/Song";
 import { Message } from "../generated/type-graphql/models/Message";
 import { User } from "../generated/type-graphql/models/User";
 import { Approval } from "../generated/type-graphql/models/Approval";
-import { Conversation } from "src/generated/type-graphql";
+import { Conversation } from "../generated/type-graphql";
 
 import { MyContext } from "../types";
 
 import { isAuth } from "../middleware/isAuth";
 
 @Resolver(Conversation)
-export class MessageResolver {
+export class ConversationResolver {
 	@Query(() => [Message])
 	async messages(
 		@Arg("id", () => Int) id: number,
@@ -35,7 +35,7 @@ export class MessageResolver {
 	//a mutation that creates a convesation between two users
 	@Mutation(() => Conversation)
 	async createConversation(
-		@Arg("participantIds", () => Array) participantIds: number[],
+		@Arg("participantIds", () => [Number]) participantIds: number[],
 		@Ctx() { prisma }: MyContext
 	): Promise<Conversation> {
 		return prisma.conversation.create({

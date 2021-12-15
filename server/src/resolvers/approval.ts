@@ -21,13 +21,15 @@ import { MyContext } from "../types";
 
 import { isAuth } from "../middleware/isAuth";
 
+import { ApprovalType } from "../generated/type-graphql";
+
 @Resolver(Approval)
 export class ApprovalResolver {
 	@Mutation(() => Approval)
 	@UseMiddleware(isAuth)
 	async upsertApproval(
 		@Ctx() { prisma }: MyContext,
-		@Arg("status", () => String) status: string,
+		@Arg("status", () => String) status: ApprovalType,
 		@Arg("commentId", () => Int) commentId: number,
 		@Arg("id", () => Int, { nullable: true }) id?: number | undefined
 	): Promise<Approval> {
