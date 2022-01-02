@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import * as faker from "faker";
+import { User } from "src/generated/type-graphql";
 const prisma = new PrismaClient();
 
 const fakerUser = (): any => ({
@@ -17,6 +18,20 @@ const fakerSong = (ownerId: any): any => ({
 	genre: faker.music.genre(),
 	ownerId,
 });
+
+//a function that creates a conversation between two users
+async function createConversation(user1: User, user2: User) {
+	const conversation = await prisma.conversation.create({
+		data: {
+			participants: {
+				create: [user1, user2].map((user) => ({
+					userId: user.id,
+				})),
+			},
+		},
+	});
+	return conversation;
+}
 
 const fakerComment = (parentId: any, senderId: any, receiverId: any): any => ({
 	parentId,
@@ -52,20 +67,20 @@ async function main() {
 
 	const users = await prisma.$queryRaw`SELECT id FROM "User"`;
 
-	// console.log("Seeding Comments...");
-	// for (var k = 0; k < users.length; k++) {
-	// 	const songs = await prisma.song.findMany({
-	// 		where: { ownerId: users[k].id },
-	// 	});
-	// 	for (var l = 0; l < songs.length; l++) {
-	// 		for (let m = 0; m < fakeCommentRounds; m++) {
-	// 			const sender = findRandomUser(users, users[k]);
-	// 			await prisma.comment.create({
-	// 				data: fakerComment(songs[l].id, sender.id, users[k].id),
-	// 			});
-	// 		}
-	// 	}
-	// }
+	console.log("Seeding Comments...");
+	for (var k = 0; k < users.length; k++) {
+		const songs = await prisma.song.findMany({
+			where: { ownerId: users[k].id },
+		});
+		for (var l = 0; l < songs.length; l++) {
+			for (let m = 0; m < fakeCommentRounds; m++) {
+				const sender = findRandomUser(users, users[k]);
+				await prisma.comment.create({
+					data: fakerComment(songs[l].id, sender.id, users[k].id),
+				});
+			}
+		}
+	}
 }
 
 main()
