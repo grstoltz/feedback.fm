@@ -1,6 +1,8 @@
 import { PrismaClient } from "@prisma/client";
+import argon2 from "argon2";
 import * as faker from "faker";
 import { User } from "src/generated/type-graphql";
+
 const prisma = new PrismaClient();
 
 const fakerUser = (): any => ({
@@ -19,19 +21,100 @@ const fakerSong = (ownerId: any): any => ({
 	ownerId,
 });
 
-//a function that creates a conversation between two users
-async function createConversation(user1: User, user2: User) {
+const adminUser = {
+	email: "test@test.com",
+	username: "test",
+	password: argon2.hash("test"),
+	avatarURL:
+		"https://res.cloudinary.com/dedeo0s30/image/upload/v1605156898/default-profile-icon-16.png",
+};
+
+//Create a user
+async function createAdminUser(user: any) {
+	const newUser = await prisma.user.create({
+		data: {
+			...user,
+		},
+	});
+	return newUser;
+}
+
+//create a new conversation between two users and add a message to it
+async function createConversationWithMessage(user1: User) {
+	const user2 = await getRandomUser2(user1);
 	const conversation = await prisma.conversation.create({
 		data: {
 			participants: {
-				create: [user1, user2].map((user) => ({
-					userId: user.id,
-				})),
+				create: [
+					{
+						user: {
+							connect: {
+								id: user1.id,
+							},
+						},
+					},
+					{
+						user: {
+							connect: {
+								id: user2.id,
+							},
+						},
+					},
+				],
 			},
 		},
 	});
-	return conversation;
+
+	const message = await prisma.message.create({
+		data: {
+			text: faker.lorem.sentence(),
+			type: "MESSAGE",
+			conversation: {
+				connect: {
+					id: conversation.id,
+				},
+			},
+			sender: {
+				connect: {
+					id: user1.id,
+				},
+			},
+		},
+	});
 }
+
+//a function that returns a random user from the database
+async function getRandomUser(): Promise<User> {
+	const user = await prisma.user.findMany({
+		take: 1,
+
+		skip: Math.floor(Math.random() * 9),
+	});
+	return user[0];
+}
+
+//find a random user but make sure its not the same user as the one passed in
+async function getRandomUser2(user: any): Promise<User> {
+	let randomUser: User;
+	do {
+		randomUser = await getRandomUser();
+	} while (randomUser.id === user.id);
+	return randomUser;
+}
+
+// //a function that creates a conversation between two users
+// async function createConversation(user1: User, user2: User) {
+// 	const conversation = await prisma.conversation.create({
+// 		data: {
+// 			participants: {
+// 				create: [user1, user2].map((user) => ({
+// 					userId: user.id,
+// 				})),
+// 			},
+// 		},
+// 	});
+// 	return conversation;
+// }
 
 const fakerComment = (parentId: any, senderId: any, receiverId: any): any => ({
 	parentId,
@@ -40,22 +123,14 @@ const fakerComment = (parentId: any, senderId: any, receiverId: any): any => ({
 	body: faker.lorem.paragraph(),
 });
 
-const findRandomUser = (users: any, user: any): any => {
-	let randomUser = users[Math.floor(Math.random() * users.length)];
-
-	if (randomUser === user) {
-		findRandomUser(users, user);
-	}
-
-	return randomUser;
-};
-
 async function main() {
 	const fakerRounds = 10;
 	const fakerSongs = 5;
 	const fakeCommentRounds = 5;
 
 	console.log("Seeding...");
+
+	await createAdminUser(adminUser);
 
 	console.log("Seeding Users...");
 	for (let i = 0; i < fakerRounds; i++) {
@@ -65,22 +140,15 @@ async function main() {
 		}
 	}
 
-	const users = await prisma.$queryRaw`SELECT id FROM "User"`;
+	console.log("Seeding Conversations...");
 
-	console.log("Seeding Comments...");
-	for (var k = 0; k < users.length; k++) {
-		const songs = await prisma.song.findMany({
-			where: { ownerId: users[k].id },
-		});
-		for (var l = 0; l < songs.length; l++) {
-			for (let m = 0; m < fakeCommentRounds; m++) {
-				const sender = findRandomUser(users, users[k]);
-				await prisma.comment.create({
-					data: fakerComment(songs[l].id, sender.id, users[k].id),
-				});
-			}
-		}
+	for (let k = 0; k < fakeCommentRounds; k++) {
+		const sender = await getRandomUser();
+		await createConversationWithMessage(sender);
 	}
+
+	console.log("out");
+	return;
 }
 
 main()
