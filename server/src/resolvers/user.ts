@@ -178,6 +178,20 @@ export class UserResolver {
 		return "";
 	}
 
+	//a field resolver for all notifications for a user
+	@FieldResolver(() => [Notification])
+	async notifications(
+		@Root() user: User,
+		@Ctx() { prisma }: MyContext
+	): Promise<Notification[]> {
+		const notifications = await prisma.notification.findMany({
+			where: {
+				receiverId: user.id,
+			},
+		});
+		return notifications;
+	}
+
 	@FieldResolver(() => Number)
 	async balance(
 		@Root() user: User,

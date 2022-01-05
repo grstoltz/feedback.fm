@@ -2,7 +2,6 @@ mutation CreateNotification($input: NotificationInput!) {
 	createNotification(input: $input) {
 		id
 		receiverId
-		body
 		type
 		url
 	}

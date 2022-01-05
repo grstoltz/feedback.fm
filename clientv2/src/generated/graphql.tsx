@@ -22,30 +22,20 @@ export type Approval = {
   __typename?: 'Approval';
   id: Scalars['Int'];
   commentId: Scalars['Int'];
-  status: Scalars['String'];
+  status: ApprovalType;
 };
 
-export type Comment = {
-  __typename?: 'Comment';
+export enum ApprovalType {
+  Approved = 'APPROVED',
+  Denied = 'DENIED',
+  Review = 'REVIEW'
+}
+
+export type Conversation = {
+  __typename?: 'Conversation';
   id: Scalars['Int'];
-  parentId: Scalars['Int'];
-  senderId: Scalars['Int'];
-  receiverId: Scalars['Int'];
-  approvalId?: Maybe<Scalars['Int']>;
-  active: Scalars['Boolean'];
-  body: Scalars['String'];
-  createdAt: Scalars['DateTime'];
   updatedAt: Scalars['DateTime'];
-  sender: User;
-  receiver: User;
-  song?: Maybe<Song>;
-  approval?: Maybe<Approval>;
-};
-
-export type CommentInput = {
-  parentId: Scalars['Float'];
-  receiverId: Scalars['Float'];
-  body: Scalars['String'];
+  createdAt: Scalars['DateTime'];
 };
 
 
@@ -55,20 +45,38 @@ export type FieldError = {
   message: Scalars['String'];
 };
 
+export type Message = {
+  __typename?: 'Message';
+  id: Scalars['Int'];
+  senderId: Scalars['Int'];
+  conversationId: Scalars['Int'];
+  approvalId?: Maybe<Scalars['Int']>;
+  songId?: Maybe<Scalars['Int']>;
+  text?: Maybe<Scalars['String']>;
+  sentAt: Scalars['DateTime'];
+  type: MessageType;
+  updatedAt: Scalars['DateTime'];
+  createdAt: Scalars['DateTime'];
+};
+
+export enum MessageType {
+  Message = 'MESSAGE',
+  Feedback = 'FEEDBACK'
+}
+
 export type Mutation = {
   __typename?: 'Mutation';
   createSong: Song;
   updateSong?: Maybe<Scalars['Float']>;
   upload: Scalars['Boolean'];
   deleteSong: Scalars['Boolean'];
+  upsertApproval: Approval;
+  createConversation: Conversation;
   forgotPassword: Scalars['Boolean'];
   changePassword: UserResponse;
   register: UserResponse;
   login: UserResponse;
   logout: Scalars['Boolean'];
-  createComment: Comment;
-  updateApproval: Approval;
-  deleteComment: Scalars['Boolean'];
   createTransaction: Transaction;
   createNotification: Notification;
 };
@@ -97,6 +105,18 @@ export type MutationDeleteSongArgs = {
 };
 
 
+export type MutationUpsertApprovalArgs = {
+  id?: Maybe<Scalars['Int']>;
+  commentId: Scalars['Int'];
+  status: Scalars['String'];
+};
+
+
+export type MutationCreateConversationArgs = {
+  participantIds: Array<Scalars['Float']>;
+};
+
+
 export type MutationForgotPasswordArgs = {
   email: Scalars['String'];
 };
@@ -119,23 +139,6 @@ export type MutationLoginArgs = {
 };
 
 
-export type MutationCreateCommentArgs = {
-  input: CommentInput;
-};
-
-
-export type MutationUpdateApprovalArgs = {
-  id?: Maybe<Scalars['Int']>;
-  commentId: Scalars['Int'];
-  status: Scalars['String'];
-};
-
-
-export type MutationDeleteCommentArgs = {
-  id: Scalars['Int'];
-};
-
-
 export type MutationCreateTransactionArgs = {
   transactionAmount: Scalars['Int'];
   id: Scalars['Int'];
@@ -150,10 +153,12 @@ export type Notification = {
   __typename?: 'Notification';
   id: Scalars['Int'];
   receiverId: Scalars['Int'];
-  body: Scalars['String'];
+  senderId: Scalars['Int'];
+  parentId?: Maybe<Scalars['Int']>;
   read: Scalars['Boolean'];
-  type: Scalars['String'];
+  type: NotificationType;
   url: Scalars['String'];
+  urlType: NotificationUrlType;
   createdAt: Scalars['DateTime'];
   updatedAt: Scalars['DateTime'];
   receiver: User;
@@ -164,18 +169,33 @@ export type NotificationInput = {
   body: Scalars['String'];
   type: Scalars['String'];
   url: Scalars['String'];
+  urlType: Scalars['String'];
+  parentId: Scalars['Float'];
 };
+
+export enum NotificationType {
+  Message = 'MESSAGE',
+  Approved = 'APPROVED',
+  Denied = 'DENIED',
+  Feedback = 'FEEDBACK'
+}
+
+export enum NotificationUrlType {
+  Song = 'SONG',
+  Feedback = 'FEEDBACK',
+  Message = 'MESSAGE'
+}
 
 export type Query = {
   __typename?: 'Query';
-  hello: Scalars['String'];
   songs: Array<Song>;
   song?: Maybe<Song>;
+  messages: Array<Message>;
+  conversationMessages: Array<Message>;
+  conversation: Array<Message>;
   admin?: Maybe<User>;
   user?: Maybe<User>;
   me?: Maybe<User>;
-  comments: Array<Comment>;
-  comment?: Maybe<Comment>;
   getNotifications?: Maybe<Array<Notification>>;
   unreadNotifications: Scalars['Boolean'];
 };
@@ -186,17 +206,22 @@ export type QuerySongArgs = {
 };
 
 
+export type QueryMessagesArgs = {
+  id: Scalars['Int'];
+};
+
+
+export type QueryConversationMessagesArgs = {
+  id: Scalars['Int'];
+};
+
+
+export type QueryConversationArgs = {
+  id: Scalars['Int'];
+};
+
+
 export type QueryUserArgs = {
-  id: Scalars['Int'];
-};
-
-
-export type QueryCommentsArgs = {
-  id: Scalars['Int'];
-};
-
-
-export type QueryCommentArgs = {
   id: Scalars['Int'];
 };
 
@@ -216,7 +241,6 @@ export type Song = {
   createdAt: Scalars['DateTime'];
   updatedAt: Scalars['DateTime'];
   owner: User;
-  comment?: Maybe<Array<Comment>>;
 };
 
 export type SongInput = {
@@ -251,18 +275,17 @@ export type User = {
   avatarURL: Scalars['String'];
   createdAt: Scalars['DateTime'];
   updatedAt: Scalars['DateTime'];
+  notifications: Array<Notification>;
   balance: Scalars['Float'];
   songs?: Maybe<Array<Song>>;
-  paginatedNotifications?: Maybe<Array<Notification>>;
-  notifications?: Maybe<Array<Notification>>;
-  receivedComments?: Maybe<Array<Comment>>;
-  sentComments?: Maybe<Array<Comment>>;
+  conversations?: Maybe<Array<UserConversation>>;
+  sentMessages?: Maybe<Array<Message>>;
 };
 
-
-export type UserPaginatedNotificationsArgs = {
-  userId: Scalars['Float'];
-  skip: Scalars['Float'];
+export type UserConversation = {
+  __typename?: 'UserConversation';
+  userId: Scalars['Int'];
+  conversationId: Scalars['Int'];
 };
 
 export type UserResponse = {
@@ -277,7 +300,7 @@ export type UsernamePasswordInput = {
   password: Scalars['String'];
 };
 
-export type NotificationSnippetFragment = { __typename?: 'Notification', id: number, body: string, url: string, read: boolean };
+export type NotificationSnippetFragment = { __typename?: 'Notification', id: number, url: string, read: boolean };
 
 export type RegularErrorFragment = { __typename?: 'FieldError', field: string, message: string };
 
@@ -295,19 +318,12 @@ export type ChangePasswordMutationVariables = Exact<{
 
 export type ChangePasswordMutation = { __typename?: 'Mutation', changePassword: { __typename?: 'UserResponse', errors?: Maybe<Array<{ __typename?: 'FieldError', field: string, message: string }>>, user?: Maybe<{ __typename?: 'User', id: number, username: string }> } };
 
-export type CreateCommentMutationVariables = Exact<{
-  input: CommentInput;
-}>;
-
-
-export type CreateCommentMutation = { __typename?: 'Mutation', createComment: { __typename?: 'Comment', id: number, parentId: number, senderId: number, receiverId: number, body: string } };
-
 export type CreateNotificationMutationVariables = Exact<{
   input: NotificationInput;
 }>;
 
 
-export type CreateNotificationMutation = { __typename?: 'Mutation', createNotification: { __typename?: 'Notification', id: number, receiverId: number, body: string, type: string, url: string } };
+export type CreateNotificationMutation = { __typename?: 'Mutation', createNotification: { __typename?: 'Notification', id: number, receiverId: number, type: NotificationType, url: string } };
 
 export type CreateSongMutationVariables = Exact<{
   input: SongInput;
@@ -323,13 +339,6 @@ export type CreateTransactionMutationVariables = Exact<{
 
 
 export type CreateTransactionMutation = { __typename?: 'Mutation', createTransaction: { __typename?: 'Transaction', id: number } };
-
-export type DeleteCommentMutationVariables = Exact<{
-  id: Scalars['Int'];
-}>;
-
-
-export type DeleteCommentMutation = { __typename?: 'Mutation', deleteComment: boolean };
 
 export type DeleteSongMutationVariables = Exact<{
   id: Scalars['Int'];
@@ -365,15 +374,6 @@ export type RegisterMutationVariables = Exact<{
 
 export type RegisterMutation = { __typename?: 'Mutation', register: { __typename?: 'UserResponse', errors?: Maybe<Array<{ __typename?: 'FieldError', field: string, message: string }>>, user?: Maybe<{ __typename?: 'User', id: number, username: string }> } };
 
-export type UpdateApprovalMutationVariables = Exact<{
-  id?: Maybe<Scalars['Int']>;
-  commentId: Scalars['Int'];
-  status: Scalars['String'];
-}>;
-
-
-export type UpdateApprovalMutation = { __typename?: 'Mutation', updateApproval: { __typename?: 'Approval', id: number } };
-
 export type UpdateSongMutationVariables = Exact<{
   id: Scalars['Int'];
   title: Scalars['String'];
@@ -384,26 +384,12 @@ export type UpdateSongMutationVariables = Exact<{
 
 export type UpdateSongMutation = { __typename?: 'Mutation', updateSong?: Maybe<number> };
 
-export type CommentQueryVariables = Exact<{
-  id: Scalars['Int'];
-}>;
-
-
-export type CommentQuery = { __typename?: 'Query', comment?: Maybe<{ __typename?: 'Comment', id: number, createdAt: any, updatedAt: any, body: string, sender: { __typename?: 'User', id: number, username: string }, receiver: { __typename?: 'User', id: number, username: string }, song?: Maybe<{ __typename?: 'Song', id: number, title: string }> }> };
-
-export type CommentsQueryVariables = Exact<{
-  id: Scalars['Int'];
-}>;
-
-
-export type CommentsQuery = { __typename?: 'Query', comments: Array<{ __typename?: 'Comment', id: number, createdAt: any, updatedAt: any, body: string, sender: { __typename?: 'User', id: number, username: string }, receiver: { __typename?: 'User', id: number, username: string }, song?: Maybe<{ __typename?: 'Song', id: number, title: string }> }> };
-
 export type GetNotificationsQueryVariables = Exact<{
   skip: Scalars['Int'];
 }>;
 
 
-export type GetNotificationsQuery = { __typename?: 'Query', getNotifications?: Maybe<Array<{ __typename?: 'Notification', id: number, body: string, url: string, read: boolean }>> };
+export type GetNotificationsQuery = { __typename?: 'Query', getNotifications?: Maybe<Array<{ __typename?: 'Notification', id: number, url: string, read: boolean }>> };
 
 export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -420,7 +406,7 @@ export type SongQueryVariables = Exact<{
 }>;
 
 
-export type SongQuery = { __typename?: 'Query', song?: Maybe<{ __typename?: 'Song', id: number, createdAt: any, updatedAt: any, title: string, mediaUrl: string, mediaType: string, genre: string, ownerId: number, owner: { __typename?: 'User', id: number, username: string }, comment?: Maybe<Array<{ __typename?: 'Comment', id: number, createdAt: any, body: string, senderId: number, receiver: { __typename?: 'User', id: number }, sender: { __typename?: 'User', id: number, username: string, avatarURL: string }, approval?: Maybe<{ __typename?: 'Approval', id: number, status: string }> }>> }> };
+export type SongQuery = { __typename?: 'Query', song?: Maybe<{ __typename?: 'Song', id: number, createdAt: any, updatedAt: any, title: string, mediaUrl: string, mediaType: string, genre: string, ownerId: number, owner: { __typename?: 'User', id: number, username: string } }> };
 
 export type SongsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -437,12 +423,11 @@ export type UserQueryVariables = Exact<{
 }>;
 
 
-export type UserQuery = { __typename?: 'Query', user?: Maybe<{ __typename?: 'User', id: number, username: string, avatarURL: string, songs?: Maybe<Array<{ __typename?: 'Song', id: number, title: string, mediaUrl: string, mediaType: string, genre: string, ownerId: number, createdAt: any, updatedAt: any, owner: { __typename?: 'User', id: number, username: string } }>>, receivedComments?: Maybe<Array<{ __typename?: 'Comment', id: number, body: string, sender: { __typename?: 'User', id: number, username: string }, song?: Maybe<{ __typename?: 'Song', id: number, title: string }>, approval?: Maybe<{ __typename?: 'Approval', status: string }> }>>, sentComments?: Maybe<Array<{ __typename?: 'Comment', id: number, body: string, receiver: { __typename?: 'User', id: number, username: string }, song?: Maybe<{ __typename?: 'Song', id: number, title: string }>, approval?: Maybe<{ __typename?: 'Approval', status: string }> }>>, notifications?: Maybe<Array<{ __typename?: 'Notification', id: number, body: string, url: string, read: boolean }>> }> };
+export type UserQuery = { __typename?: 'Query', user?: Maybe<{ __typename?: 'User', id: number, username: string, avatarURL: string, songs?: Maybe<Array<{ __typename?: 'Song', id: number, title: string, mediaUrl: string, mediaType: string, genre: string, ownerId: number, createdAt: any, updatedAt: any, owner: { __typename?: 'User', id: number, username: string } }>>, notifications: Array<{ __typename?: 'Notification', id: number, url: string, read: boolean }> }> };
 
 export const NotificationSnippetFragmentDoc = gql`
     fragment NotificationSnippet on Notification {
   id
-  body
   url
   read
 }
@@ -519,49 +504,11 @@ export function useChangePasswordMutation(baseOptions?: Apollo.MutationHookOptio
 export type ChangePasswordMutationHookResult = ReturnType<typeof useChangePasswordMutation>;
 export type ChangePasswordMutationResult = Apollo.MutationResult<ChangePasswordMutation>;
 export type ChangePasswordMutationOptions = Apollo.BaseMutationOptions<ChangePasswordMutation, ChangePasswordMutationVariables>;
-export const CreateCommentDocument = gql`
-    mutation CreateComment($input: CommentInput!) {
-  createComment(input: $input) {
-    id
-    parentId
-    senderId
-    receiverId
-    body
-  }
-}
-    `;
-export type CreateCommentMutationFn = Apollo.MutationFunction<CreateCommentMutation, CreateCommentMutationVariables>;
-
-/**
- * __useCreateCommentMutation__
- *
- * To run a mutation, you first call `useCreateCommentMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useCreateCommentMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [createCommentMutation, { data, loading, error }] = useCreateCommentMutation({
- *   variables: {
- *      input: // value for 'input'
- *   },
- * });
- */
-export function useCreateCommentMutation(baseOptions?: Apollo.MutationHookOptions<CreateCommentMutation, CreateCommentMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<CreateCommentMutation, CreateCommentMutationVariables>(CreateCommentDocument, options);
-      }
-export type CreateCommentMutationHookResult = ReturnType<typeof useCreateCommentMutation>;
-export type CreateCommentMutationResult = Apollo.MutationResult<CreateCommentMutation>;
-export type CreateCommentMutationOptions = Apollo.BaseMutationOptions<CreateCommentMutation, CreateCommentMutationVariables>;
 export const CreateNotificationDocument = gql`
     mutation CreateNotification($input: NotificationInput!) {
   createNotification(input: $input) {
     id
     receiverId
-    body
     type
     url
   }
@@ -664,37 +611,6 @@ export function useCreateTransactionMutation(baseOptions?: Apollo.MutationHookOp
 export type CreateTransactionMutationHookResult = ReturnType<typeof useCreateTransactionMutation>;
 export type CreateTransactionMutationResult = Apollo.MutationResult<CreateTransactionMutation>;
 export type CreateTransactionMutationOptions = Apollo.BaseMutationOptions<CreateTransactionMutation, CreateTransactionMutationVariables>;
-export const DeleteCommentDocument = gql`
-    mutation DeleteComment($id: Int!) {
-  deleteComment(id: $id)
-}
-    `;
-export type DeleteCommentMutationFn = Apollo.MutationFunction<DeleteCommentMutation, DeleteCommentMutationVariables>;
-
-/**
- * __useDeleteCommentMutation__
- *
- * To run a mutation, you first call `useDeleteCommentMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useDeleteCommentMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [deleteCommentMutation, { data, loading, error }] = useDeleteCommentMutation({
- *   variables: {
- *      id: // value for 'id'
- *   },
- * });
- */
-export function useDeleteCommentMutation(baseOptions?: Apollo.MutationHookOptions<DeleteCommentMutation, DeleteCommentMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<DeleteCommentMutation, DeleteCommentMutationVariables>(DeleteCommentDocument, options);
-      }
-export type DeleteCommentMutationHookResult = ReturnType<typeof useDeleteCommentMutation>;
-export type DeleteCommentMutationResult = Apollo.MutationResult<DeleteCommentMutation>;
-export type DeleteCommentMutationOptions = Apollo.BaseMutationOptions<DeleteCommentMutation, DeleteCommentMutationVariables>;
 export const DeleteSongDocument = gql`
     mutation DeleteSong($id: Int!) {
   deleteSong(id: $id)
@@ -854,41 +770,6 @@ export function useRegisterMutation(baseOptions?: Apollo.MutationHookOptions<Reg
 export type RegisterMutationHookResult = ReturnType<typeof useRegisterMutation>;
 export type RegisterMutationResult = Apollo.MutationResult<RegisterMutation>;
 export type RegisterMutationOptions = Apollo.BaseMutationOptions<RegisterMutation, RegisterMutationVariables>;
-export const UpdateApprovalDocument = gql`
-    mutation UpdateApproval($id: Int, $commentId: Int!, $status: String!) {
-  updateApproval(id: $id, commentId: $commentId, status: $status) {
-    id
-  }
-}
-    `;
-export type UpdateApprovalMutationFn = Apollo.MutationFunction<UpdateApprovalMutation, UpdateApprovalMutationVariables>;
-
-/**
- * __useUpdateApprovalMutation__
- *
- * To run a mutation, you first call `useUpdateApprovalMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useUpdateApprovalMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [updateApprovalMutation, { data, loading, error }] = useUpdateApprovalMutation({
- *   variables: {
- *      id: // value for 'id'
- *      commentId: // value for 'commentId'
- *      status: // value for 'status'
- *   },
- * });
- */
-export function useUpdateApprovalMutation(baseOptions?: Apollo.MutationHookOptions<UpdateApprovalMutation, UpdateApprovalMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<UpdateApprovalMutation, UpdateApprovalMutationVariables>(UpdateApprovalDocument, options);
-      }
-export type UpdateApprovalMutationHookResult = ReturnType<typeof useUpdateApprovalMutation>;
-export type UpdateApprovalMutationResult = Apollo.MutationResult<UpdateApprovalMutation>;
-export type UpdateApprovalMutationOptions = Apollo.BaseMutationOptions<UpdateApprovalMutation, UpdateApprovalMutationVariables>;
 export const UpdateSongDocument = gql`
     mutation UpdateSong($id: Int!, $title: String!, $mediaUrl: String!, $genre: String!) {
   updateSong(id: $id, title: $title, mediaUrl: $mediaUrl, genre: $genre)
@@ -923,111 +804,10 @@ export function useUpdateSongMutation(baseOptions?: Apollo.MutationHookOptions<U
 export type UpdateSongMutationHookResult = ReturnType<typeof useUpdateSongMutation>;
 export type UpdateSongMutationResult = Apollo.MutationResult<UpdateSongMutation>;
 export type UpdateSongMutationOptions = Apollo.BaseMutationOptions<UpdateSongMutation, UpdateSongMutationVariables>;
-export const CommentDocument = gql`
-    query Comment($id: Int!) {
-  comment(id: $id) {
-    id
-    createdAt
-    updatedAt
-    body
-    sender {
-      id
-      username
-    }
-    receiver {
-      id
-      username
-    }
-    song {
-      id
-      title
-    }
-  }
-}
-    `;
-
-/**
- * __useCommentQuery__
- *
- * To run a query within a React component, call `useCommentQuery` and pass it any options that fit your needs.
- * When your component renders, `useCommentQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useCommentQuery({
- *   variables: {
- *      id: // value for 'id'
- *   },
- * });
- */
-export function useCommentQuery(baseOptions: Apollo.QueryHookOptions<CommentQuery, CommentQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<CommentQuery, CommentQueryVariables>(CommentDocument, options);
-      }
-export function useCommentLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<CommentQuery, CommentQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<CommentQuery, CommentQueryVariables>(CommentDocument, options);
-        }
-export type CommentQueryHookResult = ReturnType<typeof useCommentQuery>;
-export type CommentLazyQueryHookResult = ReturnType<typeof useCommentLazyQuery>;
-export type CommentQueryResult = Apollo.QueryResult<CommentQuery, CommentQueryVariables>;
-export const CommentsDocument = gql`
-    query Comments($id: Int!) {
-  comments(id: $id) {
-    id
-    createdAt
-    updatedAt
-    body
-    sender {
-      id
-      username
-    }
-    receiver {
-      id
-      username
-    }
-    song {
-      id
-      title
-    }
-  }
-}
-    `;
-
-/**
- * __useCommentsQuery__
- *
- * To run a query within a React component, call `useCommentsQuery` and pass it any options that fit your needs.
- * When your component renders, `useCommentsQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useCommentsQuery({
- *   variables: {
- *      id: // value for 'id'
- *   },
- * });
- */
-export function useCommentsQuery(baseOptions: Apollo.QueryHookOptions<CommentsQuery, CommentsQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<CommentsQuery, CommentsQueryVariables>(CommentsDocument, options);
-      }
-export function useCommentsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<CommentsQuery, CommentsQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<CommentsQuery, CommentsQueryVariables>(CommentsDocument, options);
-        }
-export type CommentsQueryHookResult = ReturnType<typeof useCommentsQuery>;
-export type CommentsLazyQueryHookResult = ReturnType<typeof useCommentsLazyQuery>;
-export type CommentsQueryResult = Apollo.QueryResult<CommentsQuery, CommentsQueryVariables>;
 export const GetNotificationsDocument = gql`
     query getNotifications($skip: Int!) {
   getNotifications(skip: $skip) {
     id
-    body
     url
     read
   }
@@ -1140,24 +920,6 @@ export const SongDocument = gql`
     owner {
       id
       username
-    }
-    comment {
-      id
-      createdAt
-      body
-      senderId
-      receiver {
-        id
-      }
-      sender {
-        id
-        username
-        avatarURL
-      }
-      approval {
-        id
-        status
-      }
     }
   }
 }
@@ -1287,39 +1049,8 @@ export const UserDocument = gql`
         username
       }
     }
-    receivedComments {
-      id
-      body
-      sender {
-        id
-        username
-      }
-      song {
-        id
-        title
-      }
-      approval {
-        status
-      }
-    }
-    sentComments {
-      id
-      body
-      receiver {
-        id
-        username
-      }
-      song {
-        id
-        title
-      }
-      approval {
-        status
-      }
-    }
     notifications {
       id
-      body
       url
       read
     }

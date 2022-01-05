@@ -1,5 +1,0 @@
-mutation UpdateApproval($id: Int, $commentId: Int!, $status: String!) {
-	updateApproval(id: $id, commentId: $commentId, status: $status) {
-		id
-	}
-}

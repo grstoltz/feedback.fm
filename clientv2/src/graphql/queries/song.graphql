@@ -12,23 +12,5 @@ query Song($id: Int!) {
 			id
 			username
 		}
-		comment {
-			id
-			createdAt
-			body
-			senderId
-			receiver {
-				id
-			}
-			sender {
-				id
-				username
-				avatarURL
-			}
-			approval {
-				id
-				status
-			}
-		}
 	}
 }

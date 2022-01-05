@@ -1,6 +1,5 @@
 fragment NotificationSnippet on Notification {
 	id
-	body
 	url
 	read
 }

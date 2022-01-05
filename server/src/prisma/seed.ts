@@ -24,16 +24,17 @@ const fakerSong = (ownerId: any): any => ({
 const adminUser = {
 	email: "test@test.com",
 	username: "test",
-	password: argon2.hash("test"),
 	avatarURL:
 		"https://res.cloudinary.com/dedeo0s30/image/upload/v1605156898/default-profile-icon-16.png",
 };
 
 //Create a user
 async function createAdminUser(user: any) {
+	const password = await argon2.hash("test");
 	const newUser = await prisma.user.create({
 		data: {
 			...user,
+			password,
 		},
 	});
 	return newUser;

@@ -17,39 +17,8 @@ query User($id: Int!) {
 				username
 			}
 		}
-		receivedComments {
-			id
-			body
-			sender {
-				id
-				username
-			}
-			song {
-				id
-				title
-			}
-			approval {
-				status
-			}
-		}
-		sentComments {
-			id
-			body
-			receiver {
-				id
-				username
-			}
-			song {
-				id
-				title
-			}
-			approval {
-				status
-			}
-		}
 		notifications {
 			id
-			body
 			url
 			read
 		}
