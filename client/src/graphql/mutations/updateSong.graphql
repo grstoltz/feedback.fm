@@ -1,4 +1,4 @@
-mutation UpdateComment(
+mutation UpdateSong(
 	$id: Int!
 	$title: String!
 	$mediaUrl: String!

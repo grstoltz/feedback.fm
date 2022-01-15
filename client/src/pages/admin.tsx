@@ -1,178 +1,99 @@
-import React from "react";
-import { Formik, Form } from "formik";
-import {
-	Avatar,
-	Box,
-	Button,
-	Flex,
-	Tab,
-	TabList,
-	TabPanel,
-	TabPanels,
-	Tabs,
-	Tag,
-	Text,
-} from "@chakra-ui/react";
+import { getDataFromTree } from "@apollo/client/react/ssr";
 import NextLink from "next/link";
 
-import { Wrapper } from "../components/Wrapper";
-import { InputField } from "../components/InputField";
-import { useRouter } from "next/router";
-import { useAdminQuery } from "../generated/graphql";
-import { toErrorMap } from "../utils/toErrorMap";
-import { withApollo } from "../utils/withApollo";
-import { Layout } from "../components/Layout";
-import { DeleteButton } from "../components/DeleteButton";
+import { withApollo } from "../utils/with-apollo";
+import { useIsAuth } from "../utils/useIsAuth";
 
-interface registerProps {}
+import { Song, useMeQuery } from "../generated/graphql";
+import { useUserQuery } from "../generated/graphql";
 
-const Admin: React.FC<registerProps> = ({}) => {
-	const { data, loading, error } = useAdminQuery();
+import Layout from "../components/Layout";
+import SongCard from "../components/SongCard";
+import SongCardSkeleton from "../components/SongCard/skeleton";
 
-	if (loading) {
+import {
+	Box,
+	Stack,
+	Tab,
+	Tabs,
+	TabList,
+	TabPanels,
+	TabPanel,
+	Link,
+	Text,
+	Heading,
+} from "@chakra-ui/react";
+
+const Admin: React.FC = () => {
+	useIsAuth();
+	const { data: userData } = useMeQuery();
+
+	const userId = userData?.me?.id as number;
+
+	const { data, loading, error } = useUserQuery({
+		variables: { id: userId },
+	});
+
+	if (loading || error || !data?.user) {
 		return (
 			<Layout>
-				<div>loading...</div>
+				<SongCardSkeleton />
 			</Layout>
 		);
 	}
 
-	if (error) {
-		return <div>{error.message}</div>;
-	}
-
-	if (!data?.admin) {
-		return (
-			<Layout>
-				<Box>could not find User</Box>
-			</Layout>
-		);
-	}
+	const songs = data?.user?.songs || [];
+	const receivedComments = data?.user?.receivedComments || [];
+	const sentComments = data?.user?.sentComments || [];
 
 	return (
-		<Layout>
-			<Text fontSize="4xl">Control Panel</Text>
-			<Tabs>
-				<TabList>
-					<Tab>Home</Tab>
-					<Tab>Received Messages</Tab>
-					<Tab>Sent Messages</Tab>
-					<Tab>My Songs</Tab>
-				</TabList>
+		<>
+			<Layout>
+				<Tabs>
+					<TabList>
+						<Tab>My Songs</Tab>
+						<Tab>Sent Feedback</Tab>
+						<Tab>Received Feedback</Tab>
+					</TabList>
 
-				<TabPanels>
-					<TabPanel>
-						<Flex>
-							<Box>
-								<Avatar size="2xl" src={data.admin.avatarURL} />
-							</Box>
-							<Box>
-								<Text size="lg">{data.admin.username}</Text>
-							</Box>
-						</Flex>
-					</TabPanel>
-					<TabPanel>
-						<Box>
-							{data.admin.receivedComments.length ? (
-								data.admin.receivedComments?.map((element) => {
-									return (
-										<NextLink href={`/comment/${element.id}`}>
-											<Box
-												marginTop={2}
-												minW="lg"
-												borderWidth="1px"
-												rounded="lg"
-												overflow="hidden"
-												key={element.id}
-											>
-												<Flex>
-													<Text fontWeight="bold" fontSize="lg">
-														{element.parent.title}
-													</Text>
-													<Tag size="md">{element.status}</Tag>
-												</Flex>
-												<Text>
-													Sent By: {element.sender.username}
-												</Text>
-												<Text>{element.body}</Text>
+					<TabPanels>
+						<TabPanel>
+							<Box>Your Songs</Box>
+							{loading
+								? [1, 2, 3, 4, 5].map((i) => (
+										<Stack marginY="30px" key={i}>
+											<Box padding={5} shadow="md" borderWidth="1px">
+												<SongCardSkeleton />
 											</Box>
-										</NextLink>
-									);
-								})
-							) : (
-								<Box>You have no receieved comments!</Box>
-							)}
-						</Box>
-					</TabPanel>
-					<TabPanel>
-						{data.admin.sentComments.length ? (
-							data.admin.sentComments?.map((element) => {
-								return (
-									<NextLink href={`/comment/${element.id}`}>
-										<Box
-											marginTop={2}
-											minW="lg"
-											borderWidth="1px"
-											rounded="lg"
-											overflow="hidden"
-											key={element.id}
-										>
-											<Flex justifyContent="space-between">
-												<Text fontWeight="bold" fontSize="lg">
-													{element.parent.title}
-												</Text>
-												<Tag size="md">{element.status}</Tag>
-
-												<DeleteButton
-													id={element.id}
-													creatorId={data.admin?.id}
-													contentType="comment"
-												/>
-											</Flex>
-
-											<Text>{element.body}</Text>
-										</Box>
-									</NextLink>
-								);
-							})
-						) : (
-							<Box>You have no sent comments!</Box>
-						)}
-					</TabPanel>
-					<TabPanel>
-						{data.admin.songs.length ? (
-							data.admin.songs?.map((element) => {
-								return (
-									<Box
-										marginTop={2}
-										minW="lg"
-										borderWidth="1px"
-										rounded="lg"
-										overflow="hidden"
-										key={element.id}
-									>
-										<Flex>
-											<Text fontWeight="bold" fontSize="lg">
-												{element.title}
-											</Text>
-
-											<DeleteButton
-												id={element.id}
-												creatorId={data.admin?.id}
-												contentType="song"
-											/>
-										</Flex>
-									</Box>
-								);
-							})
-						) : (
-							<Box>You have no songs!</Box>
-						)}
-					</TabPanel>
-				</TabPanels>
-			</Tabs>
-		</Layout>
+										</Stack>
+								  ))
+								: songs
+								? songs.map(
+										(song: Song) =>
+											song && (
+												<Stack marginY="30px" key={song.id}>
+													<Box
+														padding={5}
+														shadow="md"
+														borderWidth="1px"
+													>
+														<SongCard
+															song={song}
+															showEditDeleteButton={
+																song.ownerId === userId
+															}
+														/>
+													</Box>
+												</Stack>
+											)
+								  )
+								: null}
+						</TabPanel>
+					</TabPanels>
+				</Tabs>
+			</Layout>
+		</>
 	);
 };
 
-export default withApollo({ ssr: false })(Admin);
+export default withApollo(Admin, { getDataFromTree });

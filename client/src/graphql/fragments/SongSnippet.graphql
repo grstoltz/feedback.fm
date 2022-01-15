@@ -5,6 +5,7 @@ fragment SongSnippet on Song {
 	title
 	mediaUrl
 	genre
+	ownerId
 	owner {
 		id
 		username

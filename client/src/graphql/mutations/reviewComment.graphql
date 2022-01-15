@@ -1,6 +1,0 @@
-mutation ReviewComment($id: Int!, $status: String!) {
-	reviewComment(id: $id, status: $status) {
-		id
-		approved
-	}
-}

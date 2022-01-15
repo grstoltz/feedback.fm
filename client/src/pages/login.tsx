@@ -1,42 +1,54 @@
-import React from "react";
-import { Formik, Form } from "formik";
-import { Box, Button, Link, Flex } from "@chakra-ui/react";
-import { Wrapper } from "../components/Wrapper";
-import { InputField } from "../components/InputField";
-import { useLoginMutation, MeQuery, MeDocument } from "../generated/graphql";
-import { toErrorMap } from "../utils/toErrorMap";
+// Hooks
+import { useLoginMutation } from "../generated/graphql";
 import { useRouter } from "next/router";
-import NextLink from "next/link";
-import { withApollo } from "../utils/withApollo";
 
-const Login: React.FC<{}> = ({}) => {
+// HOC
+import { getDataFromTree } from "@apollo/client/react/ssr";
+
+import { withApollo } from "../utils/with-apollo";
+
+// Components
+import FormContainer from "../components/FormContainer";
+import InputField from "../components/InputField";
+import { Formik, Form } from "formik";
+import { Button, Link, Flex } from "@chakra-ui/react";
+import NextLink from "next/link";
+
+// Utils
+import * as Yup from "yup";
+import { toErrorMap } from "../utils/toErrorMap";
+
+enum FIELDS {
+	USERNAME_OR_EMAIL = "usernameOrEmail",
+	PASSWORD = "password",
+}
+
+const validationSchema = Yup.object().shape({
+	[FIELDS.USERNAME_OR_EMAIL]: Yup.string().required("This field is required"),
+	[FIELDS.PASSWORD]: Yup.string().required("This field is required"),
+});
+
+const Login: React.FC = () => {
+	const [login, { client }] = useLoginMutation();
 	const router = useRouter();
-	const [login] = useLoginMutation();
+
 	return (
-		<Wrapper variant="small">
+		<FormContainer>
 			<Formik
-				initialValues={{ usernameOrEmail: "", password: "" }}
+				initialValues={{
+					[FIELDS.USERNAME_OR_EMAIL]: "",
+					[FIELDS.PASSWORD]: "",
+				}}
+				validationSchema={validationSchema}
 				onSubmit={async (values, { setErrors }) => {
-					const response = await login({
-						variables: values,
-						update: (cache, { data }) => {
-							cache.writeQuery<MeQuery>({
-								query: MeDocument,
-								data: {
-									__typename: "Query",
-									me: data?.login.user,
-								},
-							});
-							cache.evict({ fieldName: "user:{}" });
-						},
-					});
-					if (response.data?.login.errors) {
+					const response = await login({ variables: values });
+					if (response.data?.login?.errors) {
 						setErrors(toErrorMap(response.data.login.errors));
-					} else if (response.data?.login.user) {
-						if (typeof router.query.next === "string") {
-							router.push(router.query.next);
+					} else {
+						client.resetStore();
+						if (router.query.next) {
+							router.push(router.query.next as string);
 						} else {
-							// worked
 							router.push("/");
 						}
 					}
@@ -45,36 +57,31 @@ const Login: React.FC<{}> = ({}) => {
 				{({ isSubmitting }) => (
 					<Form>
 						<InputField
-							name="usernameOrEmail"
-							placeholder="username or email"
+							name={FIELDS.USERNAME_OR_EMAIL}
 							label="Username or Email"
+							placeholder="Username or Email"
+							marginBottom="10px"
 						/>
-						<Box mt={4}>
-							<InputField
-								name="password"
-								placeholder="password"
-								label="Password"
-								type="password"
-							/>
-						</Box>
-						<Flex mt={2}>
-							<NextLink href="/forgot-password">
-								<Link ml="auto">Forgot password?</Link>
+						<InputField
+							name={FIELDS.PASSWORD}
+							label="Password"
+							type="password"
+							placeholder="Password"
+							marginBottom="10px"
+						/>
+						<Flex marginBottom="10px">
+							<NextLink href="/forget-password">
+								<Link marginLeft="auto">Forget Password?</Link>
 							</NextLink>
 						</Flex>
-						<Button
-							mt={4}
-							type="submit"
-							isLoading={isSubmitting}
-							variantColor="teal"
-						>
-							login
+						<Button type="submit" isLoading={isSubmitting}>
+							Login
 						</Button>
 					</Form>
 				)}
 			</Formik>
-		</Wrapper>
+		</FormContainer>
 	);
 };
 
-export default withApollo({ ssr: false })(Login);
+export default withApollo(Login, { getDataFromTree });

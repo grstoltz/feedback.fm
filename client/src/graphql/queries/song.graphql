@@ -5,7 +5,9 @@ query Song($id: Int!) {
 		updatedAt
 		title
 		mediaUrl
+		mediaType
 		genre
+		ownerId
 		owner {
 			id
 			username

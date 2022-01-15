@@ -1,9 +1,0 @@
-mutation CreateComment($input: CommentInput!) {
-	createComment(input: $input) {
-		id
-		parentId
-		senderId
-		receiverId
-		body
-	}
-}

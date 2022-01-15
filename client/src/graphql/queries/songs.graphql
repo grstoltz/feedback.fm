@@ -1,11 +1,13 @@
-query Songs($limit: Int!) {
-	songs(limit: $limit) {
+query Songs {
+	songs {
 		id
 		createdAt
 		updatedAt
 		title
 		mediaUrl
+		mediaType
 		genre
+		ownerId
 		owner {
 			id
 			username

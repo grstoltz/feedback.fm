@@ -29,7 +29,6 @@ import {
 	Message,
 	UserConversation,
 } from "../generated/type-graphql";
-import { contains } from "class-validator";
 
 @ObjectType()
 class FieldError {

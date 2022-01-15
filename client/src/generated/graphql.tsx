@@ -1,12 +1,10 @@
 import { gql } from '@apollo/client';
 import * as Apollo from '@apollo/client';
-import * as React from 'react';
-import * as ApolloReactComponents from '@apollo/client/react/components';
 export type Maybe<T> = T | null;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
-export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
+const defaultOptions =  {}
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: string;
@@ -20,101 +18,51 @@ export type Scalars = {
   Upload: any;
 };
 
-export type Query = {
-  __typename?: 'Query';
-  hello: Scalars['String'];
-  songs: Array<Song>;
-  song?: Maybe<Song>;
-  admin?: Maybe<User>;
-  user?: Maybe<User>;
-  me?: Maybe<User>;
-  comments: Array<Comment>;
-  comment?: Maybe<Comment>;
-};
-
-
-export type QuerySongsArgs = {
-  limit: Scalars['Int'];
-};
-
-
-export type QuerySongArgs = {
+export type Approval = {
+  __typename?: 'Approval';
   id: Scalars['Int'];
+  commentId: Scalars['Int'];
+  status: ApprovalType;
 };
 
+export enum ApprovalType {
+  Approved = 'APPROVED',
+  Denied = 'DENIED',
+  Review = 'REVIEW'
+}
 
-export type QueryUserArgs = {
+export type Conversation = {
+  __typename?: 'Conversation';
   id: Scalars['Int'];
-};
-
-
-export type QueryCommentsArgs = {
-  id: Scalars['Int'];
-};
-
-
-export type QueryCommentArgs = {
-  id: Scalars['Int'];
-};
-
-export type Song = {
-  __typename?: 'Song';
-  id: Scalars['Int'];
-  title: Scalars['String'];
-  mediaUrl: Scalars['String'];
-  mediaType: Scalars['String'];
-  genre: Scalars['String'];
-  ownerId: Scalars['Int'];
-  createdAt: Scalars['DateTime'];
   updatedAt: Scalars['DateTime'];
-  owner: User;
-};
-
-
-export type User = {
-  __typename?: 'User';
-  id: Scalars['Int'];
-  email: Scalars['String'];
-  username: Scalars['String'];
-  password: Scalars['String'];
-  avatarURL: Scalars['String'];
   createdAt: Scalars['DateTime'];
-  updatedAt: Scalars['DateTime'];
-  balance: Scalars['Float'];
-  songs?: Maybe<Array<Song>>;
-  notifications?: Maybe<Array<Notification>>;
-  receivedComments?: Maybe<Array<Comment>>;
-  sentComments?: Maybe<Array<Comment>>;
 };
 
-export type Notification = {
-  __typename?: 'Notification';
-  id: Scalars['Int'];
-  receiverId: Scalars['Int'];
-  body: Scalars['String'];
-  read: Scalars['Boolean'];
-  type: Scalars['String'];
-  url: Scalars['String'];
-  createdAt: Scalars['DateTime'];
-  updatedAt: Scalars['DateTime'];
-  receiver: User;
+
+export type FieldError = {
+  __typename?: 'FieldError';
+  field: Scalars['String'];
+  message: Scalars['String'];
 };
 
-export type Comment = {
-  __typename?: 'Comment';
+export type Message = {
+  __typename?: 'Message';
   id: Scalars['Int'];
-  parentId: Scalars['Int'];
   senderId: Scalars['Int'];
-  receiverId: Scalars['Int'];
-  active: Scalars['Boolean'];
-  approved: Scalars['Boolean'];
-  body: Scalars['String'];
-  createdAt: Scalars['DateTime'];
+  conversationId: Scalars['Int'];
+  approvalId?: Maybe<Scalars['Int']>;
+  songId?: Maybe<Scalars['Int']>;
+  text?: Maybe<Scalars['String']>;
+  sentAt: Scalars['DateTime'];
+  type: MessageType;
   updatedAt: Scalars['DateTime'];
-  sender: User;
-  receiver: User;
-  parent?: Maybe<Song>;
+  createdAt: Scalars['DateTime'];
 };
+
+export enum MessageType {
+  Message = 'MESSAGE',
+  Feedback = 'FEEDBACK'
+}
 
 export type Mutation = {
   __typename?: 'Mutation';
@@ -122,14 +70,13 @@ export type Mutation = {
   updateSong?: Maybe<Scalars['Float']>;
   upload: Scalars['Boolean'];
   deleteSong: Scalars['Boolean'];
+  upsertApproval: Approval;
+  createConversation: Conversation;
   forgotPassword: Scalars['Boolean'];
   changePassword: UserResponse;
   register: UserResponse;
   login: UserResponse;
   logout: Scalars['Boolean'];
-  createComment: Comment;
-  reviewComment: Comment;
-  deleteComment: Scalars['Boolean'];
   createTransaction: Transaction;
   createNotification: Notification;
 };
@@ -158,6 +105,18 @@ export type MutationDeleteSongArgs = {
 };
 
 
+export type MutationUpsertApprovalArgs = {
+  id?: Maybe<Scalars['Int']>;
+  commentId: Scalars['Int'];
+  status: Scalars['String'];
+};
+
+
+export type MutationCreateConversationArgs = {
+  participantIds: Array<Scalars['Float']>;
+};
+
+
 export type MutationForgotPasswordArgs = {
   email: Scalars['String'];
 };
@@ -180,22 +139,6 @@ export type MutationLoginArgs = {
 };
 
 
-export type MutationCreateCommentArgs = {
-  input: CommentInput;
-};
-
-
-export type MutationReviewCommentArgs = {
-  status: Scalars['String'];
-  id: Scalars['Int'];
-};
-
-
-export type MutationDeleteCommentArgs = {
-  id: Scalars['Int'];
-};
-
-
 export type MutationCreateTransactionArgs = {
   transactionAmount: Scalars['Int'];
   id: Scalars['Int'];
@@ -206,6 +149,100 @@ export type MutationCreateNotificationArgs = {
   input: NotificationInput;
 };
 
+export type Notification = {
+  __typename?: 'Notification';
+  id: Scalars['Int'];
+  receiverId: Scalars['Int'];
+  senderId: Scalars['Int'];
+  parentId?: Maybe<Scalars['Int']>;
+  read: Scalars['Boolean'];
+  type: NotificationType;
+  url: Scalars['String'];
+  urlType: NotificationUrlType;
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  receiver: User;
+};
+
+export type NotificationInput = {
+  receiverId: Scalars['Float'];
+  body: Scalars['String'];
+  type: Scalars['String'];
+  url: Scalars['String'];
+  urlType: Scalars['String'];
+  parentId: Scalars['Float'];
+};
+
+export enum NotificationType {
+  Message = 'MESSAGE',
+  Approved = 'APPROVED',
+  Denied = 'DENIED',
+  Feedback = 'FEEDBACK'
+}
+
+export enum NotificationUrlType {
+  Song = 'SONG',
+  Feedback = 'FEEDBACK',
+  Message = 'MESSAGE'
+}
+
+export type Query = {
+  __typename?: 'Query';
+  songs: Array<Song>;
+  song?: Maybe<Song>;
+  messages: Array<Message>;
+  conversationMessages: Array<Message>;
+  conversation: Array<Message>;
+  admin?: Maybe<User>;
+  user?: Maybe<User>;
+  me?: Maybe<User>;
+  getNotifications?: Maybe<Array<Notification>>;
+  unreadNotifications: Scalars['Boolean'];
+};
+
+
+export type QuerySongArgs = {
+  id: Scalars['Int'];
+};
+
+
+export type QueryMessagesArgs = {
+  id: Scalars['Int'];
+};
+
+
+export type QueryConversationMessagesArgs = {
+  id: Scalars['Int'];
+};
+
+
+export type QueryConversationArgs = {
+  id: Scalars['Int'];
+};
+
+
+export type QueryUserArgs = {
+  id: Scalars['Int'];
+};
+
+
+export type QueryGetNotificationsArgs = {
+  skip: Scalars['Int'];
+};
+
+export type Song = {
+  __typename?: 'Song';
+  id: Scalars['Int'];
+  title: Scalars['String'];
+  mediaUrl: Scalars['String'];
+  mediaType: Scalars['String'];
+  genre: Scalars['String'];
+  ownerId: Scalars['Int'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  owner: User;
+};
+
 export type SongInput = {
   title: Scalars['String'];
   mediaUrl: Scalars['String'];
@@ -213,29 +250,9 @@ export type SongInput = {
   mediaType: Scalars['String'];
 };
 
-
-export type UserResponse = {
-  __typename?: 'UserResponse';
-  errors?: Maybe<Array<FieldError>>;
-  user?: Maybe<User>;
-};
-
-export type FieldError = {
-  __typename?: 'FieldError';
-  field: Scalars['String'];
-  message: Scalars['String'];
-};
-
-export type UsernamePasswordInput = {
-  email: Scalars['String'];
-  username: Scalars['String'];
-  password: Scalars['String'];
-};
-
-export type CommentInput = {
-  parentId: Scalars['Float'];
-  receiverId: Scalars['Float'];
-  body: Scalars['String'];
+export type Subscription = {
+  __typename?: 'Subscription';
+  newNotification: Notification;
 };
 
 export type Transaction = {
@@ -248,43 +265,50 @@ export type Transaction = {
   updatedAt: Scalars['DateTime'];
 };
 
-export type NotificationInput = {
-  receiverId: Scalars['Float'];
-  body: Scalars['String'];
-  parentId: Scalars['Float'];
-  type: Scalars['String'];
-  url: Scalars['String'];
+
+export type User = {
+  __typename?: 'User';
+  id: Scalars['Int'];
+  email: Scalars['String'];
+  username: Scalars['String'];
+  password: Scalars['String'];
+  avatarURL: Scalars['String'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  notifications: Array<Notification>;
+  balance: Scalars['Float'];
+  songs?: Maybe<Array<Song>>;
+  conversations?: Maybe<Array<UserConversation>>;
+  sentMessages?: Maybe<Array<Message>>;
 };
 
-export type RegularErrorFragment = (
-  { __typename?: 'FieldError' }
-  & Pick<FieldError, 'field' | 'message'>
-);
+export type UserConversation = {
+  __typename?: 'UserConversation';
+  userId: Scalars['Int'];
+  conversationId: Scalars['Int'];
+};
 
-export type RegularUserFragment = (
-  { __typename?: 'User' }
-  & Pick<User, 'id' | 'username'>
-);
+export type UserResponse = {
+  __typename?: 'UserResponse';
+  errors?: Maybe<Array<FieldError>>;
+  user?: Maybe<User>;
+};
 
-export type RegularUserResponseFragment = (
-  { __typename?: 'UserResponse' }
-  & { errors?: Maybe<Array<(
-    { __typename?: 'FieldError' }
-    & RegularErrorFragment
-  )>>, user?: Maybe<(
-    { __typename?: 'User' }
-    & RegularUserFragment
-  )> }
-);
+export type UsernamePasswordInput = {
+  email: Scalars['String'];
+  username: Scalars['String'];
+  password: Scalars['String'];
+};
 
-export type SongSnippetFragment = (
-  { __typename?: 'Song' }
-  & Pick<Song, 'id' | 'createdAt' | 'updatedAt' | 'title' | 'mediaUrl' | 'genre'>
-  & { owner: (
-    { __typename?: 'User' }
-    & Pick<User, 'id' | 'username'>
-  ) }
-);
+export type NotificationSnippetFragment = { __typename?: 'Notification', id: number, url: string, read: boolean };
+
+export type RegularErrorFragment = { __typename?: 'FieldError', field: string, message: string };
+
+export type RegularUserFragment = { __typename?: 'User', id: number, username: string };
+
+export type RegularUserResponseFragment = { __typename?: 'UserResponse', errors?: Maybe<Array<{ __typename?: 'FieldError', field: string, message: string }>>, user?: Maybe<{ __typename?: 'User', id: number, username: string }> };
+
+export type SongSnippetFragment = { __typename?: 'Song', id: number, createdAt: any, updatedAt: any, title: string, mediaUrl: string, genre: string, ownerId: number, owner: { __typename?: 'User', id: number, username: string } };
 
 export type ChangePasswordMutationVariables = Exact<{
   token: Scalars['String'];
@@ -292,52 +316,21 @@ export type ChangePasswordMutationVariables = Exact<{
 }>;
 
 
-export type ChangePasswordMutation = (
-  { __typename?: 'Mutation' }
-  & { changePassword: (
-    { __typename?: 'UserResponse' }
-    & RegularUserResponseFragment
-  ) }
-);
-
-export type CreateCommentMutationVariables = Exact<{
-  input: CommentInput;
-}>;
-
-
-export type CreateCommentMutation = (
-  { __typename?: 'Mutation' }
-  & { createComment: (
-    { __typename?: 'Comment' }
-    & Pick<Comment, 'id' | 'parentId' | 'senderId' | 'receiverId' | 'body'>
-  ) }
-);
+export type ChangePasswordMutation = { __typename?: 'Mutation', changePassword: { __typename?: 'UserResponse', errors?: Maybe<Array<{ __typename?: 'FieldError', field: string, message: string }>>, user?: Maybe<{ __typename?: 'User', id: number, username: string }> } };
 
 export type CreateNotificationMutationVariables = Exact<{
   input: NotificationInput;
 }>;
 
 
-export type CreateNotificationMutation = (
-  { __typename?: 'Mutation' }
-  & { createNotification: (
-    { __typename?: 'Notification' }
-    & Pick<Notification, 'id' | 'receiverId' | 'body' | 'read' | 'type' | 'url'>
-  ) }
-);
+export type CreateNotificationMutation = { __typename?: 'Mutation', createNotification: { __typename?: 'Notification', id: number, receiverId: number, type: NotificationType, url: string } };
 
 export type CreateSongMutationVariables = Exact<{
   input: SongInput;
 }>;
 
 
-export type CreateSongMutation = (
-  { __typename?: 'Mutation' }
-  & { createSong: (
-    { __typename?: 'Song' }
-    & Pick<Song, 'id' | 'title' | 'mediaUrl' | 'genre' | 'ownerId'>
-  ) }
-);
+export type CreateSongMutation = { __typename?: 'Mutation', createSong: { __typename?: 'Song', id: number, title: string, mediaUrl: string, genre: string, ownerId: number } };
 
 export type CreateTransactionMutationVariables = Exact<{
   id: Scalars['Int'];
@@ -345,43 +338,21 @@ export type CreateTransactionMutationVariables = Exact<{
 }>;
 
 
-export type CreateTransactionMutation = (
-  { __typename?: 'Mutation' }
-  & { createTransaction: (
-    { __typename?: 'Transaction' }
-    & Pick<Transaction, 'id'>
-  ) }
-);
-
-export type DeleteCommentMutationVariables = Exact<{
-  id: Scalars['Int'];
-}>;
-
-
-export type DeleteCommentMutation = (
-  { __typename?: 'Mutation' }
-  & Pick<Mutation, 'deleteComment'>
-);
+export type CreateTransactionMutation = { __typename?: 'Mutation', createTransaction: { __typename?: 'Transaction', id: number } };
 
 export type DeleteSongMutationVariables = Exact<{
   id: Scalars['Int'];
 }>;
 
 
-export type DeleteSongMutation = (
-  { __typename?: 'Mutation' }
-  & Pick<Mutation, 'deleteSong'>
-);
+export type DeleteSongMutation = { __typename?: 'Mutation', deleteSong: boolean };
 
 export type ForgotPasswordMutationVariables = Exact<{
   email: Scalars['String'];
 }>;
 
 
-export type ForgotPasswordMutation = (
-  { __typename?: 'Mutation' }
-  & Pick<Mutation, 'forgotPassword'>
-);
+export type ForgotPasswordMutation = { __typename?: 'Mutation', forgotPassword: boolean };
 
 export type LoginMutationVariables = Exact<{
   usernameOrEmail: Scalars['String'];
@@ -389,50 +360,21 @@ export type LoginMutationVariables = Exact<{
 }>;
 
 
-export type LoginMutation = (
-  { __typename?: 'Mutation' }
-  & { login: (
-    { __typename?: 'UserResponse' }
-    & RegularUserResponseFragment
-  ) }
-);
+export type LoginMutation = { __typename?: 'Mutation', login: { __typename?: 'UserResponse', errors?: Maybe<Array<{ __typename?: 'FieldError', field: string, message: string }>>, user?: Maybe<{ __typename?: 'User', id: number, username: string }> } };
 
 export type LogoutMutationVariables = Exact<{ [key: string]: never; }>;
 
 
-export type LogoutMutation = (
-  { __typename?: 'Mutation' }
-  & Pick<Mutation, 'logout'>
-);
+export type LogoutMutation = { __typename?: 'Mutation', logout: boolean };
 
 export type RegisterMutationVariables = Exact<{
   options: UsernamePasswordInput;
 }>;
 
 
-export type RegisterMutation = (
-  { __typename?: 'Mutation' }
-  & { register: (
-    { __typename?: 'UserResponse' }
-    & RegularUserResponseFragment
-  ) }
-);
+export type RegisterMutation = { __typename?: 'Mutation', register: { __typename?: 'UserResponse', errors?: Maybe<Array<{ __typename?: 'FieldError', field: string, message: string }>>, user?: Maybe<{ __typename?: 'User', id: number, username: string }> } };
 
-export type ReviewCommentMutationVariables = Exact<{
-  id: Scalars['Int'];
-  status: Scalars['String'];
-}>;
-
-
-export type ReviewCommentMutation = (
-  { __typename?: 'Mutation' }
-  & { reviewComment: (
-    { __typename?: 'Comment' }
-    & Pick<Comment, 'id' | 'approved'>
-  ) }
-);
-
-export type UpdateCommentMutationVariables = Exact<{
+export type UpdateSongMutationVariables = Exact<{
   id: Scalars['Int'];
   title: Scalars['String'];
   mediaUrl: Scalars['String'];
@@ -440,162 +382,56 @@ export type UpdateCommentMutationVariables = Exact<{
 }>;
 
 
-export type UpdateCommentMutation = (
-  { __typename?: 'Mutation' }
-  & Pick<Mutation, 'updateSong'>
-);
+export type UpdateSongMutation = { __typename?: 'Mutation', updateSong?: Maybe<number> };
 
-export type UploadMutationVariables = Exact<{
-  file: Scalars['Upload'];
+export type GetNotificationsQueryVariables = Exact<{
+  skip: Scalars['Int'];
 }>;
 
 
-export type UploadMutation = (
-  { __typename?: 'Mutation' }
-  & Pick<Mutation, 'upload'>
-);
-
-export type AdminQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type AdminQuery = (
-  { __typename?: 'Query' }
-  & { admin?: Maybe<(
-    { __typename?: 'User' }
-    & Pick<User, 'id' | 'username' | 'email' | 'avatarURL' | 'createdAt' | 'updatedAt'>
-    & { songs?: Maybe<Array<(
-      { __typename?: 'Song' }
-      & Pick<Song, 'id' | 'ownerId' | 'title'>
-    )>>, sentComments?: Maybe<Array<(
-      { __typename?: 'Comment' }
-      & Pick<Comment, 'id' | 'parentId' | 'body' | 'approved'>
-      & { receiver: (
-        { __typename?: 'User' }
-        & Pick<User, 'id' | 'username'>
-      ), parent?: Maybe<(
-        { __typename?: 'Song' }
-        & Pick<Song, 'id' | 'title'>
-      )> }
-    )>>, receivedComments?: Maybe<Array<(
-      { __typename?: 'Comment' }
-      & Pick<Comment, 'id' | 'parentId' | 'body' | 'approved'>
-      & { parent?: Maybe<(
-        { __typename?: 'Song' }
-        & Pick<Song, 'id' | 'title'>
-      )>, sender: (
-        { __typename?: 'User' }
-        & Pick<User, 'id' | 'username'>
-      ) }
-    )>> }
-  )> }
-);
-
-export type CommentQueryVariables = Exact<{
-  id: Scalars['Int'];
-}>;
-
-
-export type CommentQuery = (
-  { __typename?: 'Query' }
-  & { comment?: Maybe<(
-    { __typename?: 'Comment' }
-    & Pick<Comment, 'id' | 'createdAt' | 'updatedAt' | 'body'>
-    & { sender: (
-      { __typename?: 'User' }
-      & Pick<User, 'id' | 'username'>
-    ), receiver: (
-      { __typename?: 'User' }
-      & Pick<User, 'id' | 'username'>
-    ), parent?: Maybe<(
-      { __typename?: 'Song' }
-      & Pick<Song, 'id' | 'title'>
-    )> }
-  )> }
-);
-
-export type CommentsQueryVariables = Exact<{
-  id: Scalars['Int'];
-}>;
-
-
-export type CommentsQuery = (
-  { __typename?: 'Query' }
-  & { comments: Array<(
-    { __typename?: 'Comment' }
-    & Pick<Comment, 'id' | 'createdAt' | 'updatedAt' | 'body' | 'approved'>
-    & { sender: (
-      { __typename?: 'User' }
-      & Pick<User, 'id' | 'username'>
-    ), receiver: (
-      { __typename?: 'User' }
-      & Pick<User, 'id' | 'username'>
-    ), parent?: Maybe<(
-      { __typename?: 'Song' }
-      & Pick<Song, 'id' | 'title'>
-    )> }
-  )> }
-);
+export type GetNotificationsQuery = { __typename?: 'Query', getNotifications?: Maybe<Array<{ __typename?: 'Notification', id: number, url: string, read: boolean }>> };
 
 export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type MeQuery = (
-  { __typename?: 'Query' }
-  & { me?: Maybe<(
-    { __typename?: 'User' }
-    & Pick<User, 'id' | 'username'>
-  )> }
-);
+export type MeQuery = { __typename?: 'Query', me?: Maybe<{ __typename?: 'User', id: number, username: string, avatarURL: string }> };
 
-export type NavBarQueryVariables = Exact<{ [key: string]: never; }>;
+export type NotificationSubscriptionVariables = Exact<{ [key: string]: never; }>;
 
 
-export type NavBarQuery = (
-  { __typename?: 'Query' }
-  & { me?: Maybe<(
-    { __typename?: 'User' }
-    & Pick<User, 'id' | 'username' | 'balance'>
-    & { notifications?: Maybe<Array<(
-      { __typename?: 'Notification' }
-      & Pick<Notification, 'body'>
-    )>> }
-  )> }
-);
+export type NotificationSubscription = { __typename?: 'Subscription', newNotification: { __typename?: 'Notification', id: number } };
 
 export type SongQueryVariables = Exact<{
   id: Scalars['Int'];
 }>;
 
 
-export type SongQuery = (
-  { __typename?: 'Query' }
-  & { song?: Maybe<(
-    { __typename?: 'Song' }
-    & Pick<Song, 'id' | 'createdAt' | 'updatedAt' | 'title' | 'mediaUrl' | 'genre'>
-    & { owner: (
-      { __typename?: 'User' }
-      & Pick<User, 'id' | 'username'>
-    ) }
-  )> }
-);
+export type SongQuery = { __typename?: 'Query', song?: Maybe<{ __typename?: 'Song', id: number, createdAt: any, updatedAt: any, title: string, mediaUrl: string, mediaType: string, genre: string, ownerId: number, owner: { __typename?: 'User', id: number, username: string } }> };
 
-export type SongsQueryVariables = Exact<{
-  limit: Scalars['Int'];
+export type SongsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type SongsQuery = { __typename?: 'Query', songs: Array<{ __typename?: 'Song', id: number, createdAt: any, updatedAt: any, title: string, mediaUrl: string, mediaType: string, genre: string, ownerId: number, owner: { __typename?: 'User', id: number, username: string } }> };
+
+export type UnreadNotificationsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type UnreadNotificationsQuery = { __typename?: 'Query', unreadNotifications: boolean };
+
+export type UserQueryVariables = Exact<{
+  id: Scalars['Int'];
 }>;
 
 
-export type SongsQuery = (
-  { __typename?: 'Query' }
-  & { songs: Array<(
-    { __typename?: 'Song' }
-    & Pick<Song, 'id' | 'createdAt' | 'updatedAt' | 'title' | 'mediaUrl' | 'genre'>
-    & { owner: (
-      { __typename?: 'User' }
-      & Pick<User, 'id' | 'username'>
-    ) }
-  )> }
-);
+export type UserQuery = { __typename?: 'Query', user?: Maybe<{ __typename?: 'User', id: number, username: string, avatarURL: string, songs?: Maybe<Array<{ __typename?: 'Song', id: number, title: string, mediaUrl: string, mediaType: string, genre: string, ownerId: number, createdAt: any, updatedAt: any, owner: { __typename?: 'User', id: number, username: string } }>>, notifications: Array<{ __typename?: 'Notification', id: number, url: string, read: boolean }> }> };
 
+export const NotificationSnippetFragmentDoc = gql`
+    fragment NotificationSnippet on Notification {
+  id
+  url
+  read
+}
+    `;
 export const RegularErrorFragmentDoc = gql`
     fragment RegularError on FieldError {
   field
@@ -627,6 +463,7 @@ export const SongSnippetFragmentDoc = gql`
   title
   mediaUrl
   genre
+  ownerId
   owner {
     id
     username
@@ -641,12 +478,6 @@ export const ChangePasswordDocument = gql`
 }
     ${RegularUserResponseFragmentDoc}`;
 export type ChangePasswordMutationFn = Apollo.MutationFunction<ChangePasswordMutation, ChangePasswordMutationVariables>;
-export type ChangePasswordComponentProps = Omit<ApolloReactComponents.MutationComponentOptions<ChangePasswordMutation, ChangePasswordMutationVariables>, 'mutation'>;
-
-    export const ChangePasswordComponent = (props: ChangePasswordComponentProps) => (
-      <ApolloReactComponents.Mutation<ChangePasswordMutation, ChangePasswordMutationVariables> mutation={ChangePasswordDocument} {...props} />
-    );
-    
 
 /**
  * __useChangePasswordMutation__
@@ -667,72 +498,23 @@ export type ChangePasswordComponentProps = Omit<ApolloReactComponents.MutationCo
  * });
  */
 export function useChangePasswordMutation(baseOptions?: Apollo.MutationHookOptions<ChangePasswordMutation, ChangePasswordMutationVariables>) {
-        return Apollo.useMutation<ChangePasswordMutation, ChangePasswordMutationVariables>(ChangePasswordDocument, baseOptions);
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<ChangePasswordMutation, ChangePasswordMutationVariables>(ChangePasswordDocument, options);
       }
 export type ChangePasswordMutationHookResult = ReturnType<typeof useChangePasswordMutation>;
 export type ChangePasswordMutationResult = Apollo.MutationResult<ChangePasswordMutation>;
 export type ChangePasswordMutationOptions = Apollo.BaseMutationOptions<ChangePasswordMutation, ChangePasswordMutationVariables>;
-export const CreateCommentDocument = gql`
-    mutation CreateComment($input: CommentInput!) {
-  createComment(input: $input) {
-    id
-    parentId
-    senderId
-    receiverId
-    body
-  }
-}
-    `;
-export type CreateCommentMutationFn = Apollo.MutationFunction<CreateCommentMutation, CreateCommentMutationVariables>;
-export type CreateCommentComponentProps = Omit<ApolloReactComponents.MutationComponentOptions<CreateCommentMutation, CreateCommentMutationVariables>, 'mutation'>;
-
-    export const CreateCommentComponent = (props: CreateCommentComponentProps) => (
-      <ApolloReactComponents.Mutation<CreateCommentMutation, CreateCommentMutationVariables> mutation={CreateCommentDocument} {...props} />
-    );
-    
-
-/**
- * __useCreateCommentMutation__
- *
- * To run a mutation, you first call `useCreateCommentMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useCreateCommentMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [createCommentMutation, { data, loading, error }] = useCreateCommentMutation({
- *   variables: {
- *      input: // value for 'input'
- *   },
- * });
- */
-export function useCreateCommentMutation(baseOptions?: Apollo.MutationHookOptions<CreateCommentMutation, CreateCommentMutationVariables>) {
-        return Apollo.useMutation<CreateCommentMutation, CreateCommentMutationVariables>(CreateCommentDocument, baseOptions);
-      }
-export type CreateCommentMutationHookResult = ReturnType<typeof useCreateCommentMutation>;
-export type CreateCommentMutationResult = Apollo.MutationResult<CreateCommentMutation>;
-export type CreateCommentMutationOptions = Apollo.BaseMutationOptions<CreateCommentMutation, CreateCommentMutationVariables>;
 export const CreateNotificationDocument = gql`
     mutation CreateNotification($input: NotificationInput!) {
   createNotification(input: $input) {
     id
     receiverId
-    body
-    read
     type
     url
   }
 }
     `;
 export type CreateNotificationMutationFn = Apollo.MutationFunction<CreateNotificationMutation, CreateNotificationMutationVariables>;
-export type CreateNotificationComponentProps = Omit<ApolloReactComponents.MutationComponentOptions<CreateNotificationMutation, CreateNotificationMutationVariables>, 'mutation'>;
-
-    export const CreateNotificationComponent = (props: CreateNotificationComponentProps) => (
-      <ApolloReactComponents.Mutation<CreateNotificationMutation, CreateNotificationMutationVariables> mutation={CreateNotificationDocument} {...props} />
-    );
-    
 
 /**
  * __useCreateNotificationMutation__
@@ -752,7 +534,8 @@ export type CreateNotificationComponentProps = Omit<ApolloReactComponents.Mutati
  * });
  */
 export function useCreateNotificationMutation(baseOptions?: Apollo.MutationHookOptions<CreateNotificationMutation, CreateNotificationMutationVariables>) {
-        return Apollo.useMutation<CreateNotificationMutation, CreateNotificationMutationVariables>(CreateNotificationDocument, baseOptions);
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateNotificationMutation, CreateNotificationMutationVariables>(CreateNotificationDocument, options);
       }
 export type CreateNotificationMutationHookResult = ReturnType<typeof useCreateNotificationMutation>;
 export type CreateNotificationMutationResult = Apollo.MutationResult<CreateNotificationMutation>;
@@ -769,12 +552,6 @@ export const CreateSongDocument = gql`
 }
     `;
 export type CreateSongMutationFn = Apollo.MutationFunction<CreateSongMutation, CreateSongMutationVariables>;
-export type CreateSongComponentProps = Omit<ApolloReactComponents.MutationComponentOptions<CreateSongMutation, CreateSongMutationVariables>, 'mutation'>;
-
-    export const CreateSongComponent = (props: CreateSongComponentProps) => (
-      <ApolloReactComponents.Mutation<CreateSongMutation, CreateSongMutationVariables> mutation={CreateSongDocument} {...props} />
-    );
-    
 
 /**
  * __useCreateSongMutation__
@@ -794,7 +571,8 @@ export type CreateSongComponentProps = Omit<ApolloReactComponents.MutationCompon
  * });
  */
 export function useCreateSongMutation(baseOptions?: Apollo.MutationHookOptions<CreateSongMutation, CreateSongMutationVariables>) {
-        return Apollo.useMutation<CreateSongMutation, CreateSongMutationVariables>(CreateSongDocument, baseOptions);
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateSongMutation, CreateSongMutationVariables>(CreateSongDocument, options);
       }
 export type CreateSongMutationHookResult = ReturnType<typeof useCreateSongMutation>;
 export type CreateSongMutationResult = Apollo.MutationResult<CreateSongMutation>;
@@ -807,12 +585,6 @@ export const CreateTransactionDocument = gql`
 }
     `;
 export type CreateTransactionMutationFn = Apollo.MutationFunction<CreateTransactionMutation, CreateTransactionMutationVariables>;
-export type CreateTransactionComponentProps = Omit<ApolloReactComponents.MutationComponentOptions<CreateTransactionMutation, CreateTransactionMutationVariables>, 'mutation'>;
-
-    export const CreateTransactionComponent = (props: CreateTransactionComponentProps) => (
-      <ApolloReactComponents.Mutation<CreateTransactionMutation, CreateTransactionMutationVariables> mutation={CreateTransactionDocument} {...props} />
-    );
-    
 
 /**
  * __useCreateTransactionMutation__
@@ -833,59 +605,18 @@ export type CreateTransactionComponentProps = Omit<ApolloReactComponents.Mutatio
  * });
  */
 export function useCreateTransactionMutation(baseOptions?: Apollo.MutationHookOptions<CreateTransactionMutation, CreateTransactionMutationVariables>) {
-        return Apollo.useMutation<CreateTransactionMutation, CreateTransactionMutationVariables>(CreateTransactionDocument, baseOptions);
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateTransactionMutation, CreateTransactionMutationVariables>(CreateTransactionDocument, options);
       }
 export type CreateTransactionMutationHookResult = ReturnType<typeof useCreateTransactionMutation>;
 export type CreateTransactionMutationResult = Apollo.MutationResult<CreateTransactionMutation>;
 export type CreateTransactionMutationOptions = Apollo.BaseMutationOptions<CreateTransactionMutation, CreateTransactionMutationVariables>;
-export const DeleteCommentDocument = gql`
-    mutation DeleteComment($id: Int!) {
-  deleteComment(id: $id)
-}
-    `;
-export type DeleteCommentMutationFn = Apollo.MutationFunction<DeleteCommentMutation, DeleteCommentMutationVariables>;
-export type DeleteCommentComponentProps = Omit<ApolloReactComponents.MutationComponentOptions<DeleteCommentMutation, DeleteCommentMutationVariables>, 'mutation'>;
-
-    export const DeleteCommentComponent = (props: DeleteCommentComponentProps) => (
-      <ApolloReactComponents.Mutation<DeleteCommentMutation, DeleteCommentMutationVariables> mutation={DeleteCommentDocument} {...props} />
-    );
-    
-
-/**
- * __useDeleteCommentMutation__
- *
- * To run a mutation, you first call `useDeleteCommentMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useDeleteCommentMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [deleteCommentMutation, { data, loading, error }] = useDeleteCommentMutation({
- *   variables: {
- *      id: // value for 'id'
- *   },
- * });
- */
-export function useDeleteCommentMutation(baseOptions?: Apollo.MutationHookOptions<DeleteCommentMutation, DeleteCommentMutationVariables>) {
-        return Apollo.useMutation<DeleteCommentMutation, DeleteCommentMutationVariables>(DeleteCommentDocument, baseOptions);
-      }
-export type DeleteCommentMutationHookResult = ReturnType<typeof useDeleteCommentMutation>;
-export type DeleteCommentMutationResult = Apollo.MutationResult<DeleteCommentMutation>;
-export type DeleteCommentMutationOptions = Apollo.BaseMutationOptions<DeleteCommentMutation, DeleteCommentMutationVariables>;
 export const DeleteSongDocument = gql`
     mutation DeleteSong($id: Int!) {
   deleteSong(id: $id)
 }
     `;
 export type DeleteSongMutationFn = Apollo.MutationFunction<DeleteSongMutation, DeleteSongMutationVariables>;
-export type DeleteSongComponentProps = Omit<ApolloReactComponents.MutationComponentOptions<DeleteSongMutation, DeleteSongMutationVariables>, 'mutation'>;
-
-    export const DeleteSongComponent = (props: DeleteSongComponentProps) => (
-      <ApolloReactComponents.Mutation<DeleteSongMutation, DeleteSongMutationVariables> mutation={DeleteSongDocument} {...props} />
-    );
-    
 
 /**
  * __useDeleteSongMutation__
@@ -905,7 +636,8 @@ export type DeleteSongComponentProps = Omit<ApolloReactComponents.MutationCompon
  * });
  */
 export function useDeleteSongMutation(baseOptions?: Apollo.MutationHookOptions<DeleteSongMutation, DeleteSongMutationVariables>) {
-        return Apollo.useMutation<DeleteSongMutation, DeleteSongMutationVariables>(DeleteSongDocument, baseOptions);
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteSongMutation, DeleteSongMutationVariables>(DeleteSongDocument, options);
       }
 export type DeleteSongMutationHookResult = ReturnType<typeof useDeleteSongMutation>;
 export type DeleteSongMutationResult = Apollo.MutationResult<DeleteSongMutation>;
@@ -916,12 +648,6 @@ export const ForgotPasswordDocument = gql`
 }
     `;
 export type ForgotPasswordMutationFn = Apollo.MutationFunction<ForgotPasswordMutation, ForgotPasswordMutationVariables>;
-export type ForgotPasswordComponentProps = Omit<ApolloReactComponents.MutationComponentOptions<ForgotPasswordMutation, ForgotPasswordMutationVariables>, 'mutation'>;
-
-    export const ForgotPasswordComponent = (props: ForgotPasswordComponentProps) => (
-      <ApolloReactComponents.Mutation<ForgotPasswordMutation, ForgotPasswordMutationVariables> mutation={ForgotPasswordDocument} {...props} />
-    );
-    
 
 /**
  * __useForgotPasswordMutation__
@@ -941,7 +667,8 @@ export type ForgotPasswordComponentProps = Omit<ApolloReactComponents.MutationCo
  * });
  */
 export function useForgotPasswordMutation(baseOptions?: Apollo.MutationHookOptions<ForgotPasswordMutation, ForgotPasswordMutationVariables>) {
-        return Apollo.useMutation<ForgotPasswordMutation, ForgotPasswordMutationVariables>(ForgotPasswordDocument, baseOptions);
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<ForgotPasswordMutation, ForgotPasswordMutationVariables>(ForgotPasswordDocument, options);
       }
 export type ForgotPasswordMutationHookResult = ReturnType<typeof useForgotPasswordMutation>;
 export type ForgotPasswordMutationResult = Apollo.MutationResult<ForgotPasswordMutation>;
@@ -954,12 +681,6 @@ export const LoginDocument = gql`
 }
     ${RegularUserResponseFragmentDoc}`;
 export type LoginMutationFn = Apollo.MutationFunction<LoginMutation, LoginMutationVariables>;
-export type LoginComponentProps = Omit<ApolloReactComponents.MutationComponentOptions<LoginMutation, LoginMutationVariables>, 'mutation'>;
-
-    export const LoginComponent = (props: LoginComponentProps) => (
-      <ApolloReactComponents.Mutation<LoginMutation, LoginMutationVariables> mutation={LoginDocument} {...props} />
-    );
-    
 
 /**
  * __useLoginMutation__
@@ -980,7 +701,8 @@ export type LoginComponentProps = Omit<ApolloReactComponents.MutationComponentOp
  * });
  */
 export function useLoginMutation(baseOptions?: Apollo.MutationHookOptions<LoginMutation, LoginMutationVariables>) {
-        return Apollo.useMutation<LoginMutation, LoginMutationVariables>(LoginDocument, baseOptions);
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<LoginMutation, LoginMutationVariables>(LoginDocument, options);
       }
 export type LoginMutationHookResult = ReturnType<typeof useLoginMutation>;
 export type LoginMutationResult = Apollo.MutationResult<LoginMutation>;
@@ -991,12 +713,6 @@ export const LogoutDocument = gql`
 }
     `;
 export type LogoutMutationFn = Apollo.MutationFunction<LogoutMutation, LogoutMutationVariables>;
-export type LogoutComponentProps = Omit<ApolloReactComponents.MutationComponentOptions<LogoutMutation, LogoutMutationVariables>, 'mutation'>;
-
-    export const LogoutComponent = (props: LogoutComponentProps) => (
-      <ApolloReactComponents.Mutation<LogoutMutation, LogoutMutationVariables> mutation={LogoutDocument} {...props} />
-    );
-    
 
 /**
  * __useLogoutMutation__
@@ -1015,7 +731,8 @@ export type LogoutComponentProps = Omit<ApolloReactComponents.MutationComponentO
  * });
  */
 export function useLogoutMutation(baseOptions?: Apollo.MutationHookOptions<LogoutMutation, LogoutMutationVariables>) {
-        return Apollo.useMutation<LogoutMutation, LogoutMutationVariables>(LogoutDocument, baseOptions);
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<LogoutMutation, LogoutMutationVariables>(LogoutDocument, options);
       }
 export type LogoutMutationHookResult = ReturnType<typeof useLogoutMutation>;
 export type LogoutMutationResult = Apollo.MutationResult<LogoutMutation>;
@@ -1028,12 +745,6 @@ export const RegisterDocument = gql`
 }
     ${RegularUserResponseFragmentDoc}`;
 export type RegisterMutationFn = Apollo.MutationFunction<RegisterMutation, RegisterMutationVariables>;
-export type RegisterComponentProps = Omit<ApolloReactComponents.MutationComponentOptions<RegisterMutation, RegisterMutationVariables>, 'mutation'>;
-
-    export const RegisterComponent = (props: RegisterComponentProps) => (
-      <ApolloReactComponents.Mutation<RegisterMutation, RegisterMutationVariables> mutation={RegisterDocument} {...props} />
-    );
-    
 
 /**
  * __useRegisterMutation__
@@ -1053,76 +764,31 @@ export type RegisterComponentProps = Omit<ApolloReactComponents.MutationComponen
  * });
  */
 export function useRegisterMutation(baseOptions?: Apollo.MutationHookOptions<RegisterMutation, RegisterMutationVariables>) {
-        return Apollo.useMutation<RegisterMutation, RegisterMutationVariables>(RegisterDocument, baseOptions);
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<RegisterMutation, RegisterMutationVariables>(RegisterDocument, options);
       }
 export type RegisterMutationHookResult = ReturnType<typeof useRegisterMutation>;
 export type RegisterMutationResult = Apollo.MutationResult<RegisterMutation>;
 export type RegisterMutationOptions = Apollo.BaseMutationOptions<RegisterMutation, RegisterMutationVariables>;
-export const ReviewCommentDocument = gql`
-    mutation ReviewComment($id: Int!, $status: String!) {
-  reviewComment(id: $id, status: $status) {
-    id
-    approved
-  }
-}
-    `;
-export type ReviewCommentMutationFn = Apollo.MutationFunction<ReviewCommentMutation, ReviewCommentMutationVariables>;
-export type ReviewCommentComponentProps = Omit<ApolloReactComponents.MutationComponentOptions<ReviewCommentMutation, ReviewCommentMutationVariables>, 'mutation'>;
-
-    export const ReviewCommentComponent = (props: ReviewCommentComponentProps) => (
-      <ApolloReactComponents.Mutation<ReviewCommentMutation, ReviewCommentMutationVariables> mutation={ReviewCommentDocument} {...props} />
-    );
-    
-
-/**
- * __useReviewCommentMutation__
- *
- * To run a mutation, you first call `useReviewCommentMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useReviewCommentMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [reviewCommentMutation, { data, loading, error }] = useReviewCommentMutation({
- *   variables: {
- *      id: // value for 'id'
- *      status: // value for 'status'
- *   },
- * });
- */
-export function useReviewCommentMutation(baseOptions?: Apollo.MutationHookOptions<ReviewCommentMutation, ReviewCommentMutationVariables>) {
-        return Apollo.useMutation<ReviewCommentMutation, ReviewCommentMutationVariables>(ReviewCommentDocument, baseOptions);
-      }
-export type ReviewCommentMutationHookResult = ReturnType<typeof useReviewCommentMutation>;
-export type ReviewCommentMutationResult = Apollo.MutationResult<ReviewCommentMutation>;
-export type ReviewCommentMutationOptions = Apollo.BaseMutationOptions<ReviewCommentMutation, ReviewCommentMutationVariables>;
-export const UpdateCommentDocument = gql`
-    mutation UpdateComment($id: Int!, $title: String!, $mediaUrl: String!, $genre: String!) {
+export const UpdateSongDocument = gql`
+    mutation UpdateSong($id: Int!, $title: String!, $mediaUrl: String!, $genre: String!) {
   updateSong(id: $id, title: $title, mediaUrl: $mediaUrl, genre: $genre)
 }
     `;
-export type UpdateCommentMutationFn = Apollo.MutationFunction<UpdateCommentMutation, UpdateCommentMutationVariables>;
-export type UpdateCommentComponentProps = Omit<ApolloReactComponents.MutationComponentOptions<UpdateCommentMutation, UpdateCommentMutationVariables>, 'mutation'>;
-
-    export const UpdateCommentComponent = (props: UpdateCommentComponentProps) => (
-      <ApolloReactComponents.Mutation<UpdateCommentMutation, UpdateCommentMutationVariables> mutation={UpdateCommentDocument} {...props} />
-    );
-    
+export type UpdateSongMutationFn = Apollo.MutationFunction<UpdateSongMutation, UpdateSongMutationVariables>;
 
 /**
- * __useUpdateCommentMutation__
+ * __useUpdateSongMutation__
  *
- * To run a mutation, you first call `useUpdateCommentMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useUpdateCommentMutation` returns a tuple that includes:
+ * To run a mutation, you first call `useUpdateSongMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateSongMutation` returns a tuple that includes:
  * - A mutate function that you can call at any time to execute the mutation
  * - An object with fields that represent the current status of the mutation's execution
  *
  * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
  *
  * @example
- * const [updateCommentMutation, { data, loading, error }] = useUpdateCommentMutation({
+ * const [updateSongMutation, { data, loading, error }] = useUpdateSongMutation({
  *   variables: {
  *      id: // value for 'id'
  *      title: // value for 'title'
@@ -1131,247 +797,59 @@ export type UpdateCommentComponentProps = Omit<ApolloReactComponents.MutationCom
  *   },
  * });
  */
-export function useUpdateCommentMutation(baseOptions?: Apollo.MutationHookOptions<UpdateCommentMutation, UpdateCommentMutationVariables>) {
-        return Apollo.useMutation<UpdateCommentMutation, UpdateCommentMutationVariables>(UpdateCommentDocument, baseOptions);
+export function useUpdateSongMutation(baseOptions?: Apollo.MutationHookOptions<UpdateSongMutation, UpdateSongMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateSongMutation, UpdateSongMutationVariables>(UpdateSongDocument, options);
       }
-export type UpdateCommentMutationHookResult = ReturnType<typeof useUpdateCommentMutation>;
-export type UpdateCommentMutationResult = Apollo.MutationResult<UpdateCommentMutation>;
-export type UpdateCommentMutationOptions = Apollo.BaseMutationOptions<UpdateCommentMutation, UpdateCommentMutationVariables>;
-export const UploadDocument = gql`
-    mutation Upload($file: Upload!) {
-  upload(file: $file)
-}
-    `;
-export type UploadMutationFn = Apollo.MutationFunction<UploadMutation, UploadMutationVariables>;
-export type UploadComponentProps = Omit<ApolloReactComponents.MutationComponentOptions<UploadMutation, UploadMutationVariables>, 'mutation'>;
-
-    export const UploadComponent = (props: UploadComponentProps) => (
-      <ApolloReactComponents.Mutation<UploadMutation, UploadMutationVariables> mutation={UploadDocument} {...props} />
-    );
-    
-
-/**
- * __useUploadMutation__
- *
- * To run a mutation, you first call `useUploadMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useUploadMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [uploadMutation, { data, loading, error }] = useUploadMutation({
- *   variables: {
- *      file: // value for 'file'
- *   },
- * });
- */
-export function useUploadMutation(baseOptions?: Apollo.MutationHookOptions<UploadMutation, UploadMutationVariables>) {
-        return Apollo.useMutation<UploadMutation, UploadMutationVariables>(UploadDocument, baseOptions);
-      }
-export type UploadMutationHookResult = ReturnType<typeof useUploadMutation>;
-export type UploadMutationResult = Apollo.MutationResult<UploadMutation>;
-export type UploadMutationOptions = Apollo.BaseMutationOptions<UploadMutation, UploadMutationVariables>;
-export const AdminDocument = gql`
-    query Admin {
-  admin {
+export type UpdateSongMutationHookResult = ReturnType<typeof useUpdateSongMutation>;
+export type UpdateSongMutationResult = Apollo.MutationResult<UpdateSongMutation>;
+export type UpdateSongMutationOptions = Apollo.BaseMutationOptions<UpdateSongMutation, UpdateSongMutationVariables>;
+export const GetNotificationsDocument = gql`
+    query getNotifications($skip: Int!) {
+  getNotifications(skip: $skip) {
     id
-    username
-    email
-    avatarURL
-    createdAt
-    updatedAt
-    songs {
-      id
-      ownerId
-      title
-    }
-    sentComments {
-      id
-      parentId
-      receiver {
-        id
-        username
-      }
-      parent {
-        id
-        title
-      }
-      body
-      approved
-    }
-    receivedComments {
-      id
-      parentId
-      parent {
-        id
-        title
-      }
-      sender {
-        id
-        username
-      }
-      body
-      approved
-    }
+    url
+    read
   }
 }
     `;
-export type AdminComponentProps = Omit<ApolloReactComponents.QueryComponentOptions<AdminQuery, AdminQueryVariables>, 'query'>;
-
-    export const AdminComponent = (props: AdminComponentProps) => (
-      <ApolloReactComponents.Query<AdminQuery, AdminQueryVariables> query={AdminDocument} {...props} />
-    );
-    
 
 /**
- * __useAdminQuery__
+ * __useGetNotificationsQuery__
  *
- * To run a query within a React component, call `useAdminQuery` and pass it any options that fit your needs.
- * When your component renders, `useAdminQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useGetNotificationsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetNotificationsQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useAdminQuery({
+ * const { data, loading, error } = useGetNotificationsQuery({
  *   variables: {
+ *      skip: // value for 'skip'
  *   },
  * });
  */
-export function useAdminQuery(baseOptions?: Apollo.QueryHookOptions<AdminQuery, AdminQueryVariables>) {
-        return Apollo.useQuery<AdminQuery, AdminQueryVariables>(AdminDocument, baseOptions);
+export function useGetNotificationsQuery(baseOptions: Apollo.QueryHookOptions<GetNotificationsQuery, GetNotificationsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetNotificationsQuery, GetNotificationsQueryVariables>(GetNotificationsDocument, options);
       }
-export function useAdminLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<AdminQuery, AdminQueryVariables>) {
-          return Apollo.useLazyQuery<AdminQuery, AdminQueryVariables>(AdminDocument, baseOptions);
+export function useGetNotificationsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetNotificationsQuery, GetNotificationsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetNotificationsQuery, GetNotificationsQueryVariables>(GetNotificationsDocument, options);
         }
-export type AdminQueryHookResult = ReturnType<typeof useAdminQuery>;
-export type AdminLazyQueryHookResult = ReturnType<typeof useAdminLazyQuery>;
-export type AdminQueryResult = Apollo.QueryResult<AdminQuery, AdminQueryVariables>;
-export const CommentDocument = gql`
-    query Comment($id: Int!) {
-  comment(id: $id) {
-    id
-    createdAt
-    updatedAt
-    body
-    sender {
-      id
-      username
-    }
-    receiver {
-      id
-      username
-    }
-    parent {
-      id
-      title
-    }
-  }
-}
-    `;
-export type CommentComponentProps = Omit<ApolloReactComponents.QueryComponentOptions<CommentQuery, CommentQueryVariables>, 'query'> & ({ variables: CommentQueryVariables; skip?: boolean; } | { skip: boolean; });
-
-    export const CommentComponent = (props: CommentComponentProps) => (
-      <ApolloReactComponents.Query<CommentQuery, CommentQueryVariables> query={CommentDocument} {...props} />
-    );
-    
-
-/**
- * __useCommentQuery__
- *
- * To run a query within a React component, call `useCommentQuery` and pass it any options that fit your needs.
- * When your component renders, `useCommentQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useCommentQuery({
- *   variables: {
- *      id: // value for 'id'
- *   },
- * });
- */
-export function useCommentQuery(baseOptions: Apollo.QueryHookOptions<CommentQuery, CommentQueryVariables>) {
-        return Apollo.useQuery<CommentQuery, CommentQueryVariables>(CommentDocument, baseOptions);
-      }
-export function useCommentLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<CommentQuery, CommentQueryVariables>) {
-          return Apollo.useLazyQuery<CommentQuery, CommentQueryVariables>(CommentDocument, baseOptions);
-        }
-export type CommentQueryHookResult = ReturnType<typeof useCommentQuery>;
-export type CommentLazyQueryHookResult = ReturnType<typeof useCommentLazyQuery>;
-export type CommentQueryResult = Apollo.QueryResult<CommentQuery, CommentQueryVariables>;
-export const CommentsDocument = gql`
-    query Comments($id: Int!) {
-  comments(id: $id) {
-    id
-    createdAt
-    updatedAt
-    body
-    approved
-    sender {
-      id
-      username
-    }
-    receiver {
-      id
-      username
-    }
-    parent {
-      id
-      title
-    }
-  }
-}
-    `;
-export type CommentsComponentProps = Omit<ApolloReactComponents.QueryComponentOptions<CommentsQuery, CommentsQueryVariables>, 'query'> & ({ variables: CommentsQueryVariables; skip?: boolean; } | { skip: boolean; });
-
-    export const CommentsComponent = (props: CommentsComponentProps) => (
-      <ApolloReactComponents.Query<CommentsQuery, CommentsQueryVariables> query={CommentsDocument} {...props} />
-    );
-    
-
-/**
- * __useCommentsQuery__
- *
- * To run a query within a React component, call `useCommentsQuery` and pass it any options that fit your needs.
- * When your component renders, `useCommentsQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useCommentsQuery({
- *   variables: {
- *      id: // value for 'id'
- *   },
- * });
- */
-export function useCommentsQuery(baseOptions: Apollo.QueryHookOptions<CommentsQuery, CommentsQueryVariables>) {
-        return Apollo.useQuery<CommentsQuery, CommentsQueryVariables>(CommentsDocument, baseOptions);
-      }
-export function useCommentsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<CommentsQuery, CommentsQueryVariables>) {
-          return Apollo.useLazyQuery<CommentsQuery, CommentsQueryVariables>(CommentsDocument, baseOptions);
-        }
-export type CommentsQueryHookResult = ReturnType<typeof useCommentsQuery>;
-export type CommentsLazyQueryHookResult = ReturnType<typeof useCommentsLazyQuery>;
-export type CommentsQueryResult = Apollo.QueryResult<CommentsQuery, CommentsQueryVariables>;
+export type GetNotificationsQueryHookResult = ReturnType<typeof useGetNotificationsQuery>;
+export type GetNotificationsLazyQueryHookResult = ReturnType<typeof useGetNotificationsLazyQuery>;
+export type GetNotificationsQueryResult = Apollo.QueryResult<GetNotificationsQuery, GetNotificationsQueryVariables>;
 export const MeDocument = gql`
     query Me {
   me {
     id
     username
+    avatarURL
   }
 }
     `;
-export type MeComponentProps = Omit<ApolloReactComponents.QueryComponentOptions<MeQuery, MeQueryVariables>, 'query'>;
-
-    export const MeComponent = (props: MeComponentProps) => (
-      <ApolloReactComponents.Query<MeQuery, MeQueryVariables> query={MeDocument} {...props} />
-    );
-    
 
 /**
  * __useMeQuery__
@@ -1389,57 +867,45 @@ export type MeComponentProps = Omit<ApolloReactComponents.QueryComponentOptions<
  * });
  */
 export function useMeQuery(baseOptions?: Apollo.QueryHookOptions<MeQuery, MeQueryVariables>) {
-        return Apollo.useQuery<MeQuery, MeQueryVariables>(MeDocument, baseOptions);
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<MeQuery, MeQueryVariables>(MeDocument, options);
       }
 export function useMeLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<MeQuery, MeQueryVariables>) {
-          return Apollo.useLazyQuery<MeQuery, MeQueryVariables>(MeDocument, baseOptions);
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<MeQuery, MeQueryVariables>(MeDocument, options);
         }
 export type MeQueryHookResult = ReturnType<typeof useMeQuery>;
 export type MeLazyQueryHookResult = ReturnType<typeof useMeLazyQuery>;
 export type MeQueryResult = Apollo.QueryResult<MeQuery, MeQueryVariables>;
-export const NavBarDocument = gql`
-    query NavBar {
-  me {
+export const NotificationDocument = gql`
+    subscription Notification {
+  newNotification {
     id
-    username
-    balance
-    notifications {
-      body
-    }
   }
 }
     `;
-export type NavBarComponentProps = Omit<ApolloReactComponents.QueryComponentOptions<NavBarQuery, NavBarQueryVariables>, 'query'>;
-
-    export const NavBarComponent = (props: NavBarComponentProps) => (
-      <ApolloReactComponents.Query<NavBarQuery, NavBarQueryVariables> query={NavBarDocument} {...props} />
-    );
-    
 
 /**
- * __useNavBarQuery__
+ * __useNotificationSubscription__
  *
- * To run a query within a React component, call `useNavBarQuery` and pass it any options that fit your needs.
- * When your component renders, `useNavBarQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useNotificationSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useNotificationSubscription` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useNavBarQuery({
+ * const { data, loading, error } = useNotificationSubscription({
  *   variables: {
  *   },
  * });
  */
-export function useNavBarQuery(baseOptions?: Apollo.QueryHookOptions<NavBarQuery, NavBarQueryVariables>) {
-        return Apollo.useQuery<NavBarQuery, NavBarQueryVariables>(NavBarDocument, baseOptions);
+export function useNotificationSubscription(baseOptions?: Apollo.SubscriptionHookOptions<NotificationSubscription, NotificationSubscriptionVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useSubscription<NotificationSubscription, NotificationSubscriptionVariables>(NotificationDocument, options);
       }
-export function useNavBarLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<NavBarQuery, NavBarQueryVariables>) {
-          return Apollo.useLazyQuery<NavBarQuery, NavBarQueryVariables>(NavBarDocument, baseOptions);
-        }
-export type NavBarQueryHookResult = ReturnType<typeof useNavBarQuery>;
-export type NavBarLazyQueryHookResult = ReturnType<typeof useNavBarLazyQuery>;
-export type NavBarQueryResult = Apollo.QueryResult<NavBarQuery, NavBarQueryVariables>;
+export type NotificationSubscriptionHookResult = ReturnType<typeof useNotificationSubscription>;
+export type NotificationSubscriptionResult = Apollo.SubscriptionResult<NotificationSubscription>;
 export const SongDocument = gql`
     query Song($id: Int!) {
   song(id: $id) {
@@ -1448,7 +914,9 @@ export const SongDocument = gql`
     updatedAt
     title
     mediaUrl
+    mediaType
     genre
+    ownerId
     owner {
       id
       username
@@ -1456,12 +924,6 @@ export const SongDocument = gql`
   }
 }
     `;
-export type SongComponentProps = Omit<ApolloReactComponents.QueryComponentOptions<SongQuery, SongQueryVariables>, 'query'> & ({ variables: SongQueryVariables; skip?: boolean; } | { skip: boolean; });
-
-    export const SongComponent = (props: SongComponentProps) => (
-      <ApolloReactComponents.Query<SongQuery, SongQueryVariables> query={SongDocument} {...props} />
-    );
-    
 
 /**
  * __useSongQuery__
@@ -1480,23 +942,27 @@ export type SongComponentProps = Omit<ApolloReactComponents.QueryComponentOption
  * });
  */
 export function useSongQuery(baseOptions: Apollo.QueryHookOptions<SongQuery, SongQueryVariables>) {
-        return Apollo.useQuery<SongQuery, SongQueryVariables>(SongDocument, baseOptions);
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<SongQuery, SongQueryVariables>(SongDocument, options);
       }
 export function useSongLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<SongQuery, SongQueryVariables>) {
-          return Apollo.useLazyQuery<SongQuery, SongQueryVariables>(SongDocument, baseOptions);
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<SongQuery, SongQueryVariables>(SongDocument, options);
         }
 export type SongQueryHookResult = ReturnType<typeof useSongQuery>;
 export type SongLazyQueryHookResult = ReturnType<typeof useSongLazyQuery>;
 export type SongQueryResult = Apollo.QueryResult<SongQuery, SongQueryVariables>;
 export const SongsDocument = gql`
-    query Songs($limit: Int!) {
-  songs(limit: $limit) {
+    query Songs {
+  songs {
     id
     createdAt
     updatedAt
     title
     mediaUrl
+    mediaType
     genre
+    ownerId
     owner {
       id
       username
@@ -1504,12 +970,6 @@ export const SongsDocument = gql`
   }
 }
     `;
-export type SongsComponentProps = Omit<ApolloReactComponents.QueryComponentOptions<SongsQuery, SongsQueryVariables>, 'query'> & ({ variables: SongsQueryVariables; skip?: boolean; } | { skip: boolean; });
-
-    export const SongsComponent = (props: SongsComponentProps) => (
-      <ApolloReactComponents.Query<SongsQuery, SongsQueryVariables> query={SongsDocument} {...props} />
-    );
-    
 
 /**
  * __useSongsQuery__
@@ -1523,16 +983,105 @@ export type SongsComponentProps = Omit<ApolloReactComponents.QueryComponentOptio
  * @example
  * const { data, loading, error } = useSongsQuery({
  *   variables: {
- *      limit: // value for 'limit'
  *   },
  * });
  */
-export function useSongsQuery(baseOptions: Apollo.QueryHookOptions<SongsQuery, SongsQueryVariables>) {
-        return Apollo.useQuery<SongsQuery, SongsQueryVariables>(SongsDocument, baseOptions);
+export function useSongsQuery(baseOptions?: Apollo.QueryHookOptions<SongsQuery, SongsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<SongsQuery, SongsQueryVariables>(SongsDocument, options);
       }
 export function useSongsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<SongsQuery, SongsQueryVariables>) {
-          return Apollo.useLazyQuery<SongsQuery, SongsQueryVariables>(SongsDocument, baseOptions);
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<SongsQuery, SongsQueryVariables>(SongsDocument, options);
         }
 export type SongsQueryHookResult = ReturnType<typeof useSongsQuery>;
 export type SongsLazyQueryHookResult = ReturnType<typeof useSongsLazyQuery>;
 export type SongsQueryResult = Apollo.QueryResult<SongsQuery, SongsQueryVariables>;
+export const UnreadNotificationsDocument = gql`
+    query unreadNotifications {
+  unreadNotifications
+}
+    `;
+
+/**
+ * __useUnreadNotificationsQuery__
+ *
+ * To run a query within a React component, call `useUnreadNotificationsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useUnreadNotificationsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useUnreadNotificationsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useUnreadNotificationsQuery(baseOptions?: Apollo.QueryHookOptions<UnreadNotificationsQuery, UnreadNotificationsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<UnreadNotificationsQuery, UnreadNotificationsQueryVariables>(UnreadNotificationsDocument, options);
+      }
+export function useUnreadNotificationsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<UnreadNotificationsQuery, UnreadNotificationsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<UnreadNotificationsQuery, UnreadNotificationsQueryVariables>(UnreadNotificationsDocument, options);
+        }
+export type UnreadNotificationsQueryHookResult = ReturnType<typeof useUnreadNotificationsQuery>;
+export type UnreadNotificationsLazyQueryHookResult = ReturnType<typeof useUnreadNotificationsLazyQuery>;
+export type UnreadNotificationsQueryResult = Apollo.QueryResult<UnreadNotificationsQuery, UnreadNotificationsQueryVariables>;
+export const UserDocument = gql`
+    query User($id: Int!) {
+  user(id: $id) {
+    id
+    username
+    avatarURL
+    songs {
+      id
+      title
+      mediaUrl
+      mediaType
+      genre
+      ownerId
+      createdAt
+      updatedAt
+      owner {
+        id
+        username
+      }
+    }
+    notifications {
+      id
+      url
+      read
+    }
+  }
+}
+    `;
+
+/**
+ * __useUserQuery__
+ *
+ * To run a query within a React component, call `useUserQuery` and pass it any options that fit your needs.
+ * When your component renders, `useUserQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useUserQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useUserQuery(baseOptions: Apollo.QueryHookOptions<UserQuery, UserQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<UserQuery, UserQueryVariables>(UserDocument, options);
+      }
+export function useUserLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<UserQuery, UserQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<UserQuery, UserQueryVariables>(UserDocument, options);
+        }
+export type UserQueryHookResult = ReturnType<typeof useUserQuery>;
+export type UserLazyQueryHookResult = ReturnType<typeof useUserLazyQuery>;
+export type UserQueryResult = Apollo.QueryResult<UserQuery, UserQueryVariables>;

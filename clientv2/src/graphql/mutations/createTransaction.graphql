@@ -1,5 +1,0 @@
-mutation CreateTransaction($id: Int!, $transactionAmount: Int!) {
-	createTransaction(id: $id, transactionAmount: $transactionAmount) {
-		id
-	}
-}
